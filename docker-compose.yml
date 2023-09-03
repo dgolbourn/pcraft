@@ -1,0 +1,41 @@
+version: "3.8"
+services:
+  mc:
+    image: itzg/minecraft-server
+    environment:
+      EULA: "TRUE"
+      TYPE: FABRIC
+      CF_API_KEY: ${CF_API_KEY}
+      VERSION: ${MINECRAFT_VERSION:-LATEST}
+      MOTD: §k* §l§6Welcome §fto the §l§cPercycraft §fserver! §k*
+      CURSEFORGE_FILES: |
+        fabric-api
+        audioplayer
+        chat-signing-hider
+        coord-finder
+        lambdynamiclights
+        raised
+        simple-voice-chat
+        tooltipfix
+      VANILLATWEAKS_FILE: |
+        /vanillatweaks/datapacks.json,
+        /vanillatweaks/resourcepacks.json,
+        /vanillatweaks/craftingtweaks.json
+      REMOVE_OLD_VANILLATWEAKS: "TRUE"
+      EXISTING_WHITELIST_FILE: SYNCHRONIZE
+      WHITELIST_FILE: /config/allowlist.json
+      MEMORY: 4G
+    volumes:
+      - fabric:/data
+      - ./vanillatweaks:/vanillatweaks:ro
+      - ./config:/config:ro
+    ports:
+      - "25565:25565"
+      - "24454:24454"
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+volumes:
+  fabric:
+  vanillatweaks:
+  config:

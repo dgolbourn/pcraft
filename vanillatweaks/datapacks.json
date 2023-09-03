@@ -1,0 +1,19 @@
+{
+    "type": "datapacks",
+    "version": "1.20",
+    "packs": {
+        "survival": [
+            "unlock all receipes",
+            "afk display",
+            "multiplayer sleep",
+            "durability ping",
+            "nether portal coords",
+            "coodinates hud"
+        ],
+        "mobs": [
+            "anti enderman grief",
+            "name colors"
+        ]
+    },
+    "result": "ok"
+}
