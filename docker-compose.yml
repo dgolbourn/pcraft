@@ -8,15 +8,6 @@ services:
       CF_API_KEY: ${CF_API_KEY}
       VERSION: ${MINECRAFT_VERSION:-LATEST}
       MOTD: §k* §l§6Welcome §fto the §l§cPercycraft §fserver! §k*
-      CURSEFORGE_FILES: |
-        fabric-api
-        audioplayer
-        chat-signing-hider
-        coord-finder
-        lambdynamiclights
-        raised
-        simple-voice-chat
-        tooltipfix
       VANILLATWEAKS_FILE: |
         /vanillatweaks/datapacks.json,
         /vanillatweaks/resourcepacks.json,
@@ -24,18 +15,45 @@ services:
       REMOVE_OLD_VANILLATWEAKS: "TRUE"
       EXISTING_WHITELIST_FILE: SYNCHRONIZE
       WHITELIST_FILE: /config/allowlist.json
+      EXISTING_OPS_FILE: SYNCHRONIZE
+      OPS_FILE: /config/ops.json
       MEMORY: 4G
+      RESOURCE_PACK: http://localhost/api/public/dl/7TJcJPvr/VanillaTweaks_c32f2d5.zip
+      RESOURCE_PACK_SHA1: 70DEDA1931827277164084FCC75A5D9C8001B076
+      RESOURCE_PACK_ENFORCE: "TRUE"
     volumes:
-      - fabric:/data
+      - mc-data:/data
       - ./vanillatweaks:/vanillatweaks:ro
-      - ./config:/config:ro
+      - ./mc-config:/config:ro
     ports:
       - "25565:25565"
-      - "24454:24454"
+      - "24454:24454/udp"
     stdin_open: true
     tty: true
     restart: unless-stopped
+  init-fb:
+    image: filebrowser/filebrowser
+    entrypoint: sh -c
+    command:
+      - "chown -R 1000: /database"
+    restart: no
+    volumes:
+      - fb-data:/database
+  fb:
+    image: filebrowser/filebrowser
+    depends_on:
+      init-fb:
+        condition: service_completed_successfully
+    user: "1000:1000"
+    volumes:
+      - mc-data:/srv:ro
+      - fb-data:/database
+      - ./fb-config/filebrowser.json:/.filebrowser.json
+    ports:
+      - "80:80"
 volumes:
-  fabric:
+  mc-data:
+  mc-config:
   vanillatweaks:
-  config:
+  fb-data:
+  fb-config:

@@ -3,10 +3,10 @@
     "version": "1.20",
     "packs": {
         "aesthetic": [
-            "golden crown"
+            "GoldenCrown"
         ],
         "hud": [
-            "ping color indicator"
+            "PingColorIndicator"
         ]
     },
     "result": "ok"

@@ -3,7 +3,7 @@
     "version": "1.20",
     "packs": {
         "survival": [
-            "unlock all receipes",
+            "unlock all recipes",
             "afk display",
             "multiplayer sleep",
             "durability ping",
@@ -12,6 +12,10 @@
         ],
         "mobs": [
             "anti enderman grief",
+            "silence mobs"
+        ],
+        "utilities": [
+            "kill empty boats",
             "name colors"
         ]
     },
