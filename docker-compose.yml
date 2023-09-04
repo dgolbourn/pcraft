@@ -5,7 +5,6 @@ services:
     environment:
       EULA: "TRUE"
       TYPE: FABRIC
-      CF_API_KEY: ${CF_API_KEY}
       VERSION: ${MINECRAFT_VERSION:-LATEST}
       MOTD: §k* §l§6Welcome §fto the §l§cPercycraft §fserver! §k*
       VANILLATWEAKS_FILE: |
@@ -21,6 +20,15 @@ services:
       RESOURCE_PACK: http://localhost/api/public/dl/7TJcJPvr/VanillaTweaks_c32f2d5.zip
       RESOURCE_PACK_SHA1: 70DEDA1931827277164084FCC75A5D9C8001B076
       RESOURCE_PACK_ENFORCE: "TRUE"
+      MODRINTH_PROJECTS: |
+        fabric-api
+        audioplayer
+        chat-signing-hider
+        coord-finder
+        lambdynamiclights
+        raised
+        simple-voice-chat
+        tooltipfix
     volumes:
       - mc-data:/data
       - ./vanillatweaks:/vanillatweaks:ro
@@ -36,7 +44,7 @@ services:
     entrypoint: sh -c
     command:
       - "chown -R 1000: /database"
-    restart: no
+    restart: 'no'
     volumes:
       - fb-data:/database
   fb:
