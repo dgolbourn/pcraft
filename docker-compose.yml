@@ -17,8 +17,8 @@ services:
       EXISTING_OPS_FILE: SYNCHRONIZE
       OPS_FILE: /config/ops.json
       MEMORY: 4G
-      RESOURCE_PACK: http://localhost/api/public/dl/7TJcJPvr/VanillaTweaks_c32f2d5.zip
-      RESOURCE_PACK_SHA1: 70DEDA1931827277164084FCC75A5D9C8001B076
+      RESOURCE_PACK: http://localhost:8080/resourcepacks/VanillaTweaks_c32f2d5.zip
+      RESOURCE_PACK_SHA1: fa056588583b15943e5774231b1dbefaee3f519a
       RESOURCE_PACK_ENFORCE: "TRUE"
       MODRINTH_PROJECTS: |
         fabric-api
@@ -39,29 +39,13 @@ services:
     stdin_open: true
     tty: true
     restart: unless-stopped
-  init-fb:
-    image: filebrowser/filebrowser
-    entrypoint: sh -c
-    command:
-      - "chown -R 1000: /database"
-    restart: 'no'
+  fs:
+    image: halverneus/static-file-server
     volumes:
-      - fb-data:/database
-  fb:
-    image: filebrowser/filebrowser
-    depends_on:
-      init-fb:
-        condition: service_completed_successfully
-    user: "1000:1000"
-    volumes:
-      - mc-data:/srv:ro
-      - fb-data:/database
-      - ./fb-config/filebrowser.json:/.filebrowser.json
+      - mc-data:/web:ro
     ports:
-      - "80:80"
+      - "8080:8080"
 volumes:
   mc-data:
   mc-config:
   vanillatweaks:
-  fb-data:
-  fb-config:
