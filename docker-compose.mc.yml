@@ -5,21 +5,20 @@ services:
     environment:
       EULA: "TRUE"
       TYPE: FABRIC
-      VERSION: ${MINECRAFT_VERSION:-LATEST}
+      VERSION: "1.20.1"
       MOTD: §k* §l§6Welcome §fto the §l§cPercycraft §fserver! §k*
       VANILLATWEAKS_FILE: |
         /vanillatweaks/datapacks.json,
-        /vanillatweaks/resourcepacks.json,
         /vanillatweaks/craftingtweaks.json
       REMOVE_OLD_VANILLATWEAKS: "TRUE"
+      RESOURCE_PACK: ${RESOURCE_PACK}
+      RESOURCE_PACK_SHA1: ${RESOURCE_PACK_SHA1}
+      RESOURCE_PACK_ENFORCE: "TRUE"
       EXISTING_WHITELIST_FILE: SYNCHRONIZE
       WHITELIST_FILE: /config/allowlist.json
       EXISTING_OPS_FILE: SYNCHRONIZE
       OPS_FILE: /config/ops.json
       MEMORY: 4G
-      RESOURCE_PACK: http://localhost:8080/resourcepacks/VanillaTweaks_c32f2d5.zip
-      RESOURCE_PACK_SHA1: fa056588583b15943e5774231b1dbefaee3f519a
-      RESOURCE_PACK_ENFORCE: "TRUE"
       MODRINTH_PROJECTS: |
         fabric-api
         audioplayer
@@ -42,11 +41,5 @@ services:
     stdin_open: true
     tty: true
     restart: unless-stopped
-  fs:
-    image: halverneus/static-file-server
-    volumes:
-      - mc-data:/web:ro
-    ports:
-      - "8080:8080"
 volumes:
   mc-data:
