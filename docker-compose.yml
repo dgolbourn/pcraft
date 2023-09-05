@@ -31,14 +31,16 @@ services:
         tooltipfix
     volumes:
       - mc-data:/data
-      - ./vanillatweaks:/vanillatweaks:ro
-      - ./mc-config:/config:ro
+      - ./mc/vanillatweaks:/vanillatweaks:ro
+      - ./mc/config:/config:ro
+      - ./mc/scripts:/scripts
     ports:
       - "25565:25565"
       - "24454:24454/udp"
     stdin_open: true
     tty: true
     restart: unless-stopped
+    command: /scripts/post_startup.sh
   fs:
     image: halverneus/static-file-server
     volumes:
@@ -47,5 +49,3 @@ services:
       - "8080:8080"
 volumes:
   mc-data:
-  mc-config:
-  vanillatweaks:
