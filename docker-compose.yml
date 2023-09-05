@@ -29,18 +29,19 @@ services:
         raised
         simple-voice-chat
         tooltipfix
+      RCON_CMDS_STARTUP: |-
+        /gamerule playersSleepingPercentage 0
+      TZ: "Europe/London"
     volumes:
       - mc-data:/data
       - ./mc/vanillatweaks:/vanillatweaks:ro
       - ./mc/config:/config:ro
-      - ./mc/scripts:/scripts
     ports:
       - "25565:25565"
       - "24454:24454/udp"
     stdin_open: true
     tty: true
     restart: unless-stopped
-    command: /scripts/post_startup.sh
   fs:
     image: halverneus/static-file-server
     volumes:
