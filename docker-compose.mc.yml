@@ -70,5 +70,14 @@ services:
       MCRCON_PASS: asdf1234
     stdin_open: true
     tty: true
+  mca:
+    depends_on:
+      mc:
+        condition: service_healthy
+    build: ./mca/.
+    stdin_open: true
+    tty: true
+    volumes:
+      - mc-data:/data
 volumes:
   mc-data:
