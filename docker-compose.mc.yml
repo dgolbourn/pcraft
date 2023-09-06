@@ -29,7 +29,7 @@ services:
         simple-voice-chat
         tooltipfix
         fabricquilt-chunk-pregenerator
-      RCON_PASSWORD: asdf1234
+      RCON_PASSWORD: ${PASSWORD}
       RCON_CMDS_STARTUP: |-
         /gamerule playersSleepingPercentage 0
         /pregen start 25
@@ -67,7 +67,7 @@ services:
     build: ./mcrcon/.
     environment:
       MCRCON_HOST: mc
-      MCRCON_PASS: asdf1234
+      MCRCON_PASS: ${PASSWORD}
     stdin_open: true
     tty: true
   mca:
