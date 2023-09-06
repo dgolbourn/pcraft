@@ -29,6 +29,7 @@ services:
         simple-voice-chat
         tooltipfix
         fabricquilt-chunk-pregenerator
+      RCON_PASSWORD: asdf1234
       RCON_CMDS_STARTUP: |-
         /gamerule playersSleepingPercentage 0
         /pregen start 25
@@ -46,6 +47,7 @@ services:
       - ./mc/config:/config:ro
       - ./mc/resources/:/resources:ro
     ports:
+      - "25575:25575"
       - "25565:25565"
       - "24454:24454/udp"
     stdin_open: true
@@ -58,5 +60,15 @@ services:
     ports:
       - "8080:8080"
     restart: unless-stopped
+  mcrcon:
+    depends_on:
+      mc:
+        condition: service_healthy
+    build: ./mcrcon/.
+    environment:
+      MCRCON_HOST: mc
+      MCRCON_PASS: asdf1234
+    stdin_open: true
+    tty: true
 volumes:
   mc-data:
