@@ -28,13 +28,23 @@ services:
         raised
         simple-voice-chat
         tooltipfix
+        fabricquilt-chunk-pregenerator
       RCON_CMDS_STARTUP: |-
         /gamerule playersSleepingPercentage 0
+        /pregen start 25
+      RCON_CMDS_FIRST_CONNECT: |-
+        /pregen stop
+      RCON_CMDS_LAST_DISCONNECT: |-
+        /function kill_empty_boats:run
+        /pregen start 25
       TZ: "Europe/London"
+      ICON: /resources/server-icon.png
+      OVERRIDE_ICON: "TRUE"
     volumes:
       - mc-data:/data
       - ./mc/vanillatweaks:/vanillatweaks:ro
       - ./mc/config:/config:ro
+      - ./mc/resources/:/resources:ro
     ports:
       - "25565:25565"
       - "24454:24454/udp"
