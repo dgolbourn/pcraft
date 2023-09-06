@@ -1,6 +1,9 @@
 version: "3.8"
 services:
   mc:
+    depends_on:
+      restore:
+        condition: service_completed_successfully
     image: itzg/minecraft-server
     environment:
       EULA: "TRUE"
@@ -10,7 +13,7 @@ services:
       VANILLATWEAKS_FILE: |
         /vanillatweaks/datapacks.json,
         /vanillatweaks/craftingtweaks.json
-      REMOVE_OLD_VANILLATWEAKS: "TRUE"
+      REMOVE_OLD_VANILLATWEAKS: "FALSE"
       RESOURCE_PACK: ${RESOURCE_PACK}
       RESOURCE_PACK_SHA1: ${RESOURCE_PACK_SHA1}
       RESOURCE_PACK_ENFORCE: "TRUE"
@@ -29,6 +32,7 @@ services:
         simple-voice-chat
         tooltipfix
         fabricquilt-chunk-pregenerator
+      REMOVE_OLD_MODS: "FALSE"
       RCON_PASSWORD: ${PASSWORD}
       RCON_CMDS_STARTUP: |-
         /gamerule playersSleepingPercentage 0
@@ -56,7 +60,7 @@ services:
   fs:
     image: halverneus/static-file-server
     volumes:
-      - ./data:/web:ro
+      - ./web:/web:ro
     ports:
       - "8080:8080"
     restart: unless-stopped
@@ -79,5 +83,28 @@ services:
     tty: true
     volumes:
       - mc-data:/data
+  restore:
+    image: itzg/mc-backup
+    restart: no
+    entrypoint: restore-tar-backup
+    volumes:
+      - mc-data:/data
+      - ./backups:/backups:ro
+  backup:
+    image: itzg/mc-backup
+    depends_on:
+      mc:
+        condition: service_healthy
+    environment:
+      BACKUP_INTERVAL: "24h"
+      RCON_HOST: mc
+      RCON_PASSWORD: ${PASSWORD}
+      PRUNE_BACKUPS_DAYS: 14
+      INITIAL_DELAY: 0
+      LINK_LATEST: "TRUE"
+      TZ: "Europe/London"
+    volumes:
+      - mc-data:/data:ro
+      - ./backups:/backups
 volumes:
   mc-data:

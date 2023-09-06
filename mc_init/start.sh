@@ -1,20 +1,20 @@
 #!/bin/bash
-mkdir -p /output/data
+mkdir -p /output/web
 mc-image-helper vanillatweaks \
-    --output-directory=/output/data \
+    --output-directory=/output/web \
     --world-subdir=world \
     --share-codes="" \
     --pack-files="$VANILLATWEAKS_FILE"
 
 mc-image-helper modrinth \
-      --output-directory=/output/data \
+      --output-directory=/output/web \
       --projects="$MODRINTH_PROJECTS" \
       --game-version="$VERSION" \
       --loader="$TYPE" \
       --download-optional-dependencies="false" \
       --allowed-version-type="release"
 
-cd /output/data
+cd /output/web
 OUTPUT=$(sha1sum resourcepacks/*)
 OUTPUTS=($OUTPUT)
 echo "RESOURCE_PACK_SHA1=${OUTPUTS[0]}" > /output/.env
