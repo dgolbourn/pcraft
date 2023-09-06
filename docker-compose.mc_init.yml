@@ -12,20 +12,8 @@ services:
         fabric-api
         simple-voice-chat
     volumes:
-      - ./fs/start.sh:/start.sh
+      - ./mc_init/start.sh:/start.sh
       - ./:/output
-      - mc-init-data:/data
-      - fs-data:/web
       - ./mc/vanillatweaks:/vanillatweaks:ro
     restart: "no"
     entrypoint: ["/start.sh"]
-  fs:
-    image: halverneus/static-file-server
-    volumes:
-      - fs-data:/web:ro
-    ports:
-      - "8080:8080"
-    restart: unless-stopped
-volumes:
-  mc-init-data:
-  fs-data:
