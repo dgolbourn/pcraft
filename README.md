@@ -1,9 +1,32 @@
-For players:
+Percycraft
+==========
 
-Install the [Fabric Loader](https://fabricmc.net/use/)
+I made this Minecraft server so my son and I can play Minecraft with various mods and so on. 
 
-Download [Simple Voice Chat](http://localhost:8080/mods/voicechat-fabric-1.20.1-2.4.24.jar) and [Fabric API](http://localhost:8080/mods/fabric-api-0.88.1+1.20.1.jar) and place them in the /mods directory of your Minecraft (e.g. somewhere like %APPDATA%\\.minecraft\\mods on Windows)
+It deploys to AWS a Fabric mod Java Minecraft server which uses auto scaling and spot pricing to keep things affordable. The server also features a file server for downloading the requisite Resource Packs and Mods to your client. The server also has Minecraft administration tools mcrcon and mca-selector to keep things tidy.
 
-Select the Fabric version of Minecraft in the Minecraft Launcher when you start the game.
+For players
+-----------
 
-Join the Percycraft server!
+1. Tell the admin (me) your Minecraft user name so I can add it to the allow list
+
+2. Get the IP address of the server from said admin
+
+3. Install the [Fabric Loader](https://fabricmc.net/use/)
+This will allow you to select the Fabric version of Minecraft in the Minecraft Launcher when you start the game
+
+4. Download:
+* Simple Voice Chat (`http://<server ip address>:8080/mods/voicechat-fabric-1.20.1-2.4.24.jar`)
+* Fabric API (`http://<server ip address>:8080/mods/fabric-api-0.88.1+1.20.1.jar`)
+and place them in the `/mods` directory of your Minecraft (e.g. somewhere like `%APPDATA%\\.minecraft\\mods` on Windows)
+
+5. Join the Percycraft server!
+
+For server admins
+-----------------
+
+1. Create a AWS Stack using the Cloudformation template `aws/cf.yml`
+
+2. `scp` the `aws/ec2` scripts to the EC2 instance, `ssh` in and run them
+
+3. Enjoy
