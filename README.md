@@ -5,7 +5,7 @@ I made this Minecraft server so my son and I can play Minecraft with various mod
 
 It deploys to AWS a Fabric mod Java Minecraft server which uses auto scaling and spot pricing to keep things affordable. The server also features a file server for downloading the requisite Resource Packs and Mods to your client. The server also has Minecraft administration tools mcrcon and mca-selector to keep things tidy.
 
-The selection of mods I've chosen is ispired by those featured on [Hermitcraft](https://hermitcraft.com/).
+The selection of mods I've chosen is inspired by the desire to track the look and feel of [Hermitcraft](https://hermitcraft.com/).
 
 For players
 -----------
