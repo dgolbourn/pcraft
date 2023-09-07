@@ -17,7 +17,7 @@ For players
 5. Download:
     * Simple Voice Chat (`http://<server ip address>:8080/mods/voicechat-fabric-1.20.1-2.4.24.jar`)
     * Fabric API (`http://<server ip address>:8080/mods/fabric-api-0.88.1+1.20.1.jar`)
-and place them in the `/mods` directory of your Minecraft (e.g. somewhere like `%APPDATA%\\.minecraft\\mods` on Windows)
+and place them in the `/mods` directory of your Minecraft (e.g. somewhere like `%APPDATA%\.minecraft\mods` on Windows)
 
 6. Join the Percycraft server!
 
