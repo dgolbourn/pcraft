@@ -16,8 +16,8 @@ For players
 This will allow you to select the Fabric version of Minecraft in the Minecraft Launcher when you start the game
 
 4. Download:
-* Simple Voice Chat (`http://<server ip address>:8080/mods/voicechat-fabric-1.20.1-2.4.24.jar`)
-* Fabric API (`http://<server ip address>:8080/mods/fabric-api-0.88.1+1.20.1.jar`)
+    * Simple Voice Chat (`http://<server ip address>:8080/mods/voicechat-fabric-1.20.1-2.4.24.jar`)
+    * Fabric API (`http://<server ip address>:8080/mods/fabric-api-0.88.1+1.20.1.jar`)
 and place them in the `/mods` directory of your Minecraft (e.g. somewhere like `%APPDATA%\\.minecraft\\mods` on Windows)
 
 5. Join the Percycraft server!
