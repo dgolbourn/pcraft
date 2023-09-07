@@ -21,7 +21,10 @@ For players
     * Fabric API (`http://<Percycraft server IP address>:8080/mods/fabric-api-0.88.1+1.20.1.jar`)
 and place them in the `/mods` directory of your Minecraft (e.g. somewhere like `%APPDATA%\.minecraft\mods` on Windows)
 
-6. Load the game up, choose Multiplayer, and add `<Percycraft server IP address>`. Congratulations, you've joined the Percycraft server!
+6. Load the game up, choose Multiplayer, and add `<Percycraft server IP address>`.
+  
+7. **Congratulations, you've joined the Percycraft server!**
+
 
 For server admins
 -----------------
@@ -32,4 +35,4 @@ For server admins
 
 3. Enjoy
 
-Or, if you just want to run the Percycraft server locally, type `./aws/ec2/start.sh" from the project root and it should all Just Work
+Or, if you just want to run the Percycraft server locally, type `./aws/ec2/start.sh" from the project root and it should all *Just Work*
