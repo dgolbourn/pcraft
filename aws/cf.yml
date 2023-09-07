@@ -271,7 +271,7 @@ Resources:
       AutoScalingGroupName: !Sub "${AWS::StackName}-asg"
       DesiredCapacity: !FindInMap [ ServerState, !Ref ServerState, DesiredCapacity ]
       LaunchConfigurationName: !Ref LaunchConfiguration
-      NewInstancesProtectedFromScaleIn: true
+      NewInstancesProtectedFromScaleIn: false
       MaxSize: 1
       MinSize: 0
       VPCZoneIdentifier:
