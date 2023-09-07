@@ -30,3 +30,5 @@ For server admins
 2. `scp` the `aws/ec2` scripts to the EC2 instance, `ssh` in and run them
 
 3. Enjoy
+
+Or, if you just want to run the Percycraft server locally, type `./aws/ec2/start.sh" from the project root and it should all Just Work
