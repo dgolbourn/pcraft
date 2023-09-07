@@ -21,7 +21,7 @@ services:
       WHITELIST_FILE: /config/allowlist.json
       EXISTING_OPS_FILE: SYNCHRONIZE
       OPS_FILE: /config/ops.json
-      MEMORY: 4G
+      MEMORY: 3G
       MODRINTH_PROJECTS: |
         fabric-api
         audioplayer
@@ -46,7 +46,7 @@ services:
       ICON: /resources/server-icon.png
       OVERRIDE_ICON: "TRUE"
     volumes:
-      - mc-data:/data
+      - /efs/data:/data
       - ./mc/vanillatweaks:/vanillatweaks:ro
       - ./mc/config:/config:ro
       - ./mc/resources/:/resources:ro
@@ -60,36 +60,17 @@ services:
   fs:
     image: halverneus/static-file-server
     volumes:
-      - ./web:/web:ro
+      - /efs/web:/web:ro
     ports:
       - "8080:8080"
     restart: unless-stopped
-  mcrcon:
-    depends_on:
-      mc:
-        condition: service_healthy
-    build: ./mcrcon/.
-    environment:
-      MCRCON_HOST: mc
-      MCRCON_PASS: ${PASSWORD}
-    stdin_open: true
-    tty: true
-  mca:
-    depends_on:
-      mc:
-        condition: service_healthy
-    build: ./mca/.
-    stdin_open: true
-    tty: true
-    volumes:
-      - mc-data:/data
   restore:
     image: itzg/mc-backup
     restart: no
     entrypoint: restore-tar-backup
     volumes:
-      - mc-data:/data
-      - ./backups:/backups:ro
+      - /efs/data:/data
+      - /efs/backups:/backups:ro
   backup:
     image: itzg/mc-backup
     depends_on:
@@ -104,7 +85,6 @@ services:
       LINK_LATEST: "TRUE"
       TZ: "Europe/London"
     volumes:
-      - mc-data:/data:ro
-      - ./backups:/backups
-volumes:
-  mc-data:
+      - /efs/data:/data:ro
+      - /efs/backups:/backups
+

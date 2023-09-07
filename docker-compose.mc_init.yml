@@ -14,6 +14,7 @@ services:
     volumes:
       - ./mc_init/start.sh:/start.sh
       - ./:/output
+      - /efs/web:/web
       - ./mc/vanillatweaks:/vanillatweaks:ro
     restart: "no"
     entrypoint: ["/start.sh"]
