@@ -1,4 +1,3 @@
-# Adapted from https://github.com/vatertime/minecraft-spot-pricing
 AWSTemplateFormatVersion: "2010-09-09"
 Description: EC2 Spot Price Server
 Parameters:
