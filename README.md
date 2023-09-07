@@ -19,7 +19,7 @@ For players
     * Fabric API (`http://<Percycraft server IP address>:8080/mods/fabric-api-0.88.1+1.20.1.jar`)
 and place them in the `/mods` directory of your Minecraft (e.g. somewhere like `%APPDATA%\.minecraft\mods` on Windows)
 
-6. Join the Percycraft server!
+6. Load the game up, choose Multiplayer, and add `<Percycraft server IP address>`. Congratulations, you've joined the Percycraft server!
 
 For server admins
 -----------------
