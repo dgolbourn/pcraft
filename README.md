@@ -10,13 +10,13 @@ For players
 
 1. Tell the admin (me) your Minecraft user name so I can add it to the allow list
 
-2. Get the IP address of the server from said admin
+2. Get the `<Percycraft server IP address>` from said admin
 
 3. Install the [Fabric Loader](https://fabricmc.net/use/); this will allow you to select the Fabric version of Minecraft in the Minecraft Launcher when you start the game
 
 5. Download:
-    * Simple Voice Chat (`http://<server ip address>:8080/mods/voicechat-fabric-1.20.1-2.4.24.jar`)
-    * Fabric API (`http://<server ip address>:8080/mods/fabric-api-0.88.1+1.20.1.jar`)
+    * Simple Voice Chat (`http://<Percycraft server IP address>:8080/mods/voicechat-fabric-1.20.1-2.4.24.jar`)
+    * Fabric API (`http://<Percycraft server IP address>:8080/mods/fabric-api-0.88.1+1.20.1.jar`)
 and place them in the `/mods` directory of your Minecraft (e.g. somewhere like `%APPDATA%\.minecraft\mods` on Windows)
 
 6. Join the Percycraft server!
