@@ -1,7 +1,7 @@
 Percycraft
 ==========
 
-I made this Minecraft server so my son and I can play Minecraft with various mods and so on. 
+I made this Minecraft server so my son and I can play Minecraft, with various mods and so on. 
 
 It deploys to AWS a Fabric Java Minecraft server with mods. The cloud infrastructure uses auto scaling and spot pricing to keep things affordable. The server also features a file server for downloading the requisite Resource Packs and Mods to your client. The server also has installed Minecraft administration tools [mcrcon](https://github.com/Tiiffi/mcrcon) and [MCA Selector](https://github.com/Querz/mcaselector) to keep things tidy.
 
