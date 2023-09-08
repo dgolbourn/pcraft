@@ -18,6 +18,7 @@ mkdir -p /efs/backups
 mkdir -p /efs/web
 chmod +x /percycraft/aws/ec2/start.sh
 chmod +x /percycraft/aws/ec2/stop.sh
+chmod +x /percycraft/mc_init/start.sh
 mv /percycraft/aws/ec2/percycraft.service /etc/systemd/system/percycraft.service
 systemctl enable docker.service
 systemctl enable percycraft.service
