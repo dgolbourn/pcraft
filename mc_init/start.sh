@@ -20,3 +20,4 @@ OUTPUTS=($OUTPUT)
 echo "RESOURCE_PACK_SHA1=${OUTPUTS[0]}" > /output/.env
 echo "RESOURCE_PACK=http://$(curl http://checkip.amazonaws.com):8080/${OUTPUTS[1]}" >> /output/.env
 echo "PASSWORD=$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 20; echo;)" >> /output/.env
+echo "CUSTOM_SERVER=$(ls /efs/data/*.jar)"

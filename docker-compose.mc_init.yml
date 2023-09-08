@@ -49,7 +49,15 @@ services:
         tooltipfix
         fabricquilt-chunk-pregenerator
       TZ: "Europe/London"
+      EXISTING_WHITELIST_FILE: SYNCHRONIZE
+      WHITELIST_FILE: /config/allowlist.json
+      EXISTING_OPS_FILE: SYNCHRONIZE
+      OPS_FILE: /config/ops.json
+      ICON: /resources/server-icon.png
+      OVERRIDE_ICON: "TRUE"      
     volumes:
       - /efs/data:/data
       - /percycraft/mc/vanillatweaks:/vanillatweaks:ro
+      - /percycraft/mc/config:/config:ro
+      - /percycraft/mc/resources/:/resources:ro      
     restart: no

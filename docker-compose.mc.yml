@@ -4,16 +4,15 @@ services:
     image: itzg/minecraft-server
     environment:
       EULA: "TRUE"
-      TYPE: FABRIC
-      VERSION: "1.20.1"
+      TYPE: CUSTOM
+      CUSTOM_SERVER: ${CUSTOM_SERVER}
+      FAMILY: FABRIC
       MOTD: §k* §l§6Welcome §fto the §l§cPercycraft §fserver! §k*
       RESOURCE_PACK: ${RESOURCE_PACK}
       RESOURCE_PACK_SHA1: ${RESOURCE_PACK_SHA1}
       RESOURCE_PACK_ENFORCE: "TRUE"
-      EXISTING_WHITELIST_FILE: SYNCHRONIZE
-      WHITELIST_FILE: /config/allowlist.json
-      EXISTING_OPS_FILE: SYNCHRONIZE
-      OPS_FILE: /config/ops.json
+      EXISTING_WHITELIST_FILE: SKIP
+      EXISTING_OPS_FILE: SKIP
       MEMORY: 3G
       RCON_PASSWORD: ${PASSWORD}
       RCON_CMDS_STARTUP: |-
@@ -25,12 +24,8 @@ services:
         /function kill_empty_boats:run
         /pregen start 25
       TZ: "Europe/London"
-      ICON: /resources/server-icon.png
-      OVERRIDE_ICON: "TRUE"
     volumes:
       - /efs/data:/data
-      - /percycraft/mc/config:/config:ro
-      - /percycraft/mc/resources/:/resources:ro
     ports:
       - "25575:25575"
       - "25565:25565"
