@@ -31,7 +31,7 @@ and place them in the `/mods` directory of your Minecraft (e.g. somewhere like `
 For server admins
 -----------------
 
-1. Create a AWS Stack using the Cloudformation template `aws/cf.yml`
+1. Create an AWS Stack using the Cloudformation template `aws/cf.yml`
 
 3. Enjoy
 
