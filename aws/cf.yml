@@ -257,7 +257,8 @@ Resources:
         Fn::Base64: !Sub |
           #!/bin/bash -xe
           yum -y install git
-          git clone https://github.com/dgolbourn/percycraft.git /
+          cd /
+          git clone https://github.com/dgolbourn/percycraft.git
           chmod +x /percycraft/aws/ec2/install.sh 
           /percycraft/aws/ec2/install.sh ${Efs}
 

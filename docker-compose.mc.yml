@@ -45,9 +45,9 @@ services:
       OVERRIDE_ICON: "TRUE"
     volumes:
       - /efs/data:/data
-      - ./mc/vanillatweaks:/vanillatweaks:ro
-      - ./mc/config:/config:ro
-      - ./mc/resources/:/resources:ro
+      - /percycraft/mc/vanillatweaks:/vanillatweaks:ro
+      - /percycraft/mc/config:/config:ro
+      - /percycraft/mc/resources/:/resources:ro
     ports:
       - "25575:25575"
       - "25565:25565"
