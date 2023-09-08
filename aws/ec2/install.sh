@@ -17,10 +17,11 @@ rm mcrcon.tar.gz
 chmod +x /usr/local/bin/mcrcon
 mkdir -p /efs/data
 mkdir -p /efs/backups
-mkdir -p /efs/web
-chmod +x /percycraft/mc_init/start.sh
+mkdir -p /web
+ln -sf /efs/data/resourcepacks /web/resourcepacks
+ln -sf /efs/data/mods /web/mods
+chmod +x /percycraft/mc_init/init.sh
 mv /percycraft/aws/ec2/percycraft.service /etc/systemd/system/percycraft.service
-/usr/local/bin/docker-compose -f /percycraft/mc_init/docker-compose.yml up
 systemctl enable docker.service
 systemctl enable percycraft.service
 systemctl start docker.service

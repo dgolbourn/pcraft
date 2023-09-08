@@ -5,8 +5,10 @@ After=docker.service
 
 [Service]
 Restart=always
+ExecStartPre=/usr/local/bin/docker-compose -f /percycraft/mc_init/docker-compose.yml up
 ExecStart=/usr/local/bin/docker-compose -f /percycraft/mc/docker-compose.yml --env-file /percycraft/.env up
-TimeoutSec=1200
+ExecStop=/usr/local/bin/docker-compose -f /percycraft/mc_exit/docker-compose.yml --env-file /percycraft/.env up
+TimeoutSec=2400
 
 [Install]
 WantedBy=multi-user.target

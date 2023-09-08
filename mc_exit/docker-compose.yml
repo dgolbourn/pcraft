@@ -1,0 +1,19 @@
+version: "3.8"
+services:
+  backup:
+    image: itzg/mc-backup
+    restart: no
+    environment:
+      BACKUP_INTERVAL: 0
+      RCON_HOST: mc
+      RCON_PASSWORD: ${PASSWORD}
+      PRUNE_BACKUPS_DAYS: 14
+      INITIAL_DELAY: 0
+      LINK_LATEST: "TRUE"
+      RCON_RETRY_INTERVAL: 1m
+      RCON_RETRIES: 42
+      TZ: "Europe/London"
+    volumes:
+      - /efs/data:/data:ro
+      - /efs/backups:/backups
+

@@ -1,0 +1,59 @@
+version: "3.8"
+services:
+  restore:
+    image: itzg/mc-backup
+    restart: no
+    entrypoint: restore-tar-backup
+    volumes:
+      - /efs/data:/data
+      - /efs/backups:/backups:ro
+  mc_init:
+    depends_on:
+      restore:
+        condition: service_completed_successfully
+    image: itzg/minecraft-server
+    environment:
+      EULA: "TRUE"
+      TYPE: FABRIC
+      SETUP_ONLY: "TRUE"
+      VERSION: "1.20.1"
+      VANILLATWEAKS_FILE: |
+        /vanillatweaks/datapacks.json,
+        /vanillatweaks/resourcepacks.json
+        /vanillatweaks/craftingtweaks.json
+      MODRINTH_PROJECTS: |
+        fabric-api
+        audioplayer
+        chat-signing-hider
+        coord-finder
+        lambdynamiclights
+        raised
+        simple-voice-chat
+        tooltipfix
+        fabricquilt-chunk-pregenerator
+      TZ: "Europe/London"
+      EXISTING_WHITELIST_FILE: SYNCHRONIZE
+      WHITELIST_FILE: /config/allowlist.json
+      EXISTING_OPS_FILE: SYNCHRONIZE
+      OPS_FILE: /config/ops.json
+      ICON: /resources/server-icon.png
+      OVERRIDE_ICON: "TRUE"      
+    volumes:
+      - /efs/data:/data
+      - /percycraft/mc_init/vanillatweaks:/vanillatweaks:ro
+      - /percycraft/mc_init/config:/config:ro
+      - /percycraft/mc_init/resources/:/resources:ro      
+    restart: no
+    entrypoint: ['[ "$(ls -A /data)" ] && echo "data found" || start']
+  fs_init:
+    depends_on:
+      mc_init:
+        condition: service_completed_successfully
+    image: itzg/minecraft-server
+    volumes:
+      - /efs/data:/data
+      - /percycraft/mc_init/init.sh:/init.sh
+      - /percycraft:/output
+      - /efs/web:/web
+    restart: no
+    entrypoint: ["/init.sh"]

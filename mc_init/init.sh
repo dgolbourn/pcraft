@@ -1,18 +1,5 @@
 #!/bin/bash
-mc-image-helper vanillatweaks \
-    --output-directory=/web \
-    --world-subdir=world \
-    --share-codes="" \
-    --pack-files="$VANILLATWEAKS_FILE"
-
-mc-image-helper modrinth \
-      --output-directory=/web \
-      --projects="$MODRINTH_PROJECTS" \
-      --game-version="$VERSION" \
-      --loader="$TYPE" \
-      --download-optional-dependencies="false" \
-      --allowed-version-type="release"
-
+[ "$(ls -A /data)" ] && exit 0
 cd /web
 OUTPUT=$(sha1sum resourcepacks/*)
 OUTPUTS=($OUTPUT)
