@@ -5,7 +5,7 @@ After=docker.service
 
 [Service]
 Restart=always
-ExecStart=/usr/local/bin/docker-compose -f /percycraft/docker-compose.mc.yml --env-file /percycraft/.env up
+ExecStart=/usr/local/bin/docker-compose -f /percycraft/mc/docker-compose.yml --env-file /percycraft/.env up
 TimeoutSec=1200
 
 [Install]
