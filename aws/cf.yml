@@ -258,8 +258,8 @@ Resources:
           #!/bin/bash -xe
           yum -y install git
           git clone https://github.com/dgolbourn/percycraft.git /
-          chmod +x /percycraft/aws/ec2/install.sh
-          /percycraft/aws/ec2/install.sh
+          chmod +x /percycraft/aws/ec2/install.sh 
+          /percycraft/aws/ec2/install.sh ${Efs}
 
   AutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup

@@ -1,7 +1,7 @@
 #!/bin/bash
 yum install -y amazon-efs-utils
 mkdir /efs
-mount -t efs ${Efs}:/ /efs
+mount -t efs ${1}:/ /efs
 sh -c "yes | amazon-linux-extras install docker"
 curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
