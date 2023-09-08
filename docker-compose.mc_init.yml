@@ -1,6 +1,6 @@
 version: "3.8"
 services:
-  mc_init:
+  fs_init:
     image: itzg/minecraft-server
     environment:
       TYPE: FABRIC
@@ -15,5 +15,41 @@ services:
       - /percycraft:/output
       - /efs/web:/web
       - /percycraft/mc/vanillatweaks:/vanillatweaks:ro
-    restart: "no"
+    restart: no
     entrypoint: ["/start.sh"]
+  restore:
+    image: itzg/mc-backup
+    restart: no
+    entrypoint: restore-tar-backup
+    volumes:
+      - /efs/data:/data
+      - /efs/backups:/backups:ro
+  mc_init:
+    depends_on:
+      restore:
+        condition: service_completed_successfully
+    image: itzg/minecraft-server
+    environment:
+      EULA: "TRUE"
+      TYPE: FABRIC
+      SETUP_ONLY: "TRUE"
+      VERSION: "1.20.1"
+      SKIP_SERVER_PROPERTIES: "TRUE"
+      VANILLATWEAKS_FILE: |
+        /vanillatweaks/datapacks.json,
+        /vanillatweaks/craftingtweaks.json
+      MODRINTH_PROJECTS: |
+        fabric-api
+        audioplayer
+        chat-signing-hider
+        coord-finder
+        lambdynamiclights
+        raised
+        simple-voice-chat
+        tooltipfix
+        fabricquilt-chunk-pregenerator
+      TZ: "Europe/London"
+    volumes:
+      - /efs/data:/data
+      - /percycraft/mc/vanillatweaks:/vanillatweaks:ro
+    restart: no

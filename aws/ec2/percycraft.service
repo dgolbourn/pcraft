@@ -5,8 +5,8 @@ After=docker.service
 
 [Service]
 Restart=always
-ExecStart=/percycraft/aws/ec2/start.sh
-ExecStop=/percycraft/aws/ec2/stop.sh
+ExecStart=docker-compose -f /percycraft/docker-compose.mc.yml --detach --env-file /percycraft/.env up
+ExecStop=docker stop $(docker ps -a -q)
 TimeoutSec=1200
 
 [Install]
