@@ -33,8 +33,6 @@ For server admins
 
 1. Create a AWS Stack using the Cloudformation template `aws/cf.yml`
 
-2. `scp` the `aws/ec2` scripts to the EC2 instance, `ssh` in and run them
-
 3. Enjoy
 
 Or, if you just want to run the Percycraft server locally, type `docker compose -f ./docker-compose.mc_init.yml up` followed by `docker compose -f ./docker-compose.mc.yml up` from the project root
