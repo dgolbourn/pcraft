@@ -256,10 +256,10 @@ Resources:
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash -xe
-          yum install -y amazon-efs-utils
-          mkdir /efs
-          mount -t efs ${Efs}:/ /efs
-          chown 845:845 /efs
+          yum -y install git
+          git clone https://github.com/dgolbourn/percycraft.git /
+          chmod +x /percycraft/aws/ec2/install.sh
+          /percycraft/aws/ec2/install.sh
 
   AutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup

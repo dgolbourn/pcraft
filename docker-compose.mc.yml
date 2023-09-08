@@ -13,7 +13,6 @@ services:
       VANILLATWEAKS_FILE: |
         /vanillatweaks/datapacks.json,
         /vanillatweaks/craftingtweaks.json
-      REMOVE_OLD_VANILLATWEAKS: "FALSE"
       RESOURCE_PACK: ${RESOURCE_PACK}
       RESOURCE_PACK_SHA1: ${RESOURCE_PACK_SHA1}
       RESOURCE_PACK_ENFORCE: "TRUE"
@@ -32,7 +31,6 @@ services:
         simple-voice-chat
         tooltipfix
         fabricquilt-chunk-pregenerator
-      REMOVE_OLD_MODS: "FALSE"
       RCON_PASSWORD: ${PASSWORD}
       RCON_CMDS_STARTUP: |-
         /gamerule playersSleepingPercentage 0
@@ -76,6 +74,7 @@ services:
     depends_on:
       mc:
         condition: service_healthy
+    restart: unless-stopped
     environment:
       BACKUP_INTERVAL: "24h"
       RCON_HOST: mc

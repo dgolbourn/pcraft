@@ -1,0 +1,12 @@
+[Unit]
+Description=Percycraft cluster
+Requires=docker.service
+After=docker.service
+
+[Service]
+Restart=always
+ExecStart=/percycraft/aws/ec2/start.sh
+ExecStop=/percycraft/aws/ec2/stop.sh
+
+[Install]
+WantedBy=multi-user.target
