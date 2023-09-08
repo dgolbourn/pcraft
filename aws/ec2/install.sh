@@ -1,8 +1,10 @@
 #!/bin/bash
+yum update -y
 yum install -y amazon-efs-utils
 mkdir /efs
 mount -t efs ${1}:/ /efs
 sh -c "yes | amazon-linux-extras install docker"
+yum erase amazon-ssm-agent -y
 curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
 curl -fsSL -o mcaselector.jar https://github.com/Querz/mcaselector/releases/download/2.2.2/mcaselector-2.2.2.jar        
@@ -18,7 +20,7 @@ mkdir -p /efs/backups
 mkdir -p /efs/web
 chmod +x /percycraft/mc_init/start.sh
 mv /percycraft/aws/ec2/percycraft.service /etc/systemd/system/percycraft.service
-docker-compose -f /percycraft/docker-compose.mc_init.yml up
+/usr/local/bin/docker-compose -f /percycraft/docker-compose.mc_init.yml up
 systemctl enable docker.service
 systemctl enable percycraft.service
 systemctl start docker.service
