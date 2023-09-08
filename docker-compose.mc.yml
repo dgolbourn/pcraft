@@ -53,6 +53,8 @@ services:
       PRUNE_BACKUPS_DAYS: 14
       INITIAL_DELAY: 0
       LINK_LATEST: "TRUE"
+      RCON_RETRY_INTERVAL: 1m
+      RCON_RETRIES: 42
       TZ: "Europe/London"
     volumes:
       - /efs/data:/data:ro

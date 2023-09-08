@@ -1,6 +1,9 @@
 version: "3.8"
 services:
   fs_init:
+    depends_on:
+      mc_init:
+        condition: service_completed_successfully
     image: itzg/minecraft-server
     environment:
       TYPE: FABRIC
@@ -11,10 +14,11 @@ services:
         fabric-api
         simple-voice-chat
     volumes:
+      - /data:/data
       - /percycraft/mc_init/start.sh:/start.sh
       - /percycraft:/output
       - /efs/web:/web
-      - /percycraft/mc/vanillatweaks:/vanillatweaks:ro
+      - /efs/vanillatweaks:/vanillatweaks:ro
     restart: no
     entrypoint: ["/start.sh"]
   restore:
@@ -34,7 +38,6 @@ services:
       TYPE: FABRIC
       SETUP_ONLY: "TRUE"
       VERSION: "1.20.1"
-      SKIP_SERVER_PROPERTIES: "TRUE"
       VANILLATWEAKS_FILE: |
         /vanillatweaks/datapacks.json,
         /vanillatweaks/craftingtweaks.json
@@ -57,7 +60,7 @@ services:
       OVERRIDE_ICON: "TRUE"      
     volumes:
       - /efs/data:/data
-      - /percycraft/mc/vanillatweaks:/vanillatweaks:ro
-      - /percycraft/mc/config:/config:ro
-      - /percycraft/mc/resources/:/resources:ro      
+      - /efs/mc/vanillatweaks:/vanillatweaks:ro
+      - /efs/mc/config:/config:ro
+      - /efs/mc/resources/:/resources:ro      
     restart: no
