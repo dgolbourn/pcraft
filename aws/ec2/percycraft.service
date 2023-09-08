@@ -7,6 +7,7 @@ After=docker.service
 Restart=always
 ExecStart=/percycraft/aws/ec2/start.sh
 ExecStop=/percycraft/aws/ec2/stop.sh
+TimeoutSec=1200
 
 [Install]
 WantedBy=multi-user.target
