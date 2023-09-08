@@ -37,4 +37,4 @@ For server admins
 
 3. Enjoy
 
-Or, if you just want to run the Percycraft server locally, type `./aws/ec2/start.sh" from the project root and it should all *Just Work*
+Or, if you just want to run the Percycraft server locally, type `docker compose -f ./docker-compose.mc_init.yml up` followed by `docker compose -f ./docker-compose.mc.yml up` from the project root
