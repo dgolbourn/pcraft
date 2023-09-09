@@ -1,2 +1,2 @@
-#!/bin/bash1
+#!/bin/bash
 [ "$(ls -A /data)" ] && echo "data found" || /start
