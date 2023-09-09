@@ -10,7 +10,7 @@ PATTERN="/data/*.jar"
 JARS=( $PATTERN )
 echo "CUSTOM_SERVER=${JARS[0]}" >> /output/.env
 rm -rf /web/*
-mkdir -p /web/resources
+mkdir -p /web/resourcepacks
 ln -sf "/data/${OUTPUTS[1]}" /web/resourcepacks/
 cd /data/mods
 MODTEXT=()
