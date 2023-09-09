@@ -1,10 +1,10 @@
 version: "3.8"
 services:
   backup:
+    networks:
+      - mc_mc-network
     image: itzg/mc-backup
     restart: no
-    networks:
-      - mc-network
     environment:
       BACKUP_INTERVAL: 0
       RCON_HOST: mc
@@ -13,10 +13,10 @@ services:
       INITIAL_DELAY: 0
       LINK_LATEST: "TRUE"
       TZ: "Europe/London"
-      EXCLUDES: cache,*.tmp
+      EXCLUDES: cache,*.tmp, logs
     volumes:
       - /efs/data:/data:ro
       - /efs/backups:/backups
 networks:
-  mc-network:
+  mc_mc-network:
     external: true
