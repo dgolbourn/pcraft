@@ -18,12 +18,12 @@ MODTEXT=()
 while read p; do
   MOD=$(ls $p*)
   cp -f /data/mods/$MOD /web/mods/
-  MODTEXT+=("{\"text\":\"$MOD\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"$URL/mods/$p\"}}")
+  MODTEXT+=("{\"text\":\"$p\",\"underlined\":true,\"color\":\"blue\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"$URL/mods/$MOD\"}}")
 done < /client-mods.txt
 if (( ${#MODTEXT[@]} )); then
     MODTEXT=$(printf ",\"\\\n\",%s" "${MODTEXT[@]}")
-    WELCOME_MESSAGE='/tellraw @a[team=New] ["","Welcome to Percycraft!","\n","If you have not done so already, please download these mods and place them in your mods folder"'$MODTEXT']'
+    WELCOME_MESSAGE='/tellraw @a[team=New] ["",{"text":"Welcome to ","bold":true,"color":"dark_purple"},{"text":"Percycraft!","bold":true,"color":"gold"},"\n","Click these links to download the mods for you client,","\n","then place them in your mods folder:"'$MODTEXT']'
 else
-    WELCOME_MESSAGE='/tellraw @a[team=New] ["","Welcome to Percycraft!"]'
+    WELCOME_MESSAGE='/tellraw @a[team=New] ["",{"text":"Welcome to ","bold":true,"color":"dark_purple"},{"text":"Percycraft!","bold":true,"color":"gold"}]'
 fi
 echo WELCOME_MESSAGE=\'$WELCOME_MESSAGE\' >> /output/.env
