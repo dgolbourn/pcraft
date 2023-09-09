@@ -17,7 +17,7 @@ rm mcrcon.tar.gz
 chmod +x /usr/local/bin/mcrcon
 mkdir -p /efs/data
 mkdir -p /efs/backups
-mkdir -p /web
+mkdir -p /efs/web
 ln -sf /efs/data/resourcepacks /efs/web/resourcepacks
 ln -sf /efs/data/mods /efs/web/mods
 chmod +x /percycraft/mc_init/init.sh
