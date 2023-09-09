@@ -5,7 +5,7 @@ services:
     restart: no
     environment:
       BACKUP_INTERVAL: 0
-      RCON_HOST: mc
+      RCON_HOST: 127.0.0.1
       RCON_PASSWORD: ${PASSWORD}
       PRUNE_BACKUPS_DAYS: 14
       INITIAL_DELAY: 0
@@ -15,4 +15,6 @@ services:
     volumes:
       - /efs/data:/data:ro
       - /efs/backups:/backups
-
+networks:
+  mc-network:
+    external: true

@@ -59,3 +59,5 @@ services:
       - /efs/web:/web
     restart: no
     entrypoint: ["/bin/bash", "/pre-start.sh"]
+networks:
+  mc-network:
