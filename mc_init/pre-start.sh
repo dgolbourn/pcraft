@@ -11,7 +11,7 @@ JARS=( $PATTERN )
 echo "CUSTOM_SERVER=${JARS[0]}" >> /output/.env
 rm -rf /web/*
 mkdir -p /web/resources
-ln -sf "/data/${OUTPUTS[1]}" /web/resources/
+ln -sf "/data/${OUTPUTS[1]}" /web/resourcepacks/
 cd /data/mods
 MODTEXT=()
 while read p; do
