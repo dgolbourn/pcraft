@@ -54,6 +54,7 @@ services:
     volumes:
       - /efs/data:/data
       - /percycraft/mc_init/pre-start.sh:/pre-start.sh
+      - /percycraft/mc_init/client-mods.txt:/client-mods.txt
       - /percycraft:/output
       - /efs/web:/web
     restart: no

@@ -16,7 +16,7 @@ while read p; do
   MOD=$(ls $p*)
   ln -sf /data/mods/$MOD /web/
   MODTEXT+=("{\"text\":\"$MOD\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"$URL/$p\"}}")
-done < /percycraft/mc_init/client-mods.txt
+done < /client-mods.txt
 if (( ${#MODTEXT[@]} )); then
     MODTEXT=$(printf ",\"\\\n\",%s" "${MODTEXT[@]}")
     WELCOME_MESSAGE='/tellraw @a[team=New] ["","Welcome to Percycraft!","\n","If you have not done so already, please download these mods and place them in your mods folder"'$MODTEXT']'
