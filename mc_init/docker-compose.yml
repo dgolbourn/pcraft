@@ -45,7 +45,7 @@ services:
       - /percycraft/mc_init/resources/:/resources:ro  
       - /percycraft/mc_init/init.sh:/init.sh    
     restart: no
-    entrypoint: [/init.sh""]
+    entrypoint: ["/bin/bash", "/init.sh"]
   fs_init:
     depends_on:
       mc_init:
@@ -53,8 +53,8 @@ services:
     image: itzg/minecraft-server
     volumes:
       - /efs/data:/data
-      - /percycraft/mc_init/pre=start.sh:/pre-start.sh
+      - /percycraft/mc_init/pre-start.sh:/pre-start.sh
       - /percycraft:/output
       - /efs/web:/web
     restart: no
-    entrypoint: ["/pre-start.sh"]
+    entrypoint: ["/bin/bash", "/pre-start.sh"]
