@@ -11,13 +11,13 @@ JARS=( $PATTERN )
 echo "CUSTOM_SERVER=${JARS[0]}" >> /output/.env
 rm -rf /web/*
 mkdir -p /web/resourcepacks
-ln -f "/data/${OUTPUTS[1]}" /web/resourcepacks/
+cp "/data/${OUTPUTS[1]}" /web/resourcepacks/
 cd /data/mods
 MODTEXT=()
 while read p; do
   MOD=$(ls $p*)
-  ln -f /data/mods/$MOD /web/
-  MODTEXT+=("{\"text\":\"$MOD\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"$URL/$p\"}}")
+  cp -f /data/mods/$MOD /web/mods/
+  MODTEXT+=("{\"text\":\"$MOD\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"$URL/mods/$p\"}}")
 done < /client-mods.txt
 if (( ${#MODTEXT[@]} )); then
     MODTEXT=$(printf ",\"\\\n\",%s" "${MODTEXT[@]}")
