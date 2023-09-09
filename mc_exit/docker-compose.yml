@@ -7,7 +7,7 @@ services:
       - mc-network
     environment:
       BACKUP_INTERVAL: 0
-      RCON_HOST: 127.0.0.1
+      RCON_HOST: mc
       RCON_PASSWORD: ${PASSWORD}
       PRUNE_BACKUPS_DAYS: 14
       INITIAL_DELAY: 0
