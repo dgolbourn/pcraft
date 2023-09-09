@@ -3,6 +3,8 @@ services:
   backup:
     image: itzg/mc-backup
     restart: no
+    networks:
+      - mc-network
     environment:
       BACKUP_INTERVAL: 0
       RCON_HOST: 127.0.0.1
