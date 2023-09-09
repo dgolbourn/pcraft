@@ -14,6 +14,8 @@ services:
       EXISTING_WHITELIST_FILE: SKIP
       EXISTING_OPS_FILE: SKIP
       MEMORY: 3G
+      STOP_SERVER_ANNOUCE_DELAY: 60
+      STOP_DURATION: 240
       RCON_PASSWORD: ${PASSWORD}
       RCON_CMDS_STARTUP: |-
         /gamerule playersSleepingPercentage 0
@@ -24,6 +26,7 @@ services:
         /function kill_empty_boats:run
         /pregen start 25
       TZ: "Europe/London"
+    stop_grace_period: 5m
     volumes:
       - /efs/data:/data
     ports:

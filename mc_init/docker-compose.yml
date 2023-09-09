@@ -42,9 +42,10 @@ services:
       - /efs/data:/data
       - /percycraft/mc_init/vanillatweaks:/vanillatweaks:ro
       - /percycraft/mc_init/config:/config:ro
-      - /percycraft/mc_init/resources/:/resources:ro      
+      - /percycraft/mc_init/resources/:/resources:ro  
+      - /percycraft/mc_init/init.sh:/init.sh    
     restart: no
-    entrypoint: ['[ "$(ls -A /data)" ] && echo "data found" || start']
+    entrypoint: [/init.sh""]
   fs_init:
     depends_on:
       mc_init:
@@ -52,8 +53,8 @@ services:
     image: itzg/minecraft-server
     volumes:
       - /efs/data:/data
-      - /percycraft/mc_init/init.sh:/init.sh
+      - /percycraft/mc_init/pre=start.sh:/pre-start.sh
       - /percycraft:/output
       - /efs/web:/web
     restart: no
-    entrypoint: ["/init.sh"]
+    entrypoint: ["/pre-start.sh"]

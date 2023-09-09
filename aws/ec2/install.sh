@@ -18,9 +18,10 @@ chmod +x /usr/local/bin/mcrcon
 mkdir -p /efs/data
 mkdir -p /efs/backups
 mkdir -p /web
-ln -sf /efs/data/resourcepacks /web/resourcepacks
-ln -sf /efs/data/mods /web/mods
+ln -sf /efs/data/resourcepacks /efs/web/resourcepacks
+ln -sf /efs/data/mods /efs/web/mods
 chmod +x /percycraft/mc_init/init.sh
+chmod +x /percycraft/mc_init/pre-start.sh
 mv /percycraft/aws/ec2/percycraft.service /etc/systemd/system/percycraft.service
 systemctl enable docker.service
 systemctl enable percycraft.service
