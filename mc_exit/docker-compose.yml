@@ -9,11 +9,11 @@ services:
       BACKUP_INTERVAL: 0
       RCON_HOST: mc
       RCON_PASSWORD: ${PASSWORD}
-      PRUNE_BACKUPS_DAYS: 14
+      PRUNE_BACKUPS_DAYS: 7
       INITIAL_DELAY: 0
       LINK_LATEST: "TRUE"
       TZ: "Europe/London"
-      EXCLUDES: cache,*.tmp, logs
+      EXCLUDES: .cache,*.tmp,logs
     volumes:
       - /efs/data:/data:ro
       - /efs/backups:/backups
