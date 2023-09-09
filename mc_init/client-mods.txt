@@ -1,2 +1,2 @@
 fabric-api
-simple-voice-chat
+voicechat-fabric
