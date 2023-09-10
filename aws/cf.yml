@@ -301,6 +301,77 @@ Resources:
       Roles:
         - !Ref InstanceRole
 
+  StartStopLambdaRole:
+    Type: AWS::IAM::Role
+    Properties: 
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: root
+          PolicyDocument: 
+            Version: "2012-10-17"
+            Statement: 
+              - Effect: "Allow"
+                Action: "*"
+                Resource: "*"
+
+  StartLambda:
+    Type: "AWS::Lambda::Function"
+    Properties: 
+      Environment:
+        Variables:
+          AutoScalingGroupName: !Sub "${AWS::StackName}-asg"
+      Code:
+        ZipFile: |
+          import boto3
+          import os
+          def lambda_handler(event, context):
+            boto3.client('autoscaling').set_desired_capacity(
+                AutoScalingGroupName=os.environ['AutoScalingGroupName'],
+                DesiredCapacity=1,
+                HonorCooldown=False
+            )
+      Description: Starts the server
+      FunctionName: !Sub "${AWS::StackName}-start"
+      Handler: index.lambda_handler
+      MemorySize: 128
+      Role: !GetAtt StartStopLambdaRole.Arn
+      Runtime: python3.7
+      Timeout: 30
+
+  StopLambda:
+    Type: "AWS::Lambda::Function"
+    Properties: 
+      Environment:
+        Variables:
+          AutoScalingGroupName: !Sub "${AWS::StackName}-asg"
+      Code:
+        ZipFile: |
+          import boto3
+          import os
+          def lambda_handler(event, context):
+            boto3.client('autoscaling').set_desired_capacity(
+                AutoScalingGroupName=os.environ['AutoScalingGroupName'],
+                DesiredCapacity=0,
+                HonorCooldown=False
+            )
+      Description: Starts the server
+      FunctionName: !Sub "${AWS::StackName}-stop"
+      Handler: index.lambda_handler
+      MemorySize: 128
+      Role: !GetAtt StartStopLambdaRole.Arn
+      Runtime: python3.7
+      Timeout: 30
+
   SetDNSRecordLambdaRole:
     Type: AWS::IAM::Role
     Condition: DnsConfigEnabled
