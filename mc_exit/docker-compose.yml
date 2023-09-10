@@ -13,7 +13,6 @@ services:
       INITIAL_DELAY: 0
       LINK_LATEST: "TRUE"
       TZ: "Europe/London"
-      EXCLUDES: .cache,*.tmp,logs
     volumes:
       - /efs/data:/data:ro
       - /efs/backups:/backups

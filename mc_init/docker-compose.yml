@@ -43,9 +43,7 @@ services:
       - /percycraft/mc_init/vanillatweaks:/vanillatweaks:ro
       - /percycraft/mc_init/config:/config:ro
       - /percycraft/mc_init/resources/:/resources:ro  
-      - /percycraft/mc_init/init.sh:/init.sh    
     restart: no
-    entrypoint: ["/bin/bash", "/init.sh"]
   fs_init:
     depends_on:
       mc_init:
