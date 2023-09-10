@@ -43,13 +43,13 @@ services:
       - "24454:24454/udp"
     stdin_open: true
     tty: true
-    restart: unless-stopped
+    restart: no
   fs:
     image: halverneus/static-file-server
     volumes:
       - /efs/web:/web:ro
     ports:
       - "8080:8080"
-    restart: unless-stopped
+    restart: no
 networks:
   mc-network:
