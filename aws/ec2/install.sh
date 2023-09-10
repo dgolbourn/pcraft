@@ -22,7 +22,7 @@ ln -sf /efs/data/resourcepacks /efs/web/resourcepacks
 ln -sf /efs/data/mods /efs/web/mods
 chmod +x /percycraft/mc_init/init.sh
 chmod +x /percycraft/mc_init/pre-start.sh
-mv /percycraft/aws/ec2/percycraft.service /etc/systemd/system/percycraft.service
+cp /percycraft/aws/ec2/percycraft.service /etc/systemd/system/percycraft.service
 systemctl enable docker.service
 systemctl enable percycraft.service
 systemctl start docker.service
