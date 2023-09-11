@@ -175,8 +175,8 @@ Resources:
   EfsSg:
     Type: AWS::EC2::SecurityGroup
     Properties: 
-      GroupName: !Sub "${AWS::StackName}-efs"
-      GroupDescription: !Sub "${AWS::StackName}-efs"
+      GroupName: !Sub "${AWS::StackName}-EfsSg"
+      GroupDescription: !Sub "${AWS::StackName}-EfsSg"
       SecurityGroupIngress:
       - FromPort: 2049
         ToPort: 2049
@@ -187,8 +187,8 @@ Resources:
   Ec2Sg:
     Type: AWS::EC2::SecurityGroup
     Properties: 
-      GroupName: !Sub "${AWS::StackName}-ec2"
-      GroupDescription: !Sub "${AWS::StackName}-ec2"
+      GroupName: !Sub "${AWS::StackName}-Ec2Sg"
+      GroupDescription: !Sub "${AWS::StackName}-Ec2Sg"
       SecurityGroupIngress:
       - !If
         - IPv4AddressProvided 
@@ -238,7 +238,7 @@ Resources:
     - MountA
     - MountB
     Properties:
-      AutoScalingGroupName: !Sub "${AWS::StackName}-asg"
+      AutoScalingGroupName: !Sub "${AWS::StackName}-AutoScalingGroup"
       DesiredCapacity: !FindInMap [ ServerState, !Ref ServerState, DesiredCapacity ]
       LaunchConfigurationName: !Ref LaunchConfiguration
       NewInstancesProtectedFromScaleIn: false
@@ -253,10 +253,10 @@ Resources:
   AutoScalingLifecycleHook:
     Type: AWS::AutoScaling::LifecycleHook
     Properties: 
-      AutoScalingGroupName: !Sub "${AWS::StackName}-asg"
+      AutoScalingGroupName: !Sub "${AWS::StackName}-AutoScalingGroup"
       DefaultResult: CONTINUE 
       HeartbeatTimeout: 300
-      LifecycleHookName: !Sub "${AWS::StackName}-asg-hook"
+      LifecycleHookName: !Sub "${AWS::StackName}-AutoScalingLifecycleHook"
       LifecycleTransition: autoscaling:EC2_INSTANCE_TERMINATING
 
   SchedulerRole:
@@ -360,17 +360,14 @@ Resources:
             Version: "2012-10-17"
             Statement: 
               - Effect: "Allow"
-                Action: "*"
+                Action: "autoscaling:CompleteLifecycleAction"
                 Resource: "*"
-              # - Effect: "Allow"
-              #   Action: "autoscaling:CompleteLifecycleAction"
-              #   Resource: "*"
-              # - Effect: "Allow"
-              #   Action: "autoscaling:GetCommandInvocation"
-              #   Resource: "*"
-              # - Effect: "Allow"
-              #   Action: "ssm:SendCommand"
-              #   Resource: "*"
+              - Effect: "Allow"
+                Action: "ssm:GetCommandInvocation"
+                Resource: "*"
+              - Effect: "Allow"
+                Action: "ssm:SendCommand"
+                Resource: "*"
 
   GracefulShutdownLambda:
     Type: "AWS::Lambda::Function"
@@ -410,7 +407,7 @@ Resources:
                   InstanceId=event['detail']['EC2InstanceId']
               )
       Description: Gracefully shutdown the server
-      FunctionName: !Sub "${AWS::StackName}-grace"
+      FunctionName: !Sub "${AWS::StackName}-GracefulShutdownLambda"
       Handler: index.lambda_handler
       MemorySize: 128
       Role: !GetAtt GracefulShutdownLambdaRole.Arn
@@ -437,18 +434,15 @@ Resources:
             Version: "2012-10-17"
             Statement: 
               - Effect: "Allow"
-                Action: "*"
+                Action: "autoscaling:SetDesiredCapacity"
                 Resource: "*"
-              # - Effect: "Allow"
-              #   Action: "autoscaling:SetDesiredCapacity"
-              #   Resource: "*"
 
   StartLambda:
     Type: "AWS::Lambda::Function"
     Properties: 
       Environment:
         Variables:
-          AutoScalingGroupName: !Sub "${AWS::StackName}-asg"
+          AutoScalingGroupName: !Sub "${AWS::StackName}-AutoScalingGroup"
       Code:
         ZipFile: |
           import boto3
@@ -460,7 +454,7 @@ Resources:
                 HonorCooldown=False
             )
       Description: Starts the server
-      FunctionName: !Sub "${AWS::StackName}-start"
+      FunctionName: !Sub "${AWS::StackName}-StartLambda"
       Handler: index.lambda_handler
       MemorySize: 128
       Role: !GetAtt StartStopLambdaRole.Arn
@@ -472,7 +466,7 @@ Resources:
     Properties: 
       Environment:
         Variables:
-          AutoScalingGroupName: !Sub "${AWS::StackName}-asg"
+          AutoScalingGroupName: !Sub "${AWS::StackName}-AutoScalingGroup"
       Code:
         ZipFile: |
           import boto3
@@ -484,7 +478,7 @@ Resources:
                 HonorCooldown=False
             )
       Description: Starts the server
-      FunctionName: !Sub "${AWS::StackName}-stop"
+      FunctionName: !Sub "${AWS::StackName}-StopLambda"
       Handler: index.lambda_handler
       MemorySize: 128
       Role: !GetAtt StartStopLambdaRole.Arn
@@ -533,7 +527,7 @@ Resources:
                 InstanceId=event['detail']['EC2InstanceId']
             )
       Description: Assoicates Elastic IP with EC2 instance
-      FunctionName: !Sub "${AWS::StackName}-aeip"
+      FunctionName: !Sub "${AWS::StackName}-AssociateElasticIPLambda"
       Handler: index.handler
       MemorySize: 128
       Role: !GetAtt AssociateElasticIPLambdaRole.Arn
@@ -550,11 +544,11 @@ Resources:
         - EC2 Instance Launch Successful
         detail:
           AutoScalingGroupName:
-          - !Sub "${AWS::StackName}-asg"
+          - !Sub "${AWS::StackName}-AutoScalingGroup"
       State: ENABLED
       Targets:
         - Arn: !GetAtt AssociateElasticIPLambda.Arn
-          Id: !Sub "${AWS::StackName}-aeip"
+          Id: !Sub "${AWS::StackName}-AssociateElasticIPLambda"
 
   LaunchEventLambdaPermission:
     Type: AWS::Lambda::Permission
@@ -574,11 +568,11 @@ Resources:
         - EC2 Instance-terminate Lifecycle Action
         detail:
           AutoScalingGroupName:
-          - !Sub "${AWS::StackName}-asg"
+          - !Sub "${AWS::StackName}-AssociateElasticIPLambda"
       State: ENABLED
       Targets:
         - Arn: !GetAtt GracefulShutdownLambda.Arn
-          Id: !Sub "${AWS::StackName}-grace"
+          Id: !Sub "${AWS::StackName}-GracefulShutdownLambda"
 
   TerminateEventLambdaPermission:
     Type: AWS::Lambda::Permission
