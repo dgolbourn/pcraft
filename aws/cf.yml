@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: EC2 Spot Price Server
+Description: EC2 Spot Price server with start up and shut down times
 Parameters:
 
   EC2AMI:
@@ -9,7 +9,6 @@ Parameters:
 
   ServerState:
     Type: String
-    Description: "Running: A spot instance will launch shortly after setting this parameter; your server should start within 5-10 minutes of changing this parameter (once UPDATE_IN_PROGRESS becomes UPDATE_COMPLETE). Stopped: Your spot instance will be terminated shortly after setting this parameter."
     Default: Running
     AllowedValues: 
     - Running
@@ -17,53 +16,56 @@ Parameters:
 
   InstanceType:
     Type: String
-    Description: "https://aws.amazon.com/ec2/instance-types/"
     Default: t3.medium
 
   SpotPrice:
     Type: String
-    Description: "A t3.medium shouldn't cost much more than a cent per hour. Note: Leave this blank to use on-demand pricing."
     Default: "0.05"
 
   KeyPairName:
     Type: String
-    Description: (Optional - An empty value disables this feature)
     Default: ''
 
   YourIPv4:
     Type: String
-    Description: (Optional - An empty value disables this feature)
     Default: ''
 
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
-      - Label: 
-          default: Essential Configuration
+      - Label:
+          default: Initial Conditions
         Parameters:
         - ServerState
+      - Label: 
+          default: Cost/Performance Configuration
+        Parameters:
         - InstanceType
         - SpotPrice
       - Label: 
-          default: Optional Remote Access (SSH) Configuration
+          default: SSH Configuration
         Parameters:
         - KeyPairName
         - YourIPv4
+      - Label:
+          default: Virtual Machine
+        Parameters:
+        - EC2AMI
     ParameterLabels:
       ServerState:
-        default: "Update this parameter to shut down / start up your server as required to save on cost. Takes a few minutes to take effect."
+        default: "Initial server state"
       InstanceType:
-        default: "Which instance type? You must make sure this is available in your region! https://aws.amazon.com/ec2/pricing/on-demand/"
+        default: "Instance type"
       SpotPrice:
-        default: "Maximum spot price per hour? Leave blank to disable spot pricing."
+        default: "Maximum spot price per hour (blank means on demand price)"
       KeyPairName:
-        default: "If you wish to access the instance via SSH, select a Key Pair to use. https://console.aws.amazon.com/ec2/v2/home?#KeyPairs:sort=keyName"
+        default: "Key Pair: https://console.aws.amazon.com/ec2/v2/home?#KeyPairs:sort=keyName"
       YourIPv4:
-        default: "If you wish to access the instance via SSH and using IPv4, provide it."
+        default: "IPv4 address: http://checkip.amazonaws.com"
+      EC2AMI:
+        default: "Virtual machine image"
 
 Conditions:
-  KeyPairNameProvided: !Not [ !Equals [ !Ref KeyPairName, '' ] ]
-  IPv4AddressProvided: !Not [ !Equals [ !Ref YourIPv4, '' ] ]
   SpotPriceProvided: !Not [ !Equals [ !Ref SpotPrice, '' ] ]
 
 Mappings:
@@ -190,13 +192,10 @@ Resources:
       GroupName: !Sub "${AWS::StackName}-Ec2Sg"
       GroupDescription: !Sub "${AWS::StackName}-Ec2Sg"
       SecurityGroupIngress:
-      - !If
-        - IPv4AddressProvided 
-        - FromPort: 22
-          ToPort: 22
-          IpProtocol: tcp
-          CidrIp: !Sub "${YourIPv4}/32"
-        - !Ref 'AWS::NoValue'
+      - FromPort: 22
+        ToPort: 22
+        IpProtocol: tcp
+        CidrIp: !Sub "${YourIPv4}/32"
       - FromPort: 25565
         ToPort: 25565
         IpProtocol: tcp
@@ -218,8 +217,7 @@ Resources:
       IamInstanceProfile: !Ref InstanceProfile
       ImageId: !Ref EC2AMI
       InstanceType: !Ref InstanceType
-      KeyName: 
-        !If [ KeyPairNameProvided, !Ref KeyPairName, !Ref 'AWS::NoValue' ]
+      KeyName: !Ref KeyPairName
       SecurityGroups:
       - !Ref Ec2Sg
       SpotPrice: !If [ SpotPriceProvided, !Ref SpotPrice, !Ref 'AWS::NoValue' ]
@@ -252,6 +250,7 @@ Resources:
 
   AutoScalingLifecycleHook:
     Type: AWS::AutoScaling::LifecycleHook
+    DependsOn: AutoScalingGroup
     Properties: 
       AutoScalingGroupName: !Sub "${AWS::StackName}-AutoScalingGroup"
       DefaultResult: CONTINUE 
@@ -280,13 +279,26 @@ Resources:
                   Action: "lambda:InvokeFunction"
                   Resource: "*"
 
-  StopScheduler:
+  WeekdayStopScheduler:
     Type: AWS::Scheduler::Schedule
     Properties: 
       FlexibleTimeWindow: 
         MaximumWindowInMinutes: 5
         Mode: FLEXIBLE
-      ScheduleExpression: cron(0 21 ? * * *)
+      ScheduleExpression: cron(0 21 ? * 1-5 *)
+      ScheduleExpressionTimezone: Europe/London
+      State: ENABLED
+      Target: 
+        Arn: !GetAtt StopLambda.Arn
+        RoleArn: !GetAtt SchedulerRole.Arn
+
+  WeekendStopScheduler:
+    Type: AWS::Scheduler::Schedule
+    Properties: 
+      FlexibleTimeWindow: 
+        MaximumWindowInMinutes: 5
+        Mode: FLEXIBLE
+      ScheduleExpression: cron(0 22 ? * 6-7 *)
       ScheduleExpressionTimezone: Europe/London
       State: ENABLED
       Target: 
@@ -299,7 +311,7 @@ Resources:
       FlexibleTimeWindow: 
         MaximumWindowInMinutes: 5
         Mode: FLEXIBLE
-      ScheduleExpression: cron(0 17 ? * 2-6 *)
+      ScheduleExpression: cron(0 16 ? * 2-6 *)
       ScheduleExpressionTimezone: Europe/London
       State: ENABLED
       Target: 
@@ -568,7 +580,7 @@ Resources:
         - EC2 Instance-terminate Lifecycle Action
         detail:
           AutoScalingGroupName:
-          - !Sub "${AWS::StackName}-AssociateElasticIPLambda"
+          - !Sub "${AWS::StackName}-AutoScalingGroup"
       State: ENABLED
       Targets:
         - Arn: !GetAtt GracefulShutdownLambda.Arn
