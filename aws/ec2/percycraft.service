@@ -9,7 +9,8 @@ ExecStartPre=/usr/local/bin/docker-compose -f /percycraft/mc_init/docker-compose
 ExecStart=/usr/local/bin/docker-compose -f /percycraft/mc/docker-compose.yml --env-file /percycraft/.env up
 ExecStop=/usr/local/bin/docker-compose -f /percycraft/mc_exit/docker-compose.yml --env-file /percycraft/.env up
 ExecStop=/usr/local/bin/docker-compose -f /percycraft/mc/docker-compose.yml --env-file /percycraft/.env down
-TimeoutSec=2400
+TimeoutStartSec=900
+TimeoutStopSec=300
 
 [Install]
 WantedBy=multi-user.target

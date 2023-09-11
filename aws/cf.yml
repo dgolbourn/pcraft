@@ -250,6 +250,15 @@ Resources:
     Metadata:
       LaunchEvent: !GetAtt LaunchEvent.Arn
 
+  AutoScalingLifecycleHook:
+    Type: AWS::AutoScaling::LifecycleHook
+    Properties: 
+      AutoScalingGroupName: !Sub "${AWS::StackName}-asg"
+      DefaultResult: CONTINUE 
+      HeartbeatTimeout: 300
+      LifecycleHookName: !Sub "${AWS::StackName}-asg-hook"
+      LifecycleTransition: autoscaling:EC2_INSTANCE_TERMINATING
+
   InstanceRole:
     Type: AWS::IAM::Role
     Properties: 
@@ -263,13 +272,90 @@ Resources:
           Action:
           - sts:AssumeRole
       ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
+        - arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM 
 
   InstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties: 
       Roles:
         - !Ref InstanceRole
+
+  GracefulShutdownLambdaRole:
+    Type: AWS::IAM::Role
+    Properties: 
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: root
+          PolicyDocument: 
+            Version: "2012-10-17"
+            Statement: 
+              - Effect: "Allow"
+                Action: "*"
+                Resource: "*"
+              # - Effect: "Allow"
+              #   Action: "autoscaling:CompleteLifecycleAction"
+              #   Resource: "*"
+              # - Effect: "Allow"
+              #   Action: "autoscaling:GetCommandInvocation"
+              #   Resource: "*"
+              # - Effect: "Allow"
+              #   Action: "ssm:SendCommand"
+              #   Resource: "*"
+
+  GracefulShutdownLambda:
+    Type: "AWS::Lambda::Function"
+    Properties: 
+      Code:
+        ZipFile: |
+          import boto3
+          import time
+          def lambda_handler(event, context):
+              ssm_client = boto3.client('ssm') 
+              response = ssm_client.send_command(
+                  InstanceIds=[event['detail']['EC2InstanceId']],
+                  DocumentName='AWS-RunShellScript',
+                  Parameters={
+                      'commands': [
+                          'systemctl stop percycraft.service'
+                      ]
+                  }
+              )
+              command_id = response['Command']['CommandId']
+              t = 0
+              while t < 200:
+                t+=0.5
+                time.sleep(0.5)
+                response = ssm_client.get_command_invocation(
+                    CommandId=command_id,
+                    InstanceId=event['detail']['EC2InstanceId']
+                )
+                if response['Status'] != 'InProgress':
+                  break
+              as_client = boto3.client('autoscaling')
+              response = as_client.complete_lifecycle_action(
+                  LifecycleHookName=event['detail']['LifecycleHookName'],
+                  AutoScalingGroupName=event['detail']['AutoScalingGroupName'],
+                  LifecycleActionToken=event['detail']['LifecycleActionToken'],
+                  LifecycleActionResult='CONTINUE',
+                  InstanceId=event['detail']['EC2InstanceId']
+              )
+      Description: Gracefully shutdown the server
+      FunctionName: !Sub "${AWS::StackName}-grace"
+      Handler: index.lambda_handler
+      MemorySize: 128
+      Role: !GetAtt GracefulShutdownLambdaRole.Arn
+      Runtime: python3.7
+      Timeout: 300
 
   StartStopLambdaRole:
     Type: AWS::IAM::Role
@@ -293,6 +379,9 @@ Resources:
               - Effect: "Allow"
                 Action: "*"
                 Resource: "*"
+              # - Effect: "Allow"
+              #   Action: "autoscaling:SetDesiredCapacity"
+              #   Resource: "*"
 
   StartLambda:
     Type: "AWS::Lambda::Function"
@@ -416,7 +505,32 @@ Resources:
       Principal: events.amazonaws.com
       SourceArn: !GetAtt LaunchEvent.Arn
 
+  TerminateEvent:
+    Type: AWS::Events::Rule
+    Properties: 
+      EventPattern:
+        source:
+        - aws.autoscaling
+        detail-type:
+        - EC2 Instance-terminate Lifecycle Action
+        detail:
+          AutoScalingGroupName:
+          - !Sub "${AWS::StackName}-asg"
+      Name: !Sub "${AWS::StackName}-instance-terminate"
+      State: ENABLED
+      Targets:
+        - Arn: !GetAtt GracefulShutdownLambda.Arn
+          Id: !Sub "${AWS::StackName}-grace"
+
+  TerminateEventLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties: 
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt GracefulShutdownLambda.Arn
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt TerminateEvent.Arn
+
 Outputs:
-  CheckInstanceIp:
+  PublicIP:
     Description: Server IP address
     Value: !GetAtt ElasticIP.PublicIp
