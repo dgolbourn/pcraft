@@ -35,21 +35,6 @@ Parameters:
     Description: (Optional - An empty value disables this feature)
     Default: ''
 
-  YourIPv6:
-    Type: String
-    Description: (Optional - An empty value disables this feature)
-    Default: ''
-
-  HostedZoneId:
-    Type: String
-    Description: (Optional - An empty value disables this feature) If you have a hosted zone in Route 53 and wish to set a DNS record whenever your instance starts, supply the hosted zone ID here.
-    Default: ''
-
-  RecordName:
-    Type: String
-    Description: (Optional - An empty value disables this feature) If you have a hosted zone in Route 53 and wish to set a DNS record whenever your instance starts, supply the name of the record here (e.g. server.mydomain.com).
-    Default: ''
-
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
@@ -64,12 +49,6 @@ Metadata:
         Parameters:
         - KeyPairName
         - YourIPv4
-        - YourIPv6
-      - Label: 
-          default: Optional DNS Configuration
-        Parameters:
-        - HostedZoneId
-        - RecordName
     ParameterLabels:
       ServerState:
         default: "Update this parameter to shut down / start up your server as required to save on cost. Takes a few minutes to take effect."
@@ -81,18 +60,10 @@ Metadata:
         default: "If you wish to access the instance via SSH, select a Key Pair to use. https://console.aws.amazon.com/ec2/v2/home?#KeyPairs:sort=keyName"
       YourIPv4:
         default: "If you wish to access the instance via SSH and using IPv4, provide it."
-      YourIPv6:
-        default: "If you wish to access the instance via SSH and using IPv6, provide it."
-      HostedZoneId:
-        default: "If you have a hosted zone in Route 53 and wish to update a DNS record whenever your instance starts, supply the hosted zone ID here."
-      RecordName:
-        default: "If you have a hosted zone in Route 53 and wish to set a DNS record whenever your instance starts, supply a record name here (e.g. server.mydomain.com)."
 
 Conditions:
   KeyPairNameProvided: !Not [ !Equals [ !Ref KeyPairName, '' ] ]
   IPv4AddressProvided: !Not [ !Equals [ !Ref YourIPv4, '' ] ]
-  IPv6AddressProvided: !Not [ !Equals [ !Ref YourIPv6, '' ] ]
-  DnsConfigEnabled: !And [ !Not [ !Equals [ !Ref HostedZoneId, '' ] ], !Not [ !Equals [ !Ref RecordName, '' ] ] ]
   SpotPriceProvided: !Not [ !Equals [ !Ref SpotPrice, '' ] ]
 
 Mappings:
@@ -175,6 +146,12 @@ Resources:
       GatewayId: !Ref InternetGateway
       RouteTableId: !Ref RouteTable
 
+  ElasticIP:
+    Type: AWS::EC2::EIP
+    Properties: 
+      Domain: !Ref Vpc
+    DependsOn: InternetGatewayAttachment
+
   Efs:
     Type: AWS::EFS::FileSystem
     Properties: {}
@@ -219,13 +196,6 @@ Resources:
           ToPort: 22
           IpProtocol: tcp
           CidrIp: !Sub "${YourIPv4}/32"
-        - !Ref 'AWS::NoValue'
-      - !If
-        - IPv6AddressProvided 
-        - FromPort: 22
-          ToPort: 22
-          IpProtocol: tcp
-          CidrIpv6: !Sub "${YourIPv6}/128"
         - !Ref 'AWS::NoValue'
       - FromPort: 25565
         ToPort: 25565
@@ -278,7 +248,7 @@ Resources:
         - !Ref SubnetA
         - !Ref SubnetB
     Metadata:
-      LaunchEvent: !If [ DnsConfigEnabled, !GetAtt LaunchEvent.Arn, "" ]
+      LaunchEvent: !GetAtt LaunchEvent.Arn
 
   InstanceRole:
     Type: AWS::IAM::Role
@@ -372,9 +342,8 @@ Resources:
       Runtime: python3.7
       Timeout: 30
 
-  SetDNSRecordLambdaRole:
+  AssociateElasticIPLambdaRole:
     Type: AWS::IAM::Role
-    Condition: DnsConfigEnabled
     Properties: 
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
@@ -393,57 +362,37 @@ Resources:
             Version: "2012-10-17"
             Statement: 
               - Effect: "Allow"
-                Action: "route53:ChangeResourceRecordSets"
-                Resource: !Sub "arn:aws:route53:::hostedzone/${HostedZoneId}"
+                Action: "ec2:AssociateAddress"
+                Resource: "*"
               - Effect: "Allow"
                 Action: "ec2:DescribeInstance*"
                 Resource: "*"
 
-  SetDNSRecordLambda:
+  AssociateElasticIPLambda:
     Type: "AWS::Lambda::Function"
-    Condition: DnsConfigEnabled
     Properties: 
       Environment:
         Variables:
-          HostedZoneId: !Ref HostedZoneId
-          RecordName: !Ref RecordName
+          AllocationId: !GetAtt ElasticIP.AllocationId
       Code:
         ZipFile: |
           import boto3
           import os
           def handler(event, context):
-            new_instance = boto3.resource('ec2').Instance(event['detail']['EC2InstanceId'])
-            boto3.client('route53').change_resource_record_sets(
-              HostedZoneId= os.environ['HostedZoneId'],
-              ChangeBatch={
-                  'Comment': 'updating',
-                  'Changes': [
-                      {
-                          'Action': 'UPSERT',
-                          'ResourceRecordSet': {
-                              'Name': os.environ['RecordName'],
-                              'Type': 'A',
-                              'TTL': 60,
-                              'ResourceRecords': [
-                                  {
-                                      'Value': new_instance.public_ip_address
-                                  },
-                              ]
-                          }
-                      },
-                  ]
-              })
-      Description: Sets Route 53 DNS Record
-      FunctionName: !Sub "${AWS::StackName}-set-dns"
+            boto3.client('ec2').associate_address(
+                AllocationId=os.environ['AllocationId'],
+                InstanceId=event['detail']['EC2InstanceId']
+            )
+      Description: Assoicates Elastic IP with EC2 instance
+      FunctionName: !Sub "${AWS::StackName}-aeip"
       Handler: index.handler
       MemorySize: 128
-      Role: !GetAtt SetDNSRecordLambdaRole.Arn
+      Role: !GetAtt AssociateElasticIPLambdaRole.Arn
       Runtime: python3.7
-      Timeout: 20
+      Timeout: 30
 
   LaunchEvent:
     Type: AWS::Events::Rule
-    Condition: DnsConfigEnabled
     Properties: 
       EventPattern:
         source:
@@ -456,19 +405,18 @@ Resources:
       Name: !Sub "${AWS::StackName}-instance-launch"
       State: ENABLED
       Targets:
-        - Arn: !GetAtt SetDNSRecordLambda.Arn
-          Id: !Sub "${AWS::StackName}-set-dns"
+        - Arn: !GetAtt AssociateElasticIPLambda.Arn
+          Id: !Sub "${AWS::StackName}-aeip"
 
   LaunchEventLambdaPermission:
     Type: AWS::Lambda::Permission
-    Condition: DnsConfigEnabled
     Properties: 
       Action: lambda:InvokeFunction
-      FunctionName: !GetAtt SetDNSRecordLambda.Arn
+      FunctionName: !GetAtt AssociateElasticIPLambda.Arn
       Principal: events.amazonaws.com
       SourceArn: !GetAtt LaunchEvent.Arn
 
 Outputs:
   CheckInstanceIp:
-    Description: To find the instance IP address, click the following link
-    Value: !Sub "https://${AWS::Region}.console.aws.amazon.com/ec2/v2/home?region=${AWS::Region}#Instances:tag:aws:autoscaling:groupName=${AutoScalingGroup};sort=tag:Name"
+    Description: Server IP address
+    Value: !GetAtt ElasticIP.PublicIp
