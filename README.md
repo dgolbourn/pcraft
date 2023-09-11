@@ -7,7 +7,7 @@ This project is indebted to the fine work of [itzg/docker-minecraft-server](http
 
 It deploys to AWS a Fabric Java Minecraft server with mods. The cloud infrastructure uses scheduled auto scaling to turn the server off and on and spot pricing while it is on to keep things affordable. The deployment also features a file server to aid the downloading of the correct Resource Packs and Client Mods to your computer. The server also has installed Minecraft administration tools [mcrcon](https://github.com/Tiiffi/mcrcon) and [MCA Selector](https://github.com/Querz/mcaselector) to help me keep things tidy.
 
-The selection of mods I've chosen is inspired by the desire to track the look and feel of [Hermitcraft](https://hermitcraft.com/).
+The selection of mods I've chosen is motivated by the desire to track the look and feel of [Hermitcraft](https://hermitcraft.com/).
 
 For players
 -----------
