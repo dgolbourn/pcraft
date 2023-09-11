@@ -259,6 +259,66 @@ Resources:
       LifecycleHookName: !Sub "${AWS::StackName}-asg-hook"
       LifecycleTransition: autoscaling:EC2_INSTANCE_TERMINATING
 
+  SchedulerRole:
+      Type: AWS::IAM::Role
+      Properties: 
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+              - scheduler.amazonaws.com
+            Action:
+            - sts:AssumeRole
+        Policies:
+          - PolicyName: root
+            PolicyDocument: 
+              Version: "2012-10-17"
+              Statement: 
+                - Effect: "Allow"
+                  Action: "lambda:InvokeFunction"
+                  Resource: "*"
+
+  StopScheduler:
+    Type: AWS::Scheduler::Schedule
+    Properties: 
+      FlexibleTimeWindow: 
+        MaximumWindowInMinutes: 5
+        Mode: FLEXIBLE
+      ScheduleExpression: cron(0 21 ? * * *)
+      ScheduleExpressionTimezone: Europe/London
+      State: ENABLED
+      Target: 
+        Arn: !GetAtt StopLambda.Arn
+        RoleArn: !GetAtt SchedulerRole.Arn
+
+  WeekdayStartScheduler:
+    Type: AWS::Scheduler::Schedule
+    Properties: 
+      FlexibleTimeWindow: 
+        MaximumWindowInMinutes: 5
+        Mode: FLEXIBLE
+      ScheduleExpression: cron(0 17 ? * 2-6 *)
+      ScheduleExpressionTimezone: Europe/London
+      State: ENABLED
+      Target: 
+        Arn: !GetAtt StartLambda.Arn
+        RoleArn: !GetAtt SchedulerRole.Arn
+
+  WeekendStartScheduler:
+    Type: AWS::Scheduler::Schedule
+    Properties: 
+      FlexibleTimeWindow: 
+        MaximumWindowInMinutes: 5
+        Mode: FLEXIBLE
+      ScheduleExpression: cron(0 6 ? * 7-1 *)
+      ScheduleExpressionTimezone: Europe/London
+      State: ENABLED
+      Target: 
+        Arn: !GetAtt StartLambda.Arn
+        RoleArn: !GetAtt SchedulerRole.Arn        
+
   InstanceRole:
     Type: AWS::IAM::Role
     Properties: 
@@ -333,8 +393,8 @@ Resources:
               command_id = response['Command']['CommandId']
               t = 0
               while t < 200:
-                t+=0.5
-                time.sleep(0.5)
+                t+=1
+                time.sleep(1)
                 response = ssm_client.get_command_invocation(
                     CommandId=command_id,
                     InstanceId=event['detail']['EC2InstanceId']
@@ -491,7 +551,6 @@ Resources:
         detail:
           AutoScalingGroupName:
           - !Sub "${AWS::StackName}-asg"
-      Name: !Sub "${AWS::StackName}-instance-launch"
       State: ENABLED
       Targets:
         - Arn: !GetAtt AssociateElasticIPLambda.Arn
@@ -516,7 +575,6 @@ Resources:
         detail:
           AutoScalingGroupName:
           - !Sub "${AWS::StackName}-asg"
-      Name: !Sub "${AWS::StackName}-instance-terminate"
       State: ENABLED
       Targets:
         - Arn: !GetAtt GracefulShutdownLambda.Arn
