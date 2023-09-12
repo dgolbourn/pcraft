@@ -50,18 +50,5 @@ services:
     ports:
       - "8080:8080"
     restart: no
-  bluemap:
-    image: ghcr.io/bluemap-minecraft/bluemap
-    restart: no
-    command: -r -u -w
-    environment:
-      TZ: "Europe/London"
-    ports:
-      - '8100:8100'
-    volumes:
-      - /percycraft/mc/config:/app/config
-      - /efs/data/world:/app/world
-      - /efs/bluemap/data:/app/data
-      - /efs/bluemap/web:/app/web
 networks:
   mc-network:
