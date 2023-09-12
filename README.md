@@ -5,7 +5,7 @@ I made this Minecraft server so my son and I can play Minecraft, with various mo
 
 This project is indebted to the fine work of [itzg/docker-minecraft-server](https://github.com/itzg/docker-minecraft-server) and [minecraft-spot-pricing](https://github.com/vatertime/minecraft-spot-pricing).
 
-Percycraft deploys to AWS a Fabric Java Minecraft server with mods. The cloud infrastructure uses scheduled auto scaling to turn the server off and on and spot pricing while it is on to keep things affordable. The deployment includes a file server to aid users in downloading the correct Resource Packs and Client Mods. The server also has administration tools [mcrcon](https://github.com/Tiiffi/mcrcon) and [MCA Selector](https://github.com/Querz/mcaselector) to help admins keep things tidy.
+Percycraft deploys to AWS a Java Minecraft server with Fabric mods. The cloud infrastructure uses scheduled auto scaling to turn the server off and on and spot pricing while it is on to keep things affordable. The deployment includes a file server to aid users in downloading the correct Resource Packs and Client Mods. The server also has administration tools [mcrcon](https://github.com/Tiiffi/mcrcon) and [MCA Selector](https://github.com/Querz/mcaselector) to help admins keep things tidy.
 
 The selection of mods I've chosen is motivated by the desire to track the look and feel of my favourite Minecraft Youtubers such as those on the [Hermitcraft](https://hermitcraft.com/) series.
 
