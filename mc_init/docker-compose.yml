@@ -57,7 +57,7 @@ services:
       - /efs/data:/data
       - /percycraft/mc_init/pre-start.sh:/pre-start.sh
       - /percycraft/mc_init/client-mods.txt:/client-mods.txt:ro
-      - /percycraft/mc_init/bluemap:/bluemap:ro
+      - /percycraft/mc_init/config/bluemap:/bluemap:ro
       - /percycraft:/output
       - /efs/web:/web
     restart: no

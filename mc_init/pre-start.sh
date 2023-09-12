@@ -27,5 +27,4 @@ else
     WELCOME_MESSAGE='/tellraw @a[team=New] ["",{"text":"Welcome to ","bold":true,"color":"dark_purple"},{"text":"Percycraft!","bold":true,"color":"gold"}]'
 fi
 echo WELCOME_MESSAGE=\'$WELCOME_MESSAGE\' >> /output/.env
-rm -rf /data/config/bluemap
-cp -r /bluemap /data/config
+cp -r /bluemap/core.conf /data/config/bluemap/core.conf
