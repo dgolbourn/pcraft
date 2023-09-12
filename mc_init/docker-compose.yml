@@ -33,6 +33,7 @@ services:
         fabricquilt-chunk-pregenerator
         bluemap
         bmpv
+        banners4bm
       MODRINTH_ALLOWED_VERSION_TYPE: beta
       TZ: "Europe/London"
       EXISTING_WHITELIST_FILE: SYNCHRONIZE
