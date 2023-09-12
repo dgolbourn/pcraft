@@ -12,7 +12,6 @@ services:
       MOTD: §k* §l§6Welcome §fto the §l§cPercycraft §fserver! §k*
       RESOURCE_PACK: ${RESOURCE_PACK}
       RESOURCE_PACK_SHA1: ${RESOURCE_PACK_SHA1}
-      RESOURCE_PACK_ENFORCE: "TRUE"
       EXISTING_WHITELIST_FILE: SKIP
       EXISTING_OPS_FILE: SKIP
       MEMORY: 3G
