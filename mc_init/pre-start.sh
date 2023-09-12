@@ -28,5 +28,6 @@ else
 fi
 echo WELCOME_MESSAGE=\'$WELCOME_MESSAGE\' >> /output/.env
 cp -r /bluemap/core.conf /data/config/bluemap/core.conf
+cp -r /bluemap/maps/overworld.conf /data/config/bluemap/maps/
 rm -f /data/config/bluemap/maps/end.conf
 rm -f /data/config/bluemap/maps/nether.conf
