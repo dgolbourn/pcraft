@@ -51,7 +51,7 @@ services:
       - "8080:8080"
     restart: no
   bluemap:
-    image: bmoorman/bluemap:latest
+    image: bmoorman/bluemap
     container_name: bluemap
     restart: no
     environment:
