@@ -208,6 +208,10 @@ Resources:
         ToPort: 24454
         IpProtocol: udp
         CidrIp: 0.0.0.0/0
+      - FromPort: 8100
+        ToPort: 8100
+        IpProtocol: tcp
+        CidrIp: 0.0.0.0/0
       VpcId: !Ref Vpc
 
   LaunchConfiguration:
