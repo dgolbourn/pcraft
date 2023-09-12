@@ -51,15 +51,22 @@ services:
       - "8080:8080"
     restart: no
   bluemap:
-    image: bmoorman/bluemap
-    container_name: bluemap
+    image: ghcr.io/bluemap-minecraft/bluemap
     restart: no
+    command: -r -u -w
     environment:
       TZ: "Europe/London"
     ports:
-      - "8100:8100"
+      - '8100:8100'
     volumes:
-      - /efs/bluemap:/var/lib/bluemap
-      - /efs/data:/var/lib/minecraft:ro
+      - /percycraft/mc/config:/app/config
+      - /efs/data/world:/app/world
+      - nether:/world_nether
+      - end:/world_the_end
+      - /efs/bluemap/data:/app/data
+      - /efs/bluemap/web:/app/web
 networks:
   mc-network:
+volumes:
+  nether:
+  end:
