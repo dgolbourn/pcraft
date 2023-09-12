@@ -12,9 +12,9 @@ The selection of mods I've chosen is motivated by the desire to track the look a
 For players
 -----------
 
-1. Tell the admin (me) your Minecraft user name so I can add it to the allow list
+1. Tell the admin (me) your Minecraft user name so I can add you to the allow list
 
-2. Install the [Fabric Loader](https://fabricmc.net/use/); this will allow you to select the Fabric version of Minecraft in the Minecraft Launcher when you start the game
+2. Install the [Fabric Loader](https://fabricmc.net/use/); this will enable you to select the Fabric version of Minecraft in the Minecraft Launcher when you start the game
 
 3. Download the client mods from [Percycraft](http://pcraft.co.uk:8080/mods) and place them in the `/mods` directory of your Minecraft (e.g. probably `%APPDATA%\.minecraft\mods` on Windows)
 
