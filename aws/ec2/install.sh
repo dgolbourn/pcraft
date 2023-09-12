@@ -1,4 +1,5 @@
 #!/bin/bash
+git config --global --add safe.directory /percycraft
 yum update -y
 yum install -y amazon-efs-utils
 mkdir /efs
