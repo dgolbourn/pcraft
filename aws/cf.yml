@@ -418,7 +418,6 @@ Resources:
                   LifecycleActionResult='CONTINUE',
                   InstanceId=event['detail']['EC2InstanceId']
               )
-      Description: Gracefully shutdown the server
       FunctionName: !Sub "${AWS::StackName}-GracefulShutdownLambda"
       Handler: index.lambda_handler
       MemorySize: 128
