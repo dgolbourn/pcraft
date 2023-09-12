@@ -61,12 +61,7 @@ services:
     volumes:
       - /percycraft/mc/config:/app/config
       - /efs/data/world:/app/world
-      - nether:/world_nether
-      - end:/world_the_end
       - /efs/bluemap/data:/app/data
       - /efs/bluemap/web:/app/web
 networks:
   mc-network:
-volumes:
-  nether:
-  end:
