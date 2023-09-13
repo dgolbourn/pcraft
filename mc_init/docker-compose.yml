@@ -33,6 +33,7 @@ services:
         bluemap
         bmpv
         banners4bm
+        shulkerboxtooltip
       MODRINTH_ALLOWED_VERSION_TYPE: beta
       TZ: "Europe/London"
       EXISTING_WHITELIST_FILE: SYNCHRONIZE
