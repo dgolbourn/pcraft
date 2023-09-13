@@ -2,6 +2,7 @@
 git config --global --add safe.directory /percycraft
 yum update -y
 yum install -y amazon-efs-utils
+yum install -y xorg-x11-server-Xvfb
 mkdir /efs
 mount -t efs ${1}:/ /efs
 yes | amazon-linux-extras install docker
