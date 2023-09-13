@@ -32,3 +32,4 @@ cp -r /bluemap/webapp.conf /data/config/bluemap/webapp.conf
 cp -r /bluemap/maps/overworld.conf /data/config/bluemap/maps/
 rm -f /data/config/bluemap/maps/end.conf
 rm -f /data/config/bluemap/maps/nether.conf
+cp /resources/*.jar /data/mods
