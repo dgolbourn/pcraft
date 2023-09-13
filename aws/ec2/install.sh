@@ -2,7 +2,7 @@
 git config --global --add safe.directory /percycraft
 yum update -y
 yum install -y amazon-efs-utils
-WWmkdir /efs
+mkdir /efs
 mount -t efs ${1}:/ /efs
 yes | amazon-linux-extras install docker
 curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
