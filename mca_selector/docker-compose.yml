@@ -1,8 +1,0 @@
-version: "3.8"
-services:
-  mca-selector:
-    from: .
-    restart: no
-    volumes:
-      - /efs/data:/data:ro
-      - /efs/selections:/selections
