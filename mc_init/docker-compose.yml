@@ -23,7 +23,6 @@ services:
         /vanillatweaks/craftingtweaks.json
       MODRINTH_PROJECTS: |
         fabric-api
-        audioplayer
         chat-signing-hider
         coord-finder
         lambdynamiclights
