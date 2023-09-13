@@ -16,11 +16,11 @@ Parameters:
 
   InstanceType:
     Type: String
-    Default: t3.medium
+    Default: t3.large
 
   SpotPrice:
     Type: String
-    Default: "0.05"
+    Default: "0.08"
 
   KeyPairName:
     Type: String
