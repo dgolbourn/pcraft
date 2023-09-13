@@ -34,6 +34,7 @@ services:
         bmpv
         banners4bm
         shulkerboxtooltip
+        where-items-owo
       MODRINTH_ALLOWED_VERSION_TYPE: beta
       TZ: "Europe/London"
       EXISTING_WHITELIST_FILE: SYNCHRONIZE
