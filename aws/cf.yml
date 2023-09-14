@@ -217,14 +217,14 @@ Resources:
         NetworkInterfaces:
           - DeviceIndex: 0 
             AssociatePublicIpAddress: true
-            Groups: [!Ref Ec2Sg]
+            GroupSet: [!Ref Ec2Sg]
         UserData:
           Fn::Base64: !Sub |
             #!/bin/bash -xe
             yum update -y
             yum install -y amazon-efs-utils
             mkdir /efs
-            mount -t efs ${1}:/ /efs
+            mount -t efs ${Efs}:/ /efs
             yum -y install git
             cd /opt
             git clone https://github.com/dgolbourn/percycraft.git
