@@ -1,4 +1,5 @@
 #!/bin/bash
+echo "Install started"
 yum install -y docker
 curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
@@ -18,3 +19,4 @@ systemctl enable docker.service
 systemctl enable percycraft.service
 systemctl start docker.service
 systemctl start percycraft.service
+echo "Install complete"
