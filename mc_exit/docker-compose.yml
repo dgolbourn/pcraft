@@ -14,7 +14,7 @@ services:
       LINK_LATEST: "TRUE"
       TZ: "Europe/London"
     volumes:
-      - /efs/data:/data:ro
+      - /opt/data:/data:ro
       - /efs/backups:/backups
 networks:
   mc_mc-network:

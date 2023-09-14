@@ -3,7 +3,6 @@ Description: EC2 Spot Price server with start up and shut down times
 Parameters:
 
   EC2AMI:
-    Description: AWS EC2 AMI ID
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
     Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
 
@@ -17,10 +16,6 @@ Parameters:
   InstanceType:
     Type: String
     Default: t3.large
-
-  # SpotPrice:
-  #   Type: String
-  #   Default: "0.08"
 
   KeyPairName:
     Type: String
@@ -41,7 +36,6 @@ Metadata:
           default: Cost/Performance Configuration
         Parameters:
         - InstanceType
-        # - SpotPrice
       - Label: 
           default: SSH Configuration
         Parameters:
@@ -56,17 +50,12 @@ Metadata:
         default: "Initial server state"
       InstanceType:
         default: "Instance type"
-      # SpotPrice:
-      #   default: "Maximum spot price per hour (blank means on demand price)"
       KeyPairName:
         default: "Key Pair: https://console.aws.amazon.com/ec2/v2/home?#KeyPairs:sort=keyName"
       YourIPv4:
         default: "IPv4 address: http://checkip.amazonaws.com"
       EC2AMI:
         default: "Virtual machine image"
-
-# Conditions:
-#   SpotPriceProvided: !Not [ !Equals [ !Ref SpotPrice, '' ] ]
 
 Mappings:
   ServerState:
@@ -232,31 +221,15 @@ Resources:
         UserData:
           Fn::Base64: !Sub |
             #!/bin/bash -xe
+            yum update -y
+            yum install -y amazon-efs-utils
+            mkdir /efs
+            mount -t efs ${1}:/ /efs
             yum -y install git
-            cd /
+            cd /opt
             git clone https://github.com/dgolbourn/percycraft.git
-            chmod +x /percycraft/aws/ec2/install.sh 
-            /percycraft/aws/ec2/install.sh ${Efs}
-
-  # LaunchConfiguration:
-  #   Type: AWS::AutoScaling::LaunchConfiguration
-  #   Properties:
-  #     AssociatePublicIpAddress: true
-  #     IamInstanceProfile: !Ref InstanceProfile
-  #     ImageId: !Ref EC2AMI
-  #     InstanceType: !Ref InstanceType
-  #     KeyName: !Ref KeyPairName
-  #     SecurityGroups:
-  #     - !Ref Ec2Sg
-  #     SpotPrice: !If [ SpotPriceProvided, !Ref SpotPrice, !Ref 'AWS::NoValue' ]
-  #     UserData:
-  #       Fn::Base64: !Sub |
-  #         #!/bin/bash -xe
-  #         yum -y install git
-  #         cd /
-  #         git clone https://github.com/dgolbourn/percycraft.git
-  #         chmod +x /percycraft/aws/ec2/install.sh 
-  #         /percycraft/aws/ec2/install.sh ${Efs}
+            chmod +x /opt/percycraft/aws/ec2/install.sh 
+            /opt/percycraft/aws/ec2/install.sh
 
   AutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
@@ -266,7 +239,6 @@ Resources:
     Properties:
       AutoScalingGroupName: !Sub "${AWS::StackName}-AutoScalingGroup"
       DesiredCapacity: !FindInMap [ ServerState, !Ref ServerState, DesiredCapacity ]
-      #LaunchConfigurationName: !Ref LaunchConfiguration
       LaunchTemplate: 
         LaunchTemplateId: !Ref LaunchTemplate
         Version: !GetAtt LaunchTemplate.LatestVersionNumber

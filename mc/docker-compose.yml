@@ -35,7 +35,7 @@ services:
       TZ: "Europe/London"
     stop_grace_period: 5m
     volumes:
-      - /efs/data:/data
+      - /opt/data:/data
     ports:
       - "25575:25575"
       - "25565:25565"
@@ -47,7 +47,7 @@ services:
   fs:
     image: halverneus/static-file-server
     volumes:
-      - /efs/web:/web:ro
+      - /opt/web:/web:ro
     ports:
       - "8080:8080"
     restart: no

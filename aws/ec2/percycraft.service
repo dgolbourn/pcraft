@@ -5,10 +5,10 @@ After=docker.service
 
 [Service]
 Restart=no
-ExecStartPre=/usr/local/bin/docker-compose -f /percycraft/mc_init/docker-compose.yml up
-ExecStart=/usr/local/bin/docker-compose -f /percycraft/mc/docker-compose.yml --env-file /percycraft/.env up
-ExecStop=/usr/local/bin/docker-compose -f /percycraft/mc_exit/docker-compose.yml --env-file /percycraft/.env up
-ExecStop=/usr/local/bin/docker-compose -f /percycraft/mc/docker-compose.yml --env-file /percycraft/.env down
+ExecStartPre=/usr/local/bin/docker-compose -f /opt/percycraft/mc_init/docker-compose.yml up
+ExecStart=/usr/local/bin/docker-compose -f /opt/percycraft/mc/docker-compose.yml --env-file /opt/percycraft/.env up
+ExecStop=/usr/local/bin/docker-compose -f /opt/percycraft/mc_exit/docker-compose.yml --env-file /opt/percycraft/.env up
+ExecStop=/usr/local/bin/docker-compose -f /opt/percycraft/mc/docker-compose.yml --env-file /opt/percycraft/.env down
 TimeoutStartSec=900
 TimeoutStopSec=300
 
