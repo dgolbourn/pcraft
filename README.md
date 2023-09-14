@@ -22,7 +22,7 @@ For players
   
 5. **Congratulations, you've joined the Pcraft server!**
 
-While playing, you can use the map [here]((http://pcraft.co.uk:8100)
+While playing, you can use the map [here](http://pcraft.co.uk:8100)
 
 
 For server admins
