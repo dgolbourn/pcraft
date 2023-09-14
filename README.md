@@ -18,7 +18,7 @@ For players
 
 2. Install the [Fabric Loader](https://fabricmc.net/use/); this will enable you to select the Fabric version of Minecraft in the Minecraft Launcher when you start the game
 
-3. Download the client mods from [Pcraft](http://pcraft.co.uk:8080/mods) and place them in the `/mods` directory of your Minecraft (e.g. probably `%APPDATA%\.minecraft\mods` on Windows)
+3. Download the client mods from [here](http://pcraft.co.uk:8080/mods) and place them in the `/mods` directory of your Minecraft (e.g. probably `%APPDATA%\.minecraft\mods` on Windows)
 
 4. Launch the game, choose Multiplayer, and add the Pcraft server address `pcraft.co.uk`.
   
