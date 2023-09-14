@@ -22,7 +22,7 @@ For players
   
 5. **Congratulations, you've joined the Pcraft server!**
 
-[here](http://pcraft.co.uk:8100)'s how the adventure is going to far!
+[Here](http://pcraft.co.uk:8100)'s how the adventure is going to far!
 
 For server admins
 -----------------
