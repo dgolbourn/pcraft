@@ -10,7 +10,9 @@ chmod +x /usr/local/bin/mcrcon
 mkdir -p /opt/data
 mkdir -p /efs/backups
 mkdir -p /opt/web
-chmod +x /opt/percycraft/mc_init/pre-start.sh
+chmod +x /opt/percycraft/aws/ec2/restore.sh
+chmod +x /opt/percycraft/aws/ec2/pre-start.sh
+chmod +x /opt/percycraft/aws/ec2/backup.sh
 cp /opt/percycraft/aws/ec2/percycraft.service /etc/systemd/system/percycraft.service
 systemctl enable docker.service
 systemctl enable percycraft.service

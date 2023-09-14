@@ -1,16 +1,6 @@
 version: "3.8"
 services:
-  restore:
-    image: itzg/mc-backup
-    restart: no
-    entrypoint: restore-tar-backup
-    volumes:
-      - /opt/data:/data
-      - /efs/backups:/backups:ro
   mc_init:
-    depends_on:
-      restore:
-        condition: service_completed_successfully
     image: itzg/minecraft-server
     environment:
       EULA: "TRUE"
@@ -49,17 +39,3 @@ services:
       - /opt/percycraft/mc_init/config:/config:ro
       - /opt/percycraft/mc_init/resources/:/resources:ro  
     restart: no
-  fs_init:
-    depends_on:
-      mc_init:
-        condition: service_completed_successfully
-    image: itzg/minecraft-server
-    volumes:
-      - /opt/data:/data
-      - /opt/percycraft/mc_init/pre-start.sh:/pre-start.sh
-      - /opt/percycraft/mc_init/client-mods.txt:/client-mods.txt:ro
-      - /opt/percycraft/mc_init/config/bluemap:/bluemap:ro
-      - /opt/percycraft:/output
-      - /opt/web:/web
-    restart: no
-    entrypoint: ["/bin/bash", "/pre-start.sh"]

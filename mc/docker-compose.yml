@@ -2,8 +2,6 @@ version: "3.8"
 services:
   mc:
     image: itzg/minecraft-server
-    networks:
-      - mc-network
     environment:
       EULA: "TRUE"
       TYPE: CUSTOM
@@ -51,5 +49,3 @@ services:
     ports:
       - "8080:8080"
     restart: no
-networks:
-  mc-network:
