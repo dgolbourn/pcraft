@@ -1,7 +1,7 @@
 Pcraft
 ==========
 
-I made this Minecraft server so my son and I can play Minecraft, with various mods and so on. 
+I made this Minecraft server so that my son and I can play Minecraft together, with various mods and so on. 
 
 This project is indebted to the fine work of [itzg/docker-minecraft-server](https://github.com/itzg/docker-minecraft-server) and [minecraft-spot-pricing](https://github.com/vatertime/minecraft-spot-pricing).
 
