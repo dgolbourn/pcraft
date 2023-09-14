@@ -226,10 +226,9 @@ Resources:
             mkdir /efs
             mount -t efs ${Efs}:/ /efs
             yum -y install git
-            cd /opt
-            git clone https://github.com/dgolbourn/percycraft.git
-            chmod +x /opt/percycraft/aws/ec2/install.sh 
-            /opt/percycraft/aws/ec2/install.sh
+            git clone https://github.com/dgolbourn/percycraft.git /opt/pcraft
+            chmod +x /opt/pcraft/aws/ec2/install.sh 
+            /opt/pcraft/aws/ec2/install.sh
 
   AutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
@@ -398,7 +397,7 @@ Resources:
                   DocumentName='AWS-RunShellScript',
                   Parameters={
                       'commands': [
-                          'systemctl stop percycraft.service'
+                          'systemctl stop pcraft.service'
                       ]
                   }
               )

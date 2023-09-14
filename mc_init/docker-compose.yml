@@ -35,7 +35,7 @@ services:
       OVERRIDE_ICON: "TRUE"      
     volumes:
       - /opt/data:/data
-      - /opt/percycraft/mc_init/vanillatweaks:/vanillatweaks:ro
-      - /opt/percycraft/mc_init/config:/config:ro
-      - /opt/percycraft/mc_init/resources/:/resources:ro  
+      - /opt/pcraft/mc_init/vanillatweaks:/vanillatweaks:ro
+      - /opt/pcraft/mc_init/config:/config:ro
+      - /opt/pcraft/mc_init/resources/:/resources:ro  
     restart: no
