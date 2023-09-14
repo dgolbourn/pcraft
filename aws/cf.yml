@@ -5,7 +5,7 @@ Parameters:
   EC2AMI:
     Description: AWS EC2 AMI ID
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
-    Default: /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2
+    Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
 
   ServerState:
     Type: String
@@ -18,9 +18,9 @@ Parameters:
     Type: String
     Default: t3.large
 
-  SpotPrice:
-    Type: String
-    Default: "0.08"
+  # SpotPrice:
+  #   Type: String
+  #   Default: "0.08"
 
   KeyPairName:
     Type: String
@@ -41,7 +41,7 @@ Metadata:
           default: Cost/Performance Configuration
         Parameters:
         - InstanceType
-        - SpotPrice
+        # - SpotPrice
       - Label: 
           default: SSH Configuration
         Parameters:
@@ -56,8 +56,8 @@ Metadata:
         default: "Initial server state"
       InstanceType:
         default: "Instance type"
-      SpotPrice:
-        default: "Maximum spot price per hour (blank means on demand price)"
+      # SpotPrice:
+      #   default: "Maximum spot price per hour (blank means on demand price)"
       KeyPairName:
         default: "Key Pair: https://console.aws.amazon.com/ec2/v2/home?#KeyPairs:sort=keyName"
       YourIPv4:
@@ -65,8 +65,8 @@ Metadata:
       EC2AMI:
         default: "Virtual machine image"
 
-Conditions:
-  SpotPriceProvided: !Not [ !Equals [ !Ref SpotPrice, '' ] ]
+# Conditions:
+#   SpotPriceProvided: !Not [ !Equals [ !Ref SpotPrice, '' ] ]
 
 Mappings:
   ServerState:
@@ -214,25 +214,49 @@ Resources:
         CidrIp: 0.0.0.0/0
       VpcId: !Ref Vpc
 
-  LaunchConfiguration:
-    Type: AWS::AutoScaling::LaunchConfiguration
+  LaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
     Properties:
-      AssociatePublicIpAddress: true
-      IamInstanceProfile: !Ref InstanceProfile
-      ImageId: !Ref EC2AMI
-      InstanceType: !Ref InstanceType
-      KeyName: !Ref KeyPairName
-      SecurityGroups:
-      - !Ref Ec2Sg
-      SpotPrice: !If [ SpotPriceProvided, !Ref SpotPrice, !Ref 'AWS::NoValue' ]
-      UserData:
-        Fn::Base64: !Sub |
-          #!/bin/bash -xe
-          yum -y install git
-          cd /
-          git clone https://github.com/dgolbourn/percycraft.git
-          chmod +x /percycraft/aws/ec2/install.sh 
-          /percycraft/aws/ec2/install.sh ${Efs}
+      LaunchTemplateData:
+        IamInstanceProfile:
+          Arn: !GetAtt InstanceProfile.Arn
+        ImageId: !Ref EC2AMI
+        InstanceMarketOptions:
+          MarketType: "spot"
+        InstanceType: !Ref InstanceType
+        KeyName: !Ref KeyPairName
+        NetworkInterfaces:
+          - DeviceIndex: 0 
+            AssociatePublicIpAddress: true
+            Groups: [!Ref Ec2Sg]
+        UserData:
+          Fn::Base64: !Sub |
+            #!/bin/bash -xe
+            yum -y install git
+            cd /
+            git clone https://github.com/dgolbourn/percycraft.git
+            chmod +x /percycraft/aws/ec2/install.sh 
+            /percycraft/aws/ec2/install.sh ${Efs}
+
+  # LaunchConfiguration:
+  #   Type: AWS::AutoScaling::LaunchConfiguration
+  #   Properties:
+  #     AssociatePublicIpAddress: true
+  #     IamInstanceProfile: !Ref InstanceProfile
+  #     ImageId: !Ref EC2AMI
+  #     InstanceType: !Ref InstanceType
+  #     KeyName: !Ref KeyPairName
+  #     SecurityGroups:
+  #     - !Ref Ec2Sg
+  #     SpotPrice: !If [ SpotPriceProvided, !Ref SpotPrice, !Ref 'AWS::NoValue' ]
+  #     UserData:
+  #       Fn::Base64: !Sub |
+  #         #!/bin/bash -xe
+  #         yum -y install git
+  #         cd /
+  #         git clone https://github.com/dgolbourn/percycraft.git
+  #         chmod +x /percycraft/aws/ec2/install.sh 
+  #         /percycraft/aws/ec2/install.sh ${Efs}
 
   AutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
@@ -242,7 +266,10 @@ Resources:
     Properties:
       AutoScalingGroupName: !Sub "${AWS::StackName}-AutoScalingGroup"
       DesiredCapacity: !FindInMap [ ServerState, !Ref ServerState, DesiredCapacity ]
-      LaunchConfigurationName: !Ref LaunchConfiguration
+      #LaunchConfigurationName: !Ref LaunchConfiguration
+      LaunchTemplate: 
+        LaunchTemplateId: !Ref LaunchTemplate
+        Version: !GetAtt LaunchTemplate.LatestVersionNumber
       NewInstancesProtectedFromScaleIn: false
       MaxSize: 1
       MinSize: 0
