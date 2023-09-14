@@ -7,7 +7,7 @@ This project is indebted to the fine work of [itzg/docker-minecraft-server](http
 
 Pcraft deploys to AWS a Java Minecraft server with Fabric mods. The cloud infrastructure uses scheduled auto scaling to turn the server off and on and spot pricing while it is on to keep things affordable. The deployment includes a file server to aid users in downloading the correct Resource Packs and Client Mods.
 
-[Here](http://pcraft.co.uk:8100) is how the adventure is going to far!
+[Here](http://pcraft.co.uk:8100) is how the adventure is going so far!
 
 The selection of mods I've chosen is motivated by the desire to track the look and feel of my favourite Minecraft Youtubers such as those on the [Hermitcraft](https://hermitcraft.com/) series.
 
