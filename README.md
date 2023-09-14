@@ -5,7 +5,9 @@ I made this Minecraft server so my son and I can play Minecraft, with various mo
 
 This project is indebted to the fine work of [itzg/docker-minecraft-server](https://github.com/itzg/docker-minecraft-server) and [minecraft-spot-pricing](https://github.com/vatertime/minecraft-spot-pricing).
 
-Pcraft deploys to AWS a Java Minecraft server with Fabric mods. The cloud infrastructure uses scheduled auto scaling to turn the server off and on and spot pricing while it is on to keep things affordable. The deployment includes a file server to aid users in downloading the correct Resource Packs and Client Mods. The server also has administration tools [mcrcon](https://github.com/Tiiffi/mcrcon) and [MCA Selector](https://github.com/Querz/mcaselector) to help admins keep things tidy.
+Pcraft deploys to AWS a Java Minecraft server with Fabric mods. The cloud infrastructure uses scheduled auto scaling to turn the server off and on and spot pricing while it is on to keep things affordable. The deployment includes a file server to aid users in downloading the correct Resource Packs and Client Mods.
+
+[Here](http://pcraft.co.uk:8100)'s how the adventure is going to far!
 
 The selection of mods I've chosen is motivated by the desire to track the look and feel of my favourite Minecraft Youtubers such as those on the [Hermitcraft](https://hermitcraft.com/) series.
 
@@ -21,8 +23,6 @@ For players
 4. Launch the game, choose Multiplayer, and add the Pcraft server address `pcraft.co.uk`.
   
 5. **Congratulations, you've joined the Pcraft server!**
-
-[Here](http://pcraft.co.uk:8100)'s how the adventure is going to far!
 
 For server admins
 -----------------
