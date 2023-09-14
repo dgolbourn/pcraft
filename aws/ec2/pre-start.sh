@@ -31,7 +31,7 @@ else
 fi
 echo WELCOME_MESSAGE=\'$WELCOME_MESSAGE\' >> /opt/percycraft/.env
 cp -r /opt/percycraft/mc_init/config/bluemap/core.conf /opt/data/config/bluemap/core.conf
-cp -r /opt/percycraft/mc_init/config/bluemap/opt/webapp.conf /opt/data/config/bluemap/webapp.conf
+cp -r /opt/percycraft/mc_init/config/bluemap/webapp.conf /opt/data/config/bluemap/webapp.conf
 cp -r /opt/percycraft/mc_init/config/bluemap/maps/overworld.conf /opt/data/config/bluemap/maps/overworld.conf
 rm -f /opt/data/config/bluemap/maps/end.conf
 rm -f /opt/data/config/bluemap/maps/nether.conf
