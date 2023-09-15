@@ -226,7 +226,7 @@ Resources:
             mkdir /efs
             mount -t efs ${Efs}:/ /efs
             yum -y install git
-            git clone https://github.com/dgolbourn/pcraft.git /opt/percycraft
+            git clone https://github.com/dgolbourn/percycraft.git /opt/percycraft
             chmod +x /opt/percycraft/aws/ec2/install.sh 
             /opt/percycraft/aws/ec2/install.sh
 
