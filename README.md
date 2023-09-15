@@ -1,11 +1,11 @@
-Pcraft
+Percycraft
 ==========
 
 I made this Minecraft server so that my son and I can play Minecraft together, with various mods and so on. 
 
 This project is indebted to the fine work of [itzg/docker-minecraft-server](https://github.com/itzg/docker-minecraft-server) and [minecraft-spot-pricing](https://github.com/vatertime/minecraft-spot-pricing).
 
-Pcraft deploys to AWS a Java Minecraft server with Fabric mods. The cloud infrastructure uses scheduled auto scaling to turn the server off and on and spot pricing while it is on to keep things affordable. The deployment includes a file server to aid users in downloading the correct Resource Packs and Client Mods.
+Percycraft deploys to AWS a Java Minecraft server with Fabric mods. The cloud infrastructure uses scheduled auto scaling to turn the server off and on and spot pricing while it is on to keep things affordable. The deployment includes a file server to aid users in downloading the correct Resource Packs and Client Mods.
 
 [Here](http://pcraft.co.uk:8100) is how the adventure is going so far!
 
@@ -20,13 +20,13 @@ For players
 
 3. Download the client mods from [here](http://pcraft.co.uk:8080/mods) and place them in the `/mods` directory of your Minecraft (e.g. probably `%APPDATA%\.minecraft\mods` on Windows)
 
-4. Launch the game, choose Multiplayer, and add the Pcraft server address `pcraft.co.uk`.
+4. Launch the game, choose Multiplayer, and add the Percycraft server address `pcraft.co.uk`.
   
-5. **Congratulations, you've joined the Pcraft server!**
+5. **Congratulations, you've joined the Percycraft server!**
 
 For server admins
 -----------------
-If you want your own Pcraft:
+If you want your own Percycraft:
 
 1. Create an AWS Stack using the [Cloudformation template](aws/cf.yml)
 

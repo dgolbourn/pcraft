@@ -1,20 +1,20 @@
 [Unit]
-Description=Pcraft cluster
+Description=Percycraft cluster
 Requires=docker.service
 After=docker.service
 
 [Service]
 Restart=no
-ExecStartPre=/opt/pcraft/aws/ec2/restore.sh
-ExecStartPre=/usr/local/bin/docker-compose -f /opt/pcraft/mc_init/docker-compose.yml up
-ExecStartPre=/opt/pcraft/aws/ec2/pre-start.sh
-ExecStart=/usr/local/bin/docker-compose -f /opt/pcraft/mc/docker-compose.yml --env-file /opt/pcraft/.env up
-ExecStop=/usr/local/bin/docker-compose -f /opt/pcraft/mc/docker-compose.yml --env-file /opt/pcraft/.env down
-ExecStop=/opt/pcraft/aws/ec2/backup.sh
-ExecReload=/usr/local/bin/docker-compose -f /opt/pcraft/mc/docker-compose.yml --env-file /opt/pcraft/.env down
-ExecReload=/usr/local/bin/docker-compose -f /opt/pcraft/mc_init/docker-compose.yml up
-ExecReload=/opt/pcraft/aws/ec2/pre-start.sh
-ExecReload=/usr/local/bin/docker-compose -f /opt/pcraft/mc/docker-compose.yml --env-file /opt/pcraft/.env up
+ExecStartPre=/opt/percycraft/aws/ec2/restore.sh
+ExecStartPre=/usr/local/bin/docker-compose -f /opt/percycraft/mc_init/docker-compose.yml up
+ExecStartPre=/opt/percycraft/aws/ec2/pre-start.sh
+ExecStart=/usr/local/bin/docker-compose -f /opt/percycraft/mc/docker-compose.yml --env-file /opt/percycraft/.env up
+ExecStop=/usr/local/bin/docker-compose -f /opt/percycraft/mc/docker-compose.yml --env-file /opt/percycraft/.env down
+ExecStop=/opt/percycraft/aws/ec2/backup.sh
+ExecReload=/usr/local/bin/docker-compose -f /opt/percycraft/mc/docker-compose.yml --env-file /opt/percycraft/.env down
+ExecReload=/usr/local/bin/docker-compose -f /opt/percycraft/mc_init/docker-compose.yml up
+ExecReload=/opt/percycraft/aws/ec2/pre-start.sh
+ExecReload=/usr/local/bin/docker-compose -f /opt/percycraft/mc/docker-compose.yml --env-file /opt/percycraft/.env up
 TimeoutStartSec=900
 TimeoutStopSec=300
 
