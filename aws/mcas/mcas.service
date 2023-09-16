@@ -1,0 +1,15 @@
+[Unit]
+Description=MCA Selector
+
+[Service]
+Restart=no
+WorkingDirectory=/opt/mca-selector/bin
+ExecStartPre=/opt/percycraft/aws/backup/restore.sh
+ExecStart=xpra start --bind-tcp=0.0.0.0:10000 --start="/opt/mca-selector/bin/java -D/opt/mca-selector/bin -Xmx6g -jar /opt/mca-selector/lib/mca-selector.jar"
+ExecStop=xpra stop
+ExecStop=/opt/percycraft/aws/backup/backup.sh
+TimeoutStartSec=900
+TimeoutStopSec=300
+
+[Install]
+WantedBy=multi-user.target
