@@ -425,7 +425,7 @@ Resources:
       Handler: index.lambda_handler
       MemorySize: 128
       Role: !GetAtt GracefulShutdownLambdaRole.Arn
-      Runtime: Python3.11
+      Runtime: python3.9
       Timeout: 600
 
   StartStopLambdaRole:
@@ -471,7 +471,7 @@ Resources:
       Handler: index.lambda_handler
       MemorySize: 128
       Role: !GetAtt StartStopLambdaRole.Arn
-      Runtime: Python3.11
+      Runtime: python3.9
       Timeout: 30
 
   StopLambda:
@@ -494,7 +494,7 @@ Resources:
       Handler: index.lambda_handler
       MemorySize: 128
       Role: !GetAtt StartStopLambdaRole.Arn
-      Runtime: Python3.11
+      Runtime: python3.9
       Timeout: 30
 
   AssociateElasticIPLambdaRole:
@@ -542,7 +542,7 @@ Resources:
       Handler: index.handler
       MemorySize: 128
       Role: !GetAtt AssociateElasticIPLambdaRole.Arn
-      Runtime: Python3.11
+      Runtime: python3.9
       Timeout: 30
 
   LaunchEvent:
