@@ -6,16 +6,12 @@ Parameters:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
     Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
 
-  ServerState:
-    Type: String
-    Default: Running
+  DesiredCapacity:
+    Type: Number
+    Default: 1
     AllowedValues: 
-    - Running
-    - Stopped
-
-  InstanceType:
-    Type: String
-    Default: t3.large
+    - 0
+    - 1
 
   KeyPairName:
     Type: String
@@ -24,18 +20,22 @@ Parameters:
   YourIPv4:
     Type: String
     Default: ''
+  
+  Players:
+    Type: String
+    Default: ''
 
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
       - Label:
+          default: Who's playing?
+        Parameters:
+        - Players
+      - Label:
           default: Initial Conditions
         Parameters:
-        - ServerState
-      - Label: 
-          default: Cost/Performance Configuration
-        Parameters:
-        - InstanceType
+        - DesiredCapacity
       - Label: 
           default: SSH Configuration
         Parameters:
@@ -46,23 +46,16 @@ Metadata:
         Parameters:
         - EC2AMI
     ParameterLabels:
-      ServerState:
+      DesiredCapacity:
         default: "Initial server state"
-      InstanceType:
-        default: "Instance type"
       KeyPairName:
         default: "Key Pair: https://console.aws.amazon.com/ec2/v2/home?#KeyPairs:sort=keyName"
       YourIPv4:
         default: "IPv4 address: http://checkip.amazonaws.com"
       EC2AMI:
         default: "Virtual machine image"
-
-Mappings:
-  ServerState:
-    Running:
-      DesiredCapacity: 1
-    Stopped:
-      DesiredCapacity: 0
+      Players:
+        default: "Comma separated list of player names"
 
 Resources:
 
@@ -216,7 +209,7 @@ Resources:
         ImageId: !Ref EC2AMI
         InstanceMarketOptions:
           MarketType: "spot"
-        InstanceType: !Ref InstanceType
+        InstanceType: t3.large
         KeyName: !Ref KeyPairName
         NetworkInterfaces:
           - DeviceIndex: 0 
@@ -235,6 +228,7 @@ Resources:
               chmod +x /opt/percycraft/aws/ec2/install.sh 
               echo "FILEBUCKETS3URI=s3://${FileBucket}" > /opt/env
               echo "FILEBUCKETWEBSITEURL=${FileBucketWebsiteURL}" >> /opt/env
+              echo "PLAYERLIST=${Players}" >> /opt/env
               /opt/percycraft/aws/ec2/install.sh
             - FileBucketWebsiteURL: !GetAtt FileBucket.WebsiteURL
   AutoScalingGroup:
@@ -244,7 +238,7 @@ Resources:
     - MountB
     Properties:
       AutoScalingGroupName: !Sub "${AWS::StackName}-AutoScalingGroup"
-      DesiredCapacity: !FindInMap [ ServerState, !Ref ServerState, DesiredCapacity ]
+      DesiredCapacity: !Ref DesiredCapacity
       LaunchTemplate: 
         LaunchTemplateId: !Ref LaunchTemplate
         Version: !GetAtt LaunchTemplate.LatestVersionNumber

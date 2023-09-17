@@ -6,6 +6,7 @@ OUTPUTS=($OUTPUT)
 echo "RESOURCE_PACK_SHA1=${OUTPUTS[0]}" > /opt/percycraft/.env
 echo "RESOURCE_PACK=${FILEBUCKETWEBSITEURL}/${OUTPUTS[1]}" >> /opt/percycraft/.env
 echo "PASSWORD=$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 20; echo;)" >> /opt/percycraft/.env
+echo "WHITELIST=${PLAYERS}" >> /opt/percycraft/.env
 cd /opt/data
 PATTERN="*.jar"
 JARS=( $PATTERN )
@@ -44,9 +45,9 @@ cp -r /opt/percycraft/filebucket/* /opt/web
 aws s3 rm $FILEBUCKETS3URI/web --recursive
 aws s3 cp /opt/web $FILEBUCKETS3URI --recursive
 rm -rf /opt/web
-cp -r /opt/percycraft/mc_init/config/bluemap/core.conf /opt/data/config/bluemap/core.conf
-cp -r /opt/percycraft/mc_init/config/bluemap/webapp.conf /opt/data/config/bluemap/webapp.conf
-cp -r /opt/percycraft/mc_init/config/bluemap/maps/overworld.conf /opt/data/config/bluemap/maps/overworld.conf
+cp -r /opt/percycraft/mc_init/bluemap/core.conf /opt/data/config/bluemap/core.conf
+cp -r /opt/percycraft/mc_init/bluemap/webapp.conf /opt/data/config/bluemap/webapp.conf
+cp -r /opt/percycraft/mc_init/bluemap/maps/overworld.conf /opt/data/config/bluemap/maps/overworld.conf
 rm -f /opt/data/config/bluemap/maps/end.conf
 rm -f /opt/data/config/bluemap/maps/nether.conf
 echo "Pre-start complete"

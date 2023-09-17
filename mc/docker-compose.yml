@@ -10,8 +10,8 @@ services:
       MOTD: §k* §l§6Welcome §fto the §l§cPercycraft §fserver! §k*
       RESOURCE_PACK: ${RESOURCE_PACK}
       RESOURCE_PACK_SHA1: ${RESOURCE_PACK_SHA1}
+      WHITELIST: ${WHITELIST}
       EXISTING_WHITELIST_FILE: SKIP
-      EXISTING_OPS_FILE: SKIP
       MEMORY: 6G
       STOP_SERVER_ANNOUCE_DELAY: 60
       STOP_DURATION: 240
