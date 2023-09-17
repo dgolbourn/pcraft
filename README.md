@@ -18,11 +18,13 @@ For players
 
 2. Install the [Fabric Loader](https://fabricmc.net/use/); this will enable you to select the Fabric version of Minecraft in the Minecraft Launcher when you start the game
 
-3. Download the client mods from [here](http://percycraft-filebucket-fqc4yj05329z.s3-website.eu-west-2.amazonaws.com/mods) and place them in the `/mods` directory of your Minecraft (e.g. probably `%APPDATA%\.minecraft\mods` on Windows)
+3. *Windows*: Install the [client mods](https://percycraft-filebucket-fqc4yj05329z.s3.eu-west-2.amazonaws.com/percycraft_installer.exe)
 
-4. Launch the game, choose Multiplayer, and add the Percycraft server address `pcraft.co.uk`.
+   *Others*: download the client mods from [here](http://percycraft-filebucket-fqc4yj05329z.s3-website.eu-west-2.amazonaws.com/mods) and place them in the `/mods` directory of your Minecraft
+
+6. Launch the game, choose Multiplayer, and add the Percycraft server address `pcraft.co.uk`.
   
-5. **Congratulations, you've joined the Percycraft server!**
+7. **Congratulations, you've joined the Percycraft server!**
 
 For server admins
 -----------------
