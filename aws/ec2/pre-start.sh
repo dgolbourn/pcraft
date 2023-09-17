@@ -6,7 +6,7 @@ OUTPUTS=($OUTPUT)
 echo "RESOURCE_PACK_SHA1=${OUTPUTS[0]}" > /opt/percycraft/.env
 echo "RESOURCE_PACK=${FILEBUCKETWEBSITEURL}/${OUTPUTS[1]}" >> /opt/percycraft/.env
 echo "PASSWORD=$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 20; echo;)" >> /opt/percycraft/.env
-echo "WHITELIST=${PLAYERS}" >> /opt/percycraft/.env
+echo "WHITELIST=${PLAYERLIST}" >> /opt/percycraft/.env
 cd /opt/data
 PATTERN="*.jar"
 JARS=( $PATTERN )
