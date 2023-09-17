@@ -19,7 +19,8 @@ mv mca-selector.jar /opt/mca-selector/lib/mca-selector.jar
 mkdir -p /opt/data
 mkdir -p /efs/backups
 mkdir -p /efs/album
-mkdir -p /efs/web
+mkdir -p /opt/web
+yum install -y tree
 chmod +x /opt/percycraft/aws/ec2/restore.sh
 chmod +x /opt/percycraft/aws/ec2/pre-start.sh
 chmod +x /opt/percycraft/aws/ec2/backup.sh

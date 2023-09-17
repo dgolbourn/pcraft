@@ -4,6 +4,7 @@ Requires=docker.service
 After=docker.service
 
 [Service]
+EnvironmentFile=/opt/env
 Restart=no
 ExecStartPre=/opt/percycraft/aws/ec2/restore.sh
 ExecStartPre=/usr/local/bin/docker-compose -f /opt/percycraft/mc_init/docker-compose.yml up

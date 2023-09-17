@@ -1,4 +1,4 @@
-#!/bin/bash -xe
+#!/bin/bash
 echo "Generating png of world started"
 ts=$(date +"%Y%m%d-%H%M%S")
 imageFile="/efs/album/world-${ts}.png"
@@ -6,4 +6,5 @@ imageFile="/efs/album/world-${ts}.png"
 xvfb-run /opt/mca-selector/bin/java -D/opt/mca-selector/bin -Xmx6g -jar /opt/mca-selector/lib/mca-selector.jar --mode image --world /opt/data/world --selection selection.csv --output $imageFile
 rm selection.csv
 ln -sf ${imageFile} /efs/album/latest.png
+aws s3 cp /efs/album/latest.png $FILEBUCKETS3URI/album/
 echo "Generating png of world complete"

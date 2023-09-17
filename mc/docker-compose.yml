@@ -19,12 +19,6 @@ services:
       RCON_CMDS_STARTUP: |-
         /gamerule playersSleepingPercentage 0
         /pregen start 25
-        /team add New
-        /team add Old
-      RCON_CMDS_ON_CONNECT: |-
-        /team join New @a[team=]
-        ${WELCOME_MESSAGE}
-        /team join Old @a[team=New]
       RCON_CMDS_FIRST_CONNECT: |-
         /pregen stop
       RCON_CMDS_LAST_DISCONNECT: |-
@@ -41,11 +35,4 @@ services:
       - "24454:24454/udp"
     stdin_open: true
     tty: true
-    restart: no
-  fs:
-    image: halverneus/static-file-server
-    volumes:
-      - /efs/web:/web:ro
-    ports:
-      - "8080:8080"
     restart: no

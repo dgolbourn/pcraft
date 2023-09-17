@@ -208,7 +208,8 @@ Resources:
     Properties:
       LaunchTemplateData:
         BlockDeviceMappings:
-          - Ebs:
+          - DeviceName: /dev/xvda
+            Ebs:
               VolumeSize: 16
         IamInstanceProfile:
           Arn: !GetAtt InstanceProfile.Arn
@@ -222,17 +223,20 @@ Resources:
             AssociatePublicIpAddress: true
             Groups: [!Ref Ec2Sg]
         UserData:
-          Fn::Base64: !Sub |
-            #!/bin/bash -xe
-            yum update -y
-            yum install -y amazon-efs-utils
-            mkdir /efs
-            mount -t efs ${Efs}:/ /efs
-            yum -y install git
-            git clone https://github.com/dgolbourn/percycraft.git /opt/percycraft
-            chmod +x /opt/percycraft/aws/ec2/install.sh 
-            /opt/percycraft/aws/ec2/install.sh
-
+          Fn::Base64: !Sub 
+            - |
+              #!/bin/bash -xe
+              yum update -y
+              yum install -y amazon-efs-utils
+              mkdir /efs
+              mount -t efs ${Efs}:/ /efs
+              yum -y install git
+              git clone https://github.com/dgolbourn/percycraft.git /opt/percycraft
+              chmod +x /opt/percycraft/aws/ec2/install.sh 
+              echo "FILEBUCKETS3URI=s3://${FileBucket}" > /opt/env
+              echo "FILEBUCKETWEBSITEURL=${FileBucketWebsiteURL}" >> /opt/env
+              /opt/percycraft/aws/ec2/install.sh
+            - FileBucketWebsiteURL: !GetAtt FileBucket.WebsiteURL
   AutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
     DependsOn:
@@ -595,7 +599,46 @@ Resources:
       Principal: events.amazonaws.com
       SourceArn: !GetAtt TerminateEvent.Arn
 
+  FileBucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: ObjectWriter
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: error.html
+    DeletionPolicy: Delete
+
+  FileBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref FileBucket
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Action:
+              - 's3:GetObject'
+            Effect: Allow
+            Resource: !Join
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Ref FileBucket
+                - /*
+            Principal: '*'
+
 Outputs:
   PublicIP:
     Description: Server IP address
     Value: !GetAtt ElasticIP.PublicIp
+  WebsiteURL:
+    Value: !GetAtt FileBucket.WebsiteURL
+    Description: URL for file server
+  FileBucketS3URI:
+    Value: !Join
+      - ''
+      - - 's3://'
+        - !GetAtt FileBucket.DomainName
+    Description: S3 bucket for file server
