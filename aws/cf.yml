@@ -226,9 +226,9 @@ Resources:
               yum -y install git
               git clone https://github.com/dgolbourn/percycraft.git /opt/percycraft
               chmod +x /opt/percycraft/aws/ec2/install.sh 
-              echo "FILEBUCKETS3URI=s3://${FileBucket}" > /opt/env
-              echo "FILEBUCKETWEBSITEURL=${FileBucketWebsiteURL}" >> /opt/env
-              echo "PLAYERLIST=${Players}" >> /opt/env
+              echo "FILEBUCKETS3URI=s3://${FileBucket}" > /opt/percycraft/service.env
+              echo "FILEBUCKETWEBSITEURL=${FileBucketWebsiteURL}" >> /opt/percycraft/service.env
+              echo "PLAYERLIST=${Players}" >> /opt/percycraft/service.env
               /opt/percycraft/aws/ec2/install.sh
             - FileBucketWebsiteURL: !GetAtt FileBucket.WebsiteURL
   AutoScalingGroup:
@@ -257,7 +257,7 @@ Resources:
     Properties: 
       AutoScalingGroupName: !Sub "${AWS::StackName}-AutoScalingGroup"
       DefaultResult: CONTINUE 
-      HeartbeatTimeout: 300
+      HeartbeatTimeout: 600
       LifecycleHookName: !Sub "${AWS::StackName}-AutoScalingLifecycleHook"
       LifecycleTransition: autoscaling:EC2_INSTANCE_TERMINATING
 
@@ -288,7 +288,7 @@ Resources:
       FlexibleTimeWindow: 
         MaximumWindowInMinutes: 5
         Mode: FLEXIBLE
-      ScheduleExpression: cron(0 21 ? * 1-5 *)
+      ScheduleExpression: cron(0 22 ? * 1-5 *)
       ScheduleExpressionTimezone: Europe/London
       State: ENABLED
       Target: 
@@ -314,7 +314,7 @@ Resources:
       FlexibleTimeWindow: 
         MaximumWindowInMinutes: 5
         Mode: FLEXIBLE
-      ScheduleExpression: cron(0 16 ? * 2-6 *)
+      ScheduleExpression: cron(0 19 ? * 2-6 *)
       ScheduleExpressionTimezone: Europe/London
       State: ENABLED
       Target: 
@@ -327,7 +327,7 @@ Resources:
       FlexibleTimeWindow: 
         MaximumWindowInMinutes: 5
         Mode: FLEXIBLE
-      ScheduleExpression: cron(0 6 ? * 7-1 *)
+      ScheduleExpression: cron(0 7 ? * 7-1 *)
       ScheduleExpressionTimezone: Europe/London
       State: ENABLED
       Target: 
@@ -404,15 +404,15 @@ Resources:
               )
               command_id = response['Command']['CommandId']
               t = 0
-              while t < 200:
-                t+=1
-                time.sleep(1)
+              while t < 480:
                 response = ssm_client.get_command_invocation(
                     CommandId=command_id,
                     InstanceId=event['detail']['EC2InstanceId']
                 )
                 if response['Status'] != 'InProgress':
                   break
+                t+=1
+                time.sleep(1)
               as_client = boto3.client('autoscaling')
               response = as_client.complete_lifecycle_action(
                   LifecycleHookName=event['detail']['LifecycleHookName'],
@@ -425,8 +425,8 @@ Resources:
       Handler: index.lambda_handler
       MemorySize: 128
       Role: !GetAtt GracefulShutdownLambdaRole.Arn
-      Runtime: python3.7
-      Timeout: 300
+      Runtime: Python3.11
+      Timeout: 600
 
   StartStopLambdaRole:
     Type: AWS::IAM::Role
@@ -471,7 +471,7 @@ Resources:
       Handler: index.lambda_handler
       MemorySize: 128
       Role: !GetAtt StartStopLambdaRole.Arn
-      Runtime: python3.7
+      Runtime: Python3.11
       Timeout: 30
 
   StopLambda:
@@ -494,7 +494,7 @@ Resources:
       Handler: index.lambda_handler
       MemorySize: 128
       Role: !GetAtt StartStopLambdaRole.Arn
-      Runtime: python3.7
+      Runtime: Python3.11
       Timeout: 30
 
   AssociateElasticIPLambdaRole:
@@ -542,7 +542,7 @@ Resources:
       Handler: index.handler
       MemorySize: 128
       Role: !GetAtt AssociateElasticIPLambdaRole.Arn
-      Runtime: python3.7
+      Runtime: Python3.11
       Timeout: 30
 
   LaunchEvent:
@@ -596,6 +596,7 @@ Resources:
   FileBucket:
     Type: 'AWS::S3::Bucket'
     Properties:
+      BucketName: cdn.pcraft.co.uk
       PublicAccessBlockConfiguration:
         BlockPublicAcls: false
       OwnershipControls:
@@ -604,7 +605,7 @@ Resources:
       WebsiteConfiguration:
         IndexDocument: index.html
         ErrorDocument: error.html
-    DeletionPolicy: Delete
+    DeletionPolicy: Retain
 
   FileBucketPolicy:
     Type: AWS::S3::BucketPolicy
