@@ -11,6 +11,7 @@ ExecStartPre=/opt/percycraft/aws/ec2/pre-start.sh
 ExecStart=/usr/local/bin/docker-compose -f /opt/percycraft/mc/docker-compose.yml --env-file /opt/percycraft/.env up
 ExecStop=/usr/local/bin/docker-compose -f /opt/percycraft/mc/docker-compose.yml --env-file /opt/percycraft/.env down
 ExecStop=/opt/percycraft/aws/ec2/backup.sh
+ExecStop=/opt/percycraft/aws/ec2/image.sh
 ExecReload=/usr/local/bin/docker-compose -f /opt/percycraft/mc/docker-compose.yml --env-file /opt/percycraft/.env down
 ExecReload=/usr/local/bin/docker-compose -f /opt/percycraft/mc_init/docker-compose.yml up
 ExecReload=/opt/percycraft/aws/ec2/pre-start.sh

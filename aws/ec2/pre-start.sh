@@ -12,15 +12,15 @@ PATTERN="*.jar"
 JARS=( $PATTERN )
 cd -
 echo "CUSTOM_SERVER=/data/${JARS[0]}" >> /opt/percycraft/.env
-rm -rf /opt/web/*
-mkdir -p /opt/web/resourcepacks
-mkdir -p /opt/web/mods
-cp "/opt/data/${OUTPUTS[1]}" /opt/web/resourcepacks/
+rm -rf /efs/web/*
+mkdir -p /efs/web/resourcepacks
+mkdir -p /efs/web/mods
+cp "/opt/data/${OUTPUTS[1]}" /efs/web/resourcepacks/
 cd /opt/data/mods
 MODTEXT=()
 while read p; do
   MOD=$(ls $p*)
-  cp -f /opt/data/mods/$MOD /opt/web/mods/
+  cp -f /opt/data/mods/$MOD /efs/web/mods/
   MODTEXT+=("{\"text\":\"$p\",\"underlined\":true,\"color\":\"blue\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"$URL/mods/$MOD\"}}")
 done < /opt/percycraft/mc_init/client-mods.txt
 if (( ${#MODTEXT[@]} )); then

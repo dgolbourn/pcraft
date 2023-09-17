@@ -45,7 +45,7 @@ services:
   fs:
     image: halverneus/static-file-server
     volumes:
-      - /opt/web:/web:ro
+      - /efs/web:/web:ro
     ports:
       - "8080:8080"
     restart: no

@@ -207,6 +207,9 @@ Resources:
     Type: AWS::EC2::LaunchTemplate
     Properties:
       LaunchTemplateData:
+        BlockDeviceMappings:
+          - Ebs:
+              VolumeSize: 16
         IamInstanceProfile:
           Arn: !GetAtt InstanceProfile.Arn
         ImageId: !Ref EC2AMI
@@ -466,7 +469,6 @@ Resources:
                 DesiredCapacity=1,
                 HonorCooldown=False
             )
-      Description: Starts the server
       FunctionName: !Sub "${AWS::StackName}-StartLambda"
       Handler: index.lambda_handler
       MemorySize: 128
@@ -490,7 +492,6 @@ Resources:
                 DesiredCapacity=0,
                 HonorCooldown=False
             )
-      Description: Starts the server
       FunctionName: !Sub "${AWS::StackName}-StopLambda"
       Handler: index.lambda_handler
       MemorySize: 128
@@ -539,7 +540,6 @@ Resources:
                 AllocationId=os.environ['AllocationId'],
                 InstanceId=event['detail']['EC2InstanceId']
             )
-      Description: Assoicates Elastic IP with EC2 instance
       FunctionName: !Sub "${AWS::StackName}-AssociateElasticIPLambda"
       Handler: index.handler
       MemorySize: 128
