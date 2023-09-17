@@ -636,9 +636,3 @@ Outputs:
   WebsiteURL:
     Value: !GetAtt FileBucket.WebsiteURL
     Description: URL for file server
-  FileBucketS3URI:
-    Value: !Join
-      - ''
-      - - 's3://'
-        - !GetAtt FileBucket.DomainName
-    Description: S3 bucket for file server
