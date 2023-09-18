@@ -9,7 +9,7 @@ Percycraft deploys to AWS a Java Minecraft server with Fabric mods. The cloud in
 
 The selection of mods I've chosen is motivated by the desire to track the look and feel of my favourite Minecraft Youtubers such as those on the [Hermitcraft](https://hermitcraft.com/) series.
 
-[Here](http://percycraft-filebucket-fqc4yj05329z.s3-website.eu-west-2.amazonaws.com/album/latest.png) is the world so far!
+[Here](http://cdn.pcraft.co.uk/album/latest.png) is the world so far!
 
 For players
 -----------
@@ -18,9 +18,9 @@ For players
 
 2. Install the [Fabric Loader](https://fabricmc.net/use/); this will enable you to select the Fabric version of Minecraft in the Minecraft Launcher when you start the game
 
-3. *Windows*: Install the [client mods](https://percycraft-filebucket-fqc4yj05329z.s3.eu-west-2.amazonaws.com/percycraft_installer.exe)
+3. *Windows*: Install the [client mods](http://cdn.pcraft.co.uk/percycraft_installer.exe)
 
-   *Others*: download the client mods from [here](http://percycraft-filebucket-fqc4yj05329z.s3-website.eu-west-2.amazonaws.com/mods) and place them in the `/mods` directory of your Minecraft
+   *Others*: download the client mods from [here](http://cdn.pcraft.co.uk/mods) and place them in the `/mods` directory of your Minecraft
 
 6. Launch the game, choose Multiplayer, and add the Percycraft server address `pcraft.co.uk`.
   
