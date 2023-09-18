@@ -6,6 +6,10 @@ Parameters:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
     Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
 
+  NATAMI:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-arm64
+
   DesiredCapacity:
     Type: Number
     Default: 1
@@ -348,6 +352,14 @@ Resources:
           - sts:AssumeRole
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM 
+      Policies:
+        - PolicyName: root
+          PolicyDocument: 
+            Version: "2012-10-17"
+            Statement: 
+              - Effect: "Allow"
+                Action: "lambda:InvokeFunction"
+                Resource: "*"
 
   InstanceProfile:
     Type: AWS::IAM::InstanceProfile
@@ -623,6 +635,40 @@ Resources:
                 - !Ref FileBucket
                 - /*
             Principal: '*'
+
+  NATLaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      LaunchTemplateData:
+        IamInstanceProfile:
+          Arn: !GetAtt InstanceProfile.Arn
+        ImageId: !Ref NATAMI
+        InstanceMarketOptions:
+          MarketType: "spot"
+        InstanceType: t4g.nano
+        KeyName: !Ref KeyPairName
+        NetworkInterfaces:
+          - DeviceIndex: 0 
+            AssociatePublicIpAddress: true
+            Groups: [!Ref Ec2Sg]
+            SubnetId: !Ref SubnetA
+        UserData:
+          Fn::Base64: !Sub |
+            #!/bin/bash -xe
+            yum update -y
+            yum install -y amazon-efs-utils
+            mkdir /efs
+            mount -t efs ${Efs}:/ /efs
+            yum -y install git
+            git clone https://github.com/dgolbourn/percycraft.git /opt/percycraft
+            
+  NATInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      LaunchTemplate: 
+        LaunchTemplateId: !Ref NATLaunchTemplate
+        Version: !GetAtt NATLaunchTemplate.LatestVersionNumber
+
 
 Outputs:
   PublicIP:
