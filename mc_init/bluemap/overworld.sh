@@ -24,7 +24,7 @@ cat << EOF
                 label: ${label}
             }
 EOF
-    counter=${counter}+1
+    (counter=counter+1)
   fi
 done < /opt/data/config/coordfinder/places.properties
 

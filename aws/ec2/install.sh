@@ -25,7 +25,8 @@ chmod +x /opt/percycraft/aws/ec2/restore.sh
 chmod +x /opt/percycraft/aws/ec2/pre-start.sh
 chmod +x /opt/percycraft/aws/ec2/backup.sh
 chmod +x /opt/percycraft/aws/ec2/image.sh
-chmod +x /opt/percycraft/aws/mc_init/bluemap/overworld.sh
+chmod +x /opt/percycraft/mc_init/bluemap/overworld.sh
+chmod 777 /opt/percycraft/installer/
 cp /opt/percycraft/aws/ec2/percycraft.service /etc/systemd/system/percycraft.service
 systemctl enable docker.service
 systemctl enable percycraft.service
