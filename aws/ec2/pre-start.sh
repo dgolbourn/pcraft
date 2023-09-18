@@ -22,7 +22,7 @@ echo -n > /opt/percycraft/installer/files.iss
 while read p; do
   MOD=$(ls $p*)
   cp -f /opt/data/mods/$MOD /opt/web/mods/
-  echo "DownloadPage.Add('http://cdn.pcraft.co.uk/mods/${MOD}', '${MOD}', '');" >> downloads.iss
+  echo "DownloadPage.Add('${FILEBUCKETWEBSITEURL}/mods/${MOD}', '${MOD}', '');" >> downloads.iss
   echo "Source: "{tmp}\\${MOD}"; DestDir: "{app}"; Flags: external" >> files.iss
 done < /opt/percycraft/mc_init/client-mods.txt
 if [ -f "/efs/album/latest.png" ]
@@ -30,7 +30,7 @@ then
   mkdir -p /opt/web/album
   cp /efs/album/latest.png /opt/web/album
 fi
-docker run --rm -i -v /opt/percycraft/installer amake/innosetup /opt/percycraft/installer/percycraft.iss
+docker run --rm -i -v "/opt/percycraft/installer:/work" amake/innosetup percycraft.iss
 cp /opt/percycraft/installer/Output/percycraft-installer.exe /opt/web
 cd /opt/web/
 find . -type d -print -exec sh -c 'tree "$0" \
