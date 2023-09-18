@@ -48,7 +48,6 @@ find . -type d -print -exec sh -c 'tree "$0" \
     -o "$0/index.html"' {} \;
 cd -
 cp -r /opt/percycraft/filebucket/* /opt/web
-aws s3 rm $FILEBUCKETS3URI --recursive
 aws s3 cp /opt/web $FILEBUCKETS3URI --recursive
 rm -rf /opt/web
 cp -r /opt/percycraft/mc_init/bluemap/core.conf /opt/data/config/bluemap/core.conf
