@@ -18,7 +18,7 @@ For players
 
 2. Install the [Fabric Loader](https://fabricmc.net/use/); this will enable you to select the Fabric version of Minecraft in the Minecraft Launcher when you start the game
 
-3. *Windows*: Install the [client mods](http://cdn.pcraft.co.uk/percycraft_installer.exe)
+3. *Windows*: Install the [client mods](http://cdn.pcraft.co.uk/percycraft-installer.exe)
 
    *Others*: download the client mods from [here](http://cdn.pcraft.co.uk/mods) and place them in the `/mods` directory of your Minecraft
 
