@@ -30,6 +30,8 @@ then
   mkdir -p /opt/web/album
   cp /efs/album/latest.png /opt/web/album
 fi
+docker run --rm -i -v /opt/percycraft/installer amake/innosetup /opt/percycraft/installer/percycraft.iss
+cp /opt/percycraft/installer/Output/percycraft-installer.exe /opt/web
 cd /opt/web/
 find . -type d -print -exec sh -c 'tree "$0" \
     -H "." \
@@ -46,8 +48,6 @@ find . -type d -print -exec sh -c 'tree "$0" \
     -o "$0/index.html"' {} \;
 cd -
 cp -r /opt/percycraft/filebucket/* /opt/web
-docker run --rm -i -v /opt/percycraft/installer amake/innosetup /opt/percycraft/installer/percycraft.iss
-cp /opt/percycraft/installer/Output/percycraft-installer.exe /opt/web
 aws s3 rm $FILEBUCKETS3URI --recursive
 aws s3 cp /opt/web $FILEBUCKETS3URI --recursive
 rm -rf /opt/web
