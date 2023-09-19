@@ -1,0 +1,10 @@
+[Unit]
+Description=Percycraft greeting
+
+[Service]
+Restart=no
+RootDirectory=/opt/lazymc
+ExecStart=/opt/lazymc/lazymc start
+
+[Install]
+WantedBy=multi-user.target

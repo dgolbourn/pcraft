@@ -229,8 +229,8 @@ Resources:
             chmod +x /opt/percycraft/nat/host.sh
             /opt/percycraft/nat/install.sh
             /opt/percycraft/nat/host.sh ${YourIPv4}
-            cd /opt/lazymc
-            ./lazymc start
+            systemctl enable nat.service
+            systemctl start nat.service
 
   NATInstance:
     Type: AWS::EC2::Instance  
@@ -455,7 +455,7 @@ Resources:
               print(json.dumps(event, sort_keys=True, default=str))
               ssm_client = boto3.client('ssm') 
               response = ssm_client.send_command(
-                  InstanceIds=[os.environ("NATID")],
+                  InstanceIds=[os.environ["NATID"]],
                   DocumentName='AWS-RunShellScript',
                   Parameters={
                       'commands': [
@@ -606,10 +606,10 @@ Resources:
           def lambda_handler(event, context):
               ec2 = boto3.client('ec2')
               id = event['detail']['EC2InstanceId']
-              ip = ec2.describe_instances(InstanceIds=[id])['Reservations'][0]['Instances'][0]['PrivateIpAddress']
+              ip = ec2.describe_instances(InstanceIds=[id])['Reservations'][0]['Instances'][0]['PublicIpAddress']
               ssm_client = boto3.client('ssm') 
               response = ssm_client.send_command(
-                  InstanceIds=[os.environ("NATID")],
+                  InstanceIds=[os.environ["NATID"]],
                   DocumentName='AWS-RunShellScript',
                   Parameters={
                       'commands': [
