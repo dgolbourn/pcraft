@@ -229,6 +229,8 @@ Resources:
             chmod +x /opt/percycraft/nat/host.sh
             /opt/percycraft/nat/install.sh
             /opt/percycraft/nat/host.sh ${YourIPv4}
+            cd /opt/lazymc
+            ./lazymc
 
   NATInstance:
     Type: AWS::EC2::Instance
