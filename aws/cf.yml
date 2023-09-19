@@ -450,6 +450,7 @@ Resources:
         ZipFile: |
           import boto3
           import json
+          import os
           def lambda_handler(event, context):
               print(json.dumps(event, sort_keys=True, default=str))
               ssm_client = boto3.client('ssm') 
