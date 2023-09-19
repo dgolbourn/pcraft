@@ -233,9 +233,7 @@ Resources:
             ./lazymc start
 
   NATInstance:
-    Type: AWS::EC2::Instance
-    DependsOn:
-    - AutoScalingGroup    
+    Type: AWS::EC2::Instance  
     Properties:
       LaunchTemplate: 
         LaunchTemplateId: !Ref NATLaunchTemplate
