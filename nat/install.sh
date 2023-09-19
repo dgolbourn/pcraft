@@ -5,3 +5,9 @@ chmod +x /opt/lazymc/lazymc
 chmod +x /opt/percycraft/nat/server.sh
 cp /opt/percycraft/nat/server.sh /opt/lazymc
 cp /opt/percycraft/nat/lazymc.toml /opt/lazymc
+echo "127.0.0.1 percycraft" >> /etc/hosts
+
+...
+
+$ip = new ip from server
+sed -i "s/\([^\t ]*\)\([\t ]*\)percycraft/$ip\2percycraft/g" /etc/hosts

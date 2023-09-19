@@ -24,7 +24,7 @@ version = "1.20.1"
 [server]
 # Server address. Internal IP and port of server started by lazymc to proxy to.
 # Port must be different from public port.
-address = "pcraft.co.uk:25565"
+address = "percycraft:25565"
 
 # Server directory, defaults to current directory.
 directory = "."
@@ -74,7 +74,7 @@ stop_timeout = 600
 #sleep_after = 30
 
 # Minimum time in seconds to stay online when server is started.
-minimum_online_time = 30
+minimum_online_time = 3600
 
 [motd]
 # MOTD, shown in server browser.

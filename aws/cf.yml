@@ -10,6 +10,10 @@ Parameters:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
     Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-arm64
 
+  FileServerHostName:
+    Type: String
+    Default: cdn.pcraft.co.uk
+
   DesiredCapacity:
     Type: Number
     Default: 1
@@ -186,10 +190,6 @@ Resources:
         ToPort: 25565
         IpProtocol: tcp
         CidrIp: 0.0.0.0/0
-      - FromPort: 8080
-        ToPort: 8080
-        IpProtocol: tcp
-        CidrIp: 0.0.0.0/0
       - FromPort: 24454
         ToPort: 24454
         IpProtocol: udp
@@ -224,7 +224,7 @@ Resources:
             mkdir /efs
             mount -t efs ${Efs}:/ /efs
             yum -y install git
-            git clone -b nat2 --single-branch ttps://github.com/dgolbourn/percycraft.git /opt/percycraft
+            git clone -b nat2 --single-branch https://github.com/dgolbourn/percycraft.git /opt/percycraft
             chmod +x /opt/percycraft/nat/install.sh
             /opt/percycraft/nat/install.sh
 
@@ -645,7 +645,7 @@ Resources:
   FileBucket:
     Type: 'AWS::S3::Bucket'
     Properties:
-      BucketName: cdn.pcraft.co.uk
+      BucketName: !Ref FileServerHostName
       PublicAccessBlockConfiguration:
         BlockPublicAcls: false
       OwnershipControls:
@@ -672,9 +672,6 @@ Resources:
                 - !Ref FileBucket
                 - /*
             Principal: '*'
-
-
-
 
 Outputs:
   PublicIP:
