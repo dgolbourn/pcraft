@@ -235,6 +235,12 @@ Resources:
         LaunchTemplateId: !Ref NATLaunchTemplate
         Version: !GetAtt NATLaunchTemplate.LatestVersionNumber
 
+  EIPAssociation:
+    Type: AWS::EC2::EIPAssociation
+    Properties: 
+      AllocationId: !GetAtt ElasticIP.AllocationId
+      InstanceId: !Ref NATInstance
+
   LaunchTemplate:
     Type: AWS::EC2::LaunchTemplate
     Properties:
