@@ -230,7 +230,7 @@ Resources:
             /opt/percycraft/nat/install.sh
             /opt/percycraft/nat/host.sh ${YourIPv4}
             cd /opt/lazymc
-            ./lazymc
+            ./lazymc start
 
   NATInstance:
     Type: AWS::EC2::Instance
