@@ -403,7 +403,9 @@ Resources:
         ZipFile: |
           import boto3
           import time
+          import json
           def lambda_handler(event, context):
+              print(json.dumps(event, sort_keys=True, default=str))
               ssm_client = boto3.client('ssm') 
               response = ssm_client.send_command(
                   InstanceIds=[event['detail']['EC2InstanceId']],
@@ -414,17 +416,15 @@ Resources:
                       ]
                   }
               )
-              command_id = response['Command']['CommandId']
-              t = 0
-              while t < 480:
-                response = ssm_client.get_command_invocation(
-                    CommandId=command_id,
-                    InstanceId=event['detail']['EC2InstanceId']
-                )
-                if response['Status'] != 'InProgress':
-                  break
-                t+=1
-                time.sleep(1)
+              print(json.dumps(response, sort_keys=True, default=str))
+              ssm_client.get_waiter("command_executed").wait(
+                CommandId=response['Command']['CommandId'],
+                InstanceId=event['detail']['EC2InstanceId'],
+                WaiterConfig={
+                  'Delay': 480/60,
+                  'MaxAttempts': 60
+                }
+              )
               as_client = boto3.client('autoscaling')
               response = as_client.complete_lifecycle_action(
                   LifecycleHookName=event['detail']['LifecycleHookName'],
@@ -433,6 +433,7 @@ Resources:
                   LifecycleActionResult='CONTINUE',
                   InstanceId=event['detail']['EC2InstanceId']
               )
+              print(json.dumps(response, sort_keys=True, default=str))
       FunctionName: !Sub "${AWS::StackName}-GracefulShutdownLambda"
       Handler: index.lambda_handler
       MemorySize: 128
@@ -636,38 +637,7 @@ Resources:
                 - /*
             Principal: '*'
 
-  NATLaunchTemplate:
-    Type: AWS::EC2::LaunchTemplate
-    Properties:
-      LaunchTemplateData:
-        IamInstanceProfile:
-          Arn: !GetAtt InstanceProfile.Arn
-        ImageId: !Ref NATAMI
-        InstanceMarketOptions:
-          MarketType: "spot"
-        InstanceType: t4g.nano
-        KeyName: !Ref KeyPairName
-        NetworkInterfaces:
-          - DeviceIndex: 0 
-            AssociatePublicIpAddress: true
-            Groups: [!Ref Ec2Sg]
-            SubnetId: !Ref SubnetA
-        UserData:
-          Fn::Base64: !Sub |
-            #!/bin/bash -xe
-            yum update -y
-            yum install -y amazon-efs-utils
-            mkdir /efs
-            mount -t efs ${Efs}:/ /efs
-            yum -y install git
-            git clone https://github.com/dgolbourn/percycraft.git /opt/percycraft
-            
-  NATInstance:
-    Type: AWS::EC2::Instance
-    Properties:
-      LaunchTemplate: 
-        LaunchTemplateId: !Ref NATLaunchTemplate
-        Version: !GetAtt NATLaunchTemplate.LatestVersionNumber
+
 
 
 Outputs:
