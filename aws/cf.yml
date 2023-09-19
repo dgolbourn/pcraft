@@ -269,7 +269,7 @@ Resources:
               mkdir /efs
               mount -t efs ${Efs}:/ /efs
               yum -y install git
-              git clone --single-branch https://github.com/dgolbourn/percycraft.git /opt/percycraft
+              git clone -b nat2 --single-branch https://github.com/dgolbourn/percycraft.git /opt/percycraft
               chmod +x /opt/percycraft/aws/ec2/install.sh 
               echo "FILEBUCKETS3URI=s3://${FileBucket}" > /opt/percycraft/service.env
               echo "FILEBUCKETWEBSITEURL=${FileBucketWebsiteURL}" >> /opt/percycraft/service.env
