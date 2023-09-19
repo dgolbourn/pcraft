@@ -232,6 +232,8 @@ Resources:
 
   NATInstance:
     Type: AWS::EC2::Instance
+    DependsOn:
+    - AutoScalingGroup    
     Properties:
       LaunchTemplate: 
         LaunchTemplateId: !Ref NATLaunchTemplate
@@ -283,7 +285,6 @@ Resources:
     Type: AWS::AutoScaling::AutoScalingGroup
     DependsOn:
     - MountA
-    - MountB
     Properties:
       AutoScalingGroupName: !Sub "${AWS::StackName}-AutoScalingGroup"
       DesiredCapacity: !Ref DesiredCapacity
@@ -295,7 +296,6 @@ Resources:
       MinSize: 0
       VPCZoneIdentifier:
         - !Ref SubnetA
-        - !Ref SubnetB
     Metadata:
       LaunchEvent: !GetAtt LaunchEvent.Arn
 
