@@ -390,7 +390,6 @@ Resources:
       Code:
         ZipFile: |
           import boto3
-          import time
           import json
           def lambda_handler(event, context):
               print(json.dumps(event, sort_keys=True, default=str))
