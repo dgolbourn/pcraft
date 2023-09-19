@@ -6,4 +6,4 @@ chmod +x /opt/percycraft/nat/server.sh
 chmod +x /opt/percycraft/nat/host.sh
 cp /opt/percycraft/nat/server.sh /opt/lazymc
 cp /opt/percycraft/nat/lazymc.toml /opt/lazymc
-echo "127.0.0.1 percycraft" >> /etc/hosts
+echo "x.x.x.x percycraft" >> /etc/hosts

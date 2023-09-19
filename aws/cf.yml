@@ -226,7 +226,9 @@ Resources:
             yum -y install git
             git clone -b nat2 --single-branch https://github.com/dgolbourn/percycraft.git /opt/percycraft
             chmod +x /opt/percycraft/nat/install.sh
+            chmod +x /opt/percycraft/nat/host.sh
             /opt/percycraft/nat/install.sh
+            /opt/percycraft/nat/host.sh ${YourIPv4}
 
   NATInstance:
     Type: AWS::EC2::Instance
@@ -451,12 +453,12 @@ Resources:
           def lambda_handler(event, context):
               print(json.dumps(event, sort_keys=True, default=str))
               ssm_client = boto3.client('ssm') 
-              response = ssm.send_command(
+              response = ssm_client.send_command(
                   InstanceIds=[os.environ("NATID")],
                   DocumentName='AWS-RunShellScript',
                   Parameters={
                       'commands': [
-                          '/opt/percycraft/nat/host.sh 127.0.0.1'
+                          '/opt/percycraft/nat/host.sh ${YourIPv4}'
                       ]
                   }
               )
@@ -602,9 +604,10 @@ Resources:
           import os
           def lambda_handler(event, context):
               ec2 = boto3.client('ec2')
-              ip = ec2.describe_instances(InstanceIds=[{event['detail']['EC2InstanceId']}])['Reservations'][0]['Instances'][0]['PrivateIpAddress']
-              ssm = boto3.client('ssm') 
-              response = ssm.send_command(
+              id = event['detail']['EC2InstanceId']
+              ip = ec2.describe_instances(InstanceIds=[id])['Reservations'][0]['Instances'][0]['PrivateIpAddress']
+              ssm_client = boto3.client('ssm') 
+              response = ssm_client.send_command(
                   InstanceIds=[os.environ("NATID")],
                   DocumentName='AWS-RunShellScript',
                   Parameters={
