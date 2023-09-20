@@ -6,12 +6,13 @@ Parameters:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
     Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
 
-  DesiredCapacity:
-    Type: Number
-    Default: 1
-    AllowedValues: 
-    - 0
-    - 1
+  NATAMI:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-arm64
+
+  FileServerHostName:
+    Type: String
+    Default: cdn.pcraft.co.uk
 
   KeyPairName:
     Type: String
@@ -25,6 +26,10 @@ Parameters:
     Type: String
     Default: ''
 
+  TimeZone:
+    Type: String
+    Default: Europe/London
+
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
@@ -32,10 +37,6 @@ Metadata:
           default: Who's playing?
         Parameters:
         - Players
-      - Label:
-          default: Initial Conditions
-        Parameters:
-        - DesiredCapacity
       - Label: 
           default: SSH Configuration
         Parameters:
@@ -46,8 +47,6 @@ Metadata:
         Parameters:
         - EC2AMI
     ParameterLabels:
-      DesiredCapacity:
-        default: "Initial server state"
       KeyPairName:
         default: "Key Pair: https://console.aws.amazon.com/ec2/v2/home?#KeyPairs:sort=keyName"
       YourIPv4:
@@ -136,6 +135,12 @@ Resources:
       Domain: !Ref Vpc
     DependsOn: InternetGatewayAttachment
 
+  AuxElasticIP:
+    Type: AWS::EC2::EIP
+    Properties: 
+      Domain: !Ref Vpc
+    DependsOn: InternetGatewayAttachment    
+
   Efs:
     Type: AWS::EFS::FileSystem
     Properties: {}
@@ -182,10 +187,6 @@ Resources:
         ToPort: 25565
         IpProtocol: tcp
         CidrIp: 0.0.0.0/0
-      - FromPort: 8080
-        ToPort: 8080
-        IpProtocol: tcp
-        CidrIp: 0.0.0.0/0
       - FromPort: 24454
         ToPort: 24454
         IpProtocol: udp
@@ -195,6 +196,50 @@ Resources:
         IpProtocol: tcp
         CidrIp: 0.0.0.0/0
       VpcId: !Ref Vpc
+
+  NATLaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      LaunchTemplateData:
+        IamInstanceProfile:
+          Arn: !GetAtt InstanceProfile.Arn
+        ImageId: !Ref NATAMI
+        InstanceMarketOptions:
+          MarketType: "spot"
+        InstanceType: t4g.nano
+        KeyName: !Ref KeyPairName
+        NetworkInterfaces:
+          - DeviceIndex: 0 
+            AssociatePublicIpAddress: true
+            Groups: [!Ref Ec2Sg]
+            SubnetId: !Ref SubnetA
+        UserData:
+          Fn::Base64: !Sub
+            - |          
+              #!/bin/bash -xe
+              yum update -y
+              timedatectl set-timezone ${TimeZone}
+              yum install -y amazon-efs-utils
+              mkdir /efs
+              mount -t efs ${Efs}:/ /efs
+              yum -y install git
+              git clone --single-branch https://github.com/dgolbourn/percycraft.git /opt/percycraft
+              chmod +x /opt/percycraft/lobby/install.sh
+              /opt/percycraft/lobby/install.sh ${SERVER_IP} ${Players}
+            - SERVER_IP: !GetAtt ElasticIP.PublicIp
+
+  NATInstance:
+    Type: AWS::EC2::Instance  
+    Properties:
+      LaunchTemplate: 
+        LaunchTemplateId: !Ref NATLaunchTemplate
+        Version: !GetAtt NATLaunchTemplate.LatestVersionNumber
+
+  EIPAssociation:
+    Type: AWS::EC2::EIPAssociation
+    Properties: 
+      AllocationId: !GetAtt AuxElasticIP.AllocationId
+      InstanceId: !Ref NATInstance
 
   LaunchTemplate:
     Type: AWS::EC2::LaunchTemplate
@@ -218,27 +263,29 @@ Resources:
         UserData:
           Fn::Base64: !Sub 
             - |
-              #!/bin/bash -xe
+              #!/bin/bash -xe    
               yum update -y
+              timedatectl set-timezone ${TimeZone}
               yum install -y amazon-efs-utils
               mkdir /efs
               mount -t efs ${Efs}:/ /efs
               yum -y install git
-              git clone https://github.com/dgolbourn/percycraft.git /opt/percycraft
+              git clone --single-branch https://github.com/dgolbourn/percycraft.git /opt/percycraft
               chmod +x /opt/percycraft/aws/ec2/install.sh 
               echo "FILEBUCKETS3URI=s3://${FileBucket}" > /opt/percycraft/service.env
               echo "FILEBUCKETWEBSITEURL=${FileBucketWebsiteURL}" >> /opt/percycraft/service.env
               echo "PLAYERLIST=${Players}" >> /opt/percycraft/service.env
+              echo "TZ=${TimeZone}" >> /opt/percycraft/service.env
               /opt/percycraft/aws/ec2/install.sh
             - FileBucketWebsiteURL: !GetAtt FileBucket.WebsiteURL
+
   AutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
     DependsOn:
     - MountA
-    - MountB
     Properties:
       AutoScalingGroupName: !Sub "${AWS::StackName}-AutoScalingGroup"
-      DesiredCapacity: !Ref DesiredCapacity
+      DesiredCapacity: 0
       LaunchTemplate: 
         LaunchTemplateId: !Ref LaunchTemplate
         Version: !GetAtt LaunchTemplate.LatestVersionNumber
@@ -247,7 +294,6 @@ Resources:
       MinSize: 0
       VPCZoneIdentifier:
         - !Ref SubnetA
-        - !Ref SubnetB
     Metadata:
       LaunchEvent: !GetAtt LaunchEvent.Arn
 
@@ -348,6 +394,14 @@ Resources:
           - sts:AssumeRole
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM 
+      Policies:
+        - PolicyName: root
+          PolicyDocument: 
+            Version: "2012-10-17"
+            Statement: 
+              - Effect: "Allow"
+                Action: "lambda:InvokeFunction"
+                Resource: "*"
 
   InstanceProfile:
     Type: AWS::IAM::InstanceProfile
@@ -386,14 +440,15 @@ Resources:
 
   GracefulShutdownLambda:
     Type: "AWS::Lambda::Function"
-    Properties: 
+    Properties:  
       Code:
         ZipFile: |
           import boto3
           import json
+          import os
           def lambda_handler(event, context):
               print(json.dumps(event, sort_keys=True, default=str))
-              ssm_client = boto3.client('ssm') 
+              ssm_client = boto3.client('ssm')
               response = ssm_client.send_command(
                   InstanceIds=[event['detail']['EC2InstanceId']],
                   DocumentName='AWS-RunShellScript',
@@ -596,7 +651,7 @@ Resources:
   FileBucket:
     Type: 'AWS::S3::Bucket'
     Properties:
-      BucketName: cdn.pcraft.co.uk
+      BucketName: !Ref FileServerHostName
       PublicAccessBlockConfiguration:
         BlockPublicAcls: false
       OwnershipControls:
@@ -628,6 +683,9 @@ Outputs:
   PublicIP:
     Description: Server IP address
     Value: !GetAtt ElasticIP.PublicIp
+  LobbyIP:
+    Description: Server IP address
+    Value: !GetAtt AuxElasticIP.PublicIp    
   WebsiteURL:
     Value: !GetAtt FileBucket.WebsiteURL
     Description: URL for file server

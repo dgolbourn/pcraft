@@ -24,7 +24,7 @@ services:
       RCON_CMDS_LAST_DISCONNECT: |-
         /function kill_empty_boats:run
         /pregen start 25
-      TZ: "Europe/London"
+      TZ: ${TZ}
     stop_grace_period: 5m
     volumes:
       - /opt/data:/data
