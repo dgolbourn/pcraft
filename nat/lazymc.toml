@@ -38,14 +38,14 @@ command = "/opt/lazymc/server.sh"
 freeze_process = false
 
 # Immediately wake server when starting lazymc.
-#wake_on_start = false
+wake_on_start = false
 
 # Immediately wake server after crash.
-#wake_on_crash = false
+wake_on_crash = false
 
 # Probe required server details when starting lazymc, wakes server on start.
 # Improves client compatibility. Automatically enabled if required by other config properties.
-probe_on_start = true
+probe_on_start = false
 
 # Set to true if this server runs Forge.
 #forge = false
