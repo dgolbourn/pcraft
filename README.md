@@ -3,7 +3,7 @@ Percycraft
 
 I made this Minecraft server so that my son and I can play Minecraft together, with various mods and so on. 
 
-This project is indebted to the fine work of [itzg/docker-minecraft-server](https://github.com/itzg/docker-minecraft-server) and [minecraft-spot-pricing](https://github.com/vatertime/minecraft-spot-pricing).
+This project is indebted to the fine work of [itzg/docker-minecraft-server](https://github.com/itzg/docker-minecraft-server), [minecraft-spot-pricing](https://github.com/vatertime/minecraft-spot-pricing) and [lazymc](https://github.com/timvisee/lazymc).
 
 Percycraft deploys to AWS a Java Minecraft server with Fabric mods. The server can be turned on on-demand when connected to via Minecraft and turns itself off when left idle for long enough. Additionally, the cloud infrastructure is configured to use scheduled auto scaling to also turn the server off and on at certain times of day. When the server is on, it uses spot pricing to keep things affordable. The deployment also includes a file server to aid users in downloading the correct Resource Packs and Client Mods.
 
