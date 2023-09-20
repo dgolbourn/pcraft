@@ -1,10 +1,9 @@
 [Unit]
-Description=Percycraft greeting
+Description=Percycraft lobby
 
 [Service]
 Restart=no
-RootDirectory=/opt/lazymc
-ExecStart=/opt/lazymc/lazymc start
+ExecStart=/opt/lazymc/lazymc -c /opt/lazymc/lazymc.toml
 
 [Install]
 WantedBy=multi-user.target

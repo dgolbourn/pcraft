@@ -144,6 +144,12 @@ Resources:
       Domain: !Ref Vpc
     DependsOn: InternetGatewayAttachment
 
+  AuxElasticIP:
+    Type: AWS::EC2::EIP
+    Properties: 
+      Domain: !Ref Vpc
+    DependsOn: InternetGatewayAttachment    
+
   Efs:
     Type: AWS::EFS::FileSystem
     Properties: {}
@@ -226,11 +232,7 @@ Resources:
             yum -y install git
             git clone -b nat2 --single-branch https://github.com/dgolbourn/percycraft.git /opt/percycraft
             chmod +x /opt/percycraft/nat/install.sh
-            chmod +x /opt/percycraft/nat/host.sh
             /opt/percycraft/nat/install.sh
-            /opt/percycraft/nat/host.sh ${YourIPv4}
-            systemctl enable nat.service
-            systemctl start nat.service
 
   NATInstance:
     Type: AWS::EC2::Instance  
@@ -242,7 +244,7 @@ Resources:
   EIPAssociation:
     Type: AWS::EC2::EIPAssociation
     Properties: 
-      AllocationId: !GetAtt ElasticIP.AllocationId
+      AllocationId: !GetAtt AuxElasticIP.AllocationId
       InstanceId: !Ref NATInstance
 
   LaunchTemplate:
@@ -442,10 +444,7 @@ Resources:
 
   GracefulShutdownLambda:
     Type: "AWS::Lambda::Function"
-    Properties: 
-      Environment:
-        Variables:
-          NATID: !Ref NATInstance    
+    Properties:  
       Code:
         ZipFile: |
           import boto3
@@ -453,17 +452,7 @@ Resources:
           import os
           def lambda_handler(event, context):
               print(json.dumps(event, sort_keys=True, default=str))
-              ssm_client = boto3.client('ssm') 
-              response = ssm_client.send_command(
-                  InstanceIds=[os.environ["NATID"]],
-                  DocumentName='AWS-RunShellScript',
-                  Parameters={
-                      'commands': [
-                          '/opt/percycraft/nat/host.sh ${YourIPv4}'
-                      ]
-                  }
-              )
-              print(json.dumps(response, sort_keys=True, default=str))              
+              ssm_client = boto3.client('ssm')
               response = ssm_client.send_command(
                   InstanceIds=[event['detail']['EC2InstanceId']],
                   DocumentName='AWS-RunShellScript',
@@ -567,7 +556,7 @@ Resources:
       Runtime: python3.9
       Timeout: 30
 
-  GracefulStartupLambdaRole:
+  AssociateElasticIPLambdaRole:
     Type: AWS::IAM::Role
     Properties: 
       AssumeRolePolicyDocument:
@@ -587,40 +576,31 @@ Resources:
             Version: "2012-10-17"
             Statement: 
               - Effect: "Allow"
-                Action: "ssm:SendCommand"
+                Action: "ec2:AssociateAddress"
                 Resource: "*"
               - Effect: "Allow"
-                Action: "ec2:DescribeInstances"
+                Action: "ec2:DescribeInstance*"
                 Resource: "*"
 
-  GracefulStartupLambda:
+  AssociateElasticIPLambda:
     Type: "AWS::Lambda::Function"
     Properties: 
       Environment:
         Variables:
-          NATID: !Ref NATInstance
+          AllocationId: !GetAtt ElasticIP.AllocationId
       Code:
         ZipFile: |
           import boto3
           import os
-          def lambda_handler(event, context):
-              ec2 = boto3.client('ec2')
-              id = event['detail']['EC2InstanceId']
-              ip = ec2.describe_instances(InstanceIds=[id])['Reservations'][0]['Instances'][0]['PublicIpAddress']
-              ssm_client = boto3.client('ssm') 
-              response = ssm_client.send_command(
-                  InstanceIds=[os.environ["NATID"]],
-                  DocumentName='AWS-RunShellScript',
-                  Parameters={
-                      'commands': [
-                          '/opt/percycraft/nat/host.sh ' + ip
-                      ]
-                  }
-              )
-      FunctionName: !Sub "${AWS::StackName}-GracefulStartupLambda"
-      Handler: index.lambda_handler
+          def handler(event, context):
+            boto3.client('ec2').associate_address(
+                AllocationId=os.environ['AllocationId'],
+                InstanceId=event['detail']['EC2InstanceId']
+            )
+      FunctionName: !Sub "${AWS::StackName}-AssociateElasticIPLambda"
+      Handler: index.handler
       MemorySize: 128
-      Role: !GetAtt GracefulStartupLambdaRole.Arn
+      Role: !GetAtt AssociateElasticIPLambdaRole.Arn
       Runtime: python3.9
       Timeout: 30
 
@@ -637,14 +617,14 @@ Resources:
           - !Sub "${AWS::StackName}-AutoScalingGroup"
       State: ENABLED
       Targets:
-        - Arn: !GetAtt GracefulStartupLambda.Arn
-          Id: !Sub "${AWS::StackName}-GracefulStartupLambda"
+        - Arn: !GetAtt AssociateElasticIPLambda.Arn
+          Id: !Sub "${AWS::StackName}-AssociateElasticIPLambda"
 
   LaunchEventLambdaPermission:
     Type: AWS::Lambda::Permission
     Properties: 
       Action: lambda:InvokeFunction
-      FunctionName: !GetAtt GracefulStartupLambda.Arn
+      FunctionName: !GetAtt AssociateElasticIPLambda.Arn
       Principal: events.amazonaws.com
       SourceArn: !GetAtt LaunchEvent.Arn
 

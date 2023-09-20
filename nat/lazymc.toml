@@ -24,7 +24,7 @@ version = "1.20.1"
 [server]
 # Server address. Internal IP and port of server started by lazymc to proxy to.
 # Port must be different from public port.
-address = "percycraft:25565"
+address = "pcraft.co.uk:25565"
 
 # Server directory, defaults to current directory.
 directory = "."
