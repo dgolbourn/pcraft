@@ -19,15 +19,15 @@ address = "0.0.0.0:25565"
 # Sent to clients until actual server version is known.
 # See: https://git.io/J1Fvx
 version = "1.20.1"
-#protocol = 761
+protocol = 763
 
 [server]
 # Server address. Internal IP and port of server started by lazymc to proxy to.
 # Port must be different from public port.
-address = "pcraft.co.uk:25565"
+address = "percycraft:25565"
 
 # Server directory, defaults to current directory.
-directory = "."
+directory = "/opt/lazymc"
 
 # Command to start the server.
 # Warning: if using a bash script read: https://git.io/JMIKH
@@ -55,7 +55,7 @@ start_timeout = 600
 stop_timeout = 600
 
 # To wake server, user must be in server whitelist if enabled on server.
-#wake_whitelist = true
+wake_whitelist = true
 
 # Block banned IPs as listed in banned-ips.json in server directory.
 #block_banned_ips = true

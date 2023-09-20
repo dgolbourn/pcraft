@@ -33,6 +33,10 @@ Parameters:
     Type: String
     Default: ''
 
+  TimeZone:
+    Type: String
+    Default: Europe/London
+
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
@@ -223,16 +227,19 @@ Resources:
             Groups: [!Ref Ec2Sg]
             SubnetId: !Ref SubnetA
         UserData:
-          Fn::Base64: !Sub |
-            #!/bin/bash -xe
-            yum update -y
-            yum install -y amazon-efs-utils
-            mkdir /efs
-            mount -t efs ${Efs}:/ /efs
-            yum -y install git
-            git clone -b nat2 --single-branch https://github.com/dgolbourn/percycraft.git /opt/percycraft
-            chmod +x /opt/percycraft/lobby/install.sh
-            /opt/percycraft/lobby/install.sh
+          Fn::Base64: !Sub
+            - |          
+              #!/bin/bash -xe
+              yum update -y
+              timedatectl set-timezone ${TimeZone}
+              yum install -y amazon-efs-utils
+              mkdir /efs
+              mount -t efs ${Efs}:/ /efs
+              yum -y install git
+              git clone -b nat2 --single-branch https://github.com/dgolbourn/percycraft.git /opt/percycraft
+              chmod +x /opt/percycraft/lobby/install.sh
+              /opt/percycraft/lobby/install.sh ${SERVER_IP} ${Players}
+            - SERVER_IP: !GetAtt ElasticIP.PublicIp
 
   NATInstance:
     Type: AWS::EC2::Instance  
@@ -269,8 +276,9 @@ Resources:
         UserData:
           Fn::Base64: !Sub 
             - |
-              #!/bin/bash -xe
+              #!/bin/bash -xe    
               yum update -y
+              timedatectl set-timezone ${TimeZone}
               yum install -y amazon-efs-utils
               mkdir /efs
               mount -t efs ${Efs}:/ /efs
@@ -280,6 +288,7 @@ Resources:
               echo "FILEBUCKETS3URI=s3://${FileBucket}" > /opt/percycraft/service.env
               echo "FILEBUCKETWEBSITEURL=${FileBucketWebsiteURL}" >> /opt/percycraft/service.env
               echo "PLAYERLIST=${Players}" >> /opt/percycraft/service.env
+              echo "TZ=${TimeZone}" >> /opt/percycraft/service.env
               /opt/percycraft/aws/ec2/install.sh
             - FileBucketWebsiteURL: !GetAtt FileBucket.WebsiteURL
 
