@@ -22,7 +22,7 @@ For players
 
    *Others*: download the client mods from [here](http://cdn.pcraft.co.uk/mods) and place them in the `/mods` directory of your Minecraft
 
-6. Launch the game, choose Multiplayer, and add the Percycraft server address `pcraft.co.uk`.
+6. Launch the game, choose Multiplayer, and add the Percycraft server lobby `lobby.pcraft.co.uk`.
   
 7. **Congratulations, you've joined the Percycraft server!**
 
