@@ -687,6 +687,9 @@ Outputs:
   PublicIP:
     Description: Server IP address
     Value: !GetAtt ElasticIP.PublicIp
+  LobbyIP:
+    Description: Server IP address
+    Value: !GetAtt AuxElasticIP.PublicIp    
   WebsiteURL:
     Value: !GetAtt FileBucket.WebsiteURL
     Description: URL for file server
