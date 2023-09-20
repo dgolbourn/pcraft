@@ -231,8 +231,8 @@ Resources:
             mount -t efs ${Efs}:/ /efs
             yum -y install git
             git clone -b nat2 --single-branch https://github.com/dgolbourn/percycraft.git /opt/percycraft
-            chmod +x /opt/percycraft/nat/install.sh
-            /opt/percycraft/nat/install.sh
+            chmod +x /opt/percycraft/lobby/install.sh
+            /opt/percycraft/lobby/install.sh
 
   NATInstance:
     Type: AWS::EC2::Instance  
