@@ -74,7 +74,7 @@ Metadata:
         - WeekendStopSchedule
       - Label:
           default: Host names
-        Paramters:
+        Parameters:
         - FileServerHostName
       - Label:
           default: Virtual Machines
