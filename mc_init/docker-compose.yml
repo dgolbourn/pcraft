@@ -21,12 +21,12 @@ services:
         tooltipfix
         fabricquilt-chunk-pregenerator
         bluemap
-        bmpv
-        banners4bm
+        bmarker
         shulkerboxtooltip
         where-items-owo
+        lmd
       MODRINTH_ALLOWED_VERSION_TYPE: beta
-      TZ: "Europe/London"
+      TZ: ${TZ}
       ICON: /resources/server-icon.png
       OVERRIDE_ICON: "TRUE"      
     volumes:
