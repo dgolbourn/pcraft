@@ -6,7 +6,7 @@ Parameters:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
     Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
 
-  NATAMI:
+  LOBBYAMI:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
     Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-arm64
 
@@ -68,7 +68,7 @@ Metadata:
           default: Virtual Machines
         Parameters:
         - EC2AMI
-        - NATAMI
+        - LOBBYAMI
       - Label:
           default: Schedule
         Parameters:
@@ -89,7 +89,7 @@ Metadata:
         default: "IPv4 address: http://checkip.amazonaws.com"
       EC2AMI:
         default: "Server virtual machine image"
-      NATAMI:
+      LOBBYAMI:
         default: "Lobby virtual machine image"
       Players:
         default: "Comma separated list of player names"
@@ -206,13 +206,13 @@ Resources:
         CidrIp: 0.0.0.0/0
       VpcId: !Ref Vpc
 
-  NATLaunchTemplate:
+  LobbyLaunchTemplate:
     Type: AWS::EC2::LaunchTemplate
     Properties:
       LaunchTemplateData:
         IamInstanceProfile:
           Arn: !GetAtt InstanceProfile.Arn
-        ImageId: !Ref NATAMI
+        ImageId: !Ref LOBBYAMI
         InstanceMarketOptions:
           MarketType: "spot"
         InstanceType: t4g.nano
@@ -237,18 +237,18 @@ Resources:
               /opt/percycraft/lobby/install.sh ${SERVER_IP} ${Players}
             - SERVER_IP: !GetAtt ElasticIP.PublicIp
 
-  NATInstance:
+  LobbyInstance:
     Type: AWS::EC2::Instance
     Properties:
       LaunchTemplate:
-        LaunchTemplateId: !Ref NATLaunchTemplate
-        Version: !GetAtt NATLaunchTemplate.LatestVersionNumber
+        LaunchTemplateId: !Ref LobbyLaunchTemplate
+        Version: !GetAtt LobbyLaunchTemplate.LatestVersionNumber
 
   EIPAssociation:
     Type: AWS::EC2::EIPAssociation
     Properties:
       AllocationId: !GetAtt AuxElasticIP.AllocationId
-      InstanceId: !Ref NATInstance
+      InstanceId: !Ref LobbyInstance
 
   LaunchTemplate:
     Type: AWS::EC2::LaunchTemplate
