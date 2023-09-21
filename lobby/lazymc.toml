@@ -71,7 +71,7 @@ wake_whitelist = true
 
 [time]
 # Sleep after number of seconds.
-#sleep_after = 30
+sleep_after = 3600
 
 # Minimum time in seconds to stay online when server is started.
 minimum_online_time = 3600
@@ -99,8 +99,8 @@ methods = [
 # Instantly kicks a client with a message.
 
 # Message shown when client is kicked while server is starting/stopping.
-starting = "Server is starting... §c♥§r\n\nThis may take some time.\n\nPlease try to reconnect in a minute."
-stopping = "Server is going to sleep... §7☠§r\n\nPlease try to reconnect in a minute to wake it again."
+starting = "Server is starting... §c♥§r\n\nThis may take some time.\n\nGrab a cup of tea and come back in 5 minutes."
+stopping = "Server is going to sleep... §7☠§r\n\nPlease try to reconnect in a few minutes to wake it again."
 
 [join.hold]
 # Hold occupation method.
