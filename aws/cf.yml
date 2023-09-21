@@ -539,6 +539,7 @@ Resources:
         ZipFile: |
           import boto3
           import os
+          import json
           def lambda_handler(event, context):
             as_client = boto3.client('autoscaling')
             response = as_client.describe_auto_scaling_instances()
