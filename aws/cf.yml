@@ -65,11 +65,6 @@ Metadata:
         - KeyPairName
         - YourIPv4
       - Label:
-          default: Virtual Machines
-        Parameters:
-        - EC2AMI
-        - LOBBYAMI
-      - Label:
           default: Schedule
         Parameters:
         - TimeZone
@@ -81,6 +76,11 @@ Metadata:
           default: Host names
         Paramters:
         - FileServerHostName
+      - Label:
+          default: Virtual Machines
+        Parameters:
+        - EC2AMI
+        - LOBBYAMI        
 
     ParameterLabels:
       KeyPairName:
@@ -93,6 +93,18 @@ Metadata:
         default: "Lobby virtual machine image"
       Players:
         default: "Comma separated list of player names"
+      FileServerHostName:
+        default: "File server host name"
+      TimeZone:
+        default: "Time zone"
+      WeekdayStartSchedule:
+        default: "Server weekday start schedule"
+      WeekdayStopSchedule:
+        default: "Server weekday stop schedule"
+      WeekendStartSchedule:
+        default: "Server weekend start schedule"
+      WeekendStopSchedule:        
+        default: "Server weekend stop schedule"
 
 Resources:
 
