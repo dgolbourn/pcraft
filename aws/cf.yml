@@ -546,12 +546,13 @@ Resources:
             instances = response['AutoScalingInstances']
             instance_ids = [instance['InstanceId'] for instance in instances if instance['AutoScalingGroupName'] == os.environ['AutoScalingGroupName']]
             print(json.dumps(instance_ids, sort_keys=True, default=str))
-            response = as_client.set_instance_protection(
-                AutoScalingGroupName=os.environ['AutoScalingGroupName'],
-                InstanceIds=instance_ids,
-                ProtectedFromScaleIn=True
-            )
-            print(json.dumps(response, sort_keys=True, default=str))
+            if instance_ids:
+              response = as_client.set_instance_protection(
+                  AutoScalingGroupName=os.environ['AutoScalingGroupName'],
+                  InstanceIds=instance_ids,
+                  ProtectedFromScaleIn=True
+              )
+              print(json.dumps(response, sort_keys=True, default=str))
             response = as_client.update_auto_scaling_group(
                 AutoScalingGroupName=os.environ['AutoScalingGroupName'],
                 DesiredCapacity=1,
@@ -582,12 +583,13 @@ Resources:
             instances = response['AutoScalingInstances']
             instance_ids = [instance['InstanceId'] for instance in instances if instance['AutoScalingGroupName'] == os.environ['AutoScalingGroupName']]
             print(json.dumps(instance_ids, sort_keys=True, default=str))
-            response = as_client.set_instance_protection(
-                AutoScalingGroupName=os.environ['AutoScalingGroupName'],
-                InstanceIds=instance_ids,
-                ProtectedFromScaleIn=False
-            )
-            print(json.dumps(response, sort_keys=True, default=str))
+            if instance_ids:
+              response = as_client.set_instance_protection(
+                  AutoScalingGroupName=os.environ['AutoScalingGroupName'],
+                  InstanceIds=instance_ids,
+                  ProtectedFromScaleIn=False
+              )
+              print(json.dumps(response, sort_keys=True, default=str))
             response = as_client.update_auto_scaling_group(
                 AutoScalingGroupName=os.environ['AutoScalingGroupName'],
                 DesiredCapacity=0,
