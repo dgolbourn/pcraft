@@ -1,0 +1,823 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Percycraft
+Parameters:
+
+  EC2AMI:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
+
+  LOBBYAMI:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-arm64
+
+  FileServerHostName:
+    Type: String
+    Default: cdn.pcraft.co.uk
+
+  KeyPairName:
+    Type: String
+    Default: ''
+
+  YourIPv4:
+    Type: String
+    Default: ''
+
+  Players:
+    Type: String
+    Default: ''
+
+  TimeZone:
+    Type: String
+    Default: Europe/London
+
+  WeekdayStartSchedule:
+    Type: String
+    Default: ''
+
+  WeekdayStopSchedule:
+    Type: String
+    Default: cron(0 22 ? * 1-5 *)
+
+  WeekendStartSchedule:
+    Type: String
+    Default: cron(0 7 ? * 7-1 *)
+
+  WeekendStopSchedule:
+    Type: String
+    Default: cron(0 22 ? * 6-7 *)
+
+Conditions:
+  WeekdayStartScheduleProvided: !Not [ !Equals [ !Ref WeekdayStartSchedule, '' ] ]
+  WeekdayStopScheduleProvided: !Not [ !Equals [ !Ref WeekdayStopSchedule, '' ] ]
+  WeekendStartScheduleProvided: !Not [ !Equals [ !Ref WeekendStartSchedule, '' ] ]
+  WeekendStopScheduleProvided: !Not [ !Equals [ !Ref WeekendStopSchedule, '' ] ]
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: Who's playing?
+        Parameters:
+        - Players
+      - Label:
+          default: SSH Configuration
+        Parameters:
+        - KeyPairName
+        - YourIPv4
+      - Label:
+          default: Schedule
+        Parameters:
+        - TimeZone
+        - WeekdayStartSchedule
+        - WeekdayStopSchedule
+        - WeekendStartSchedule
+        - WeekendStopSchedule
+      - Label:
+          default: Host names
+        Parameters:
+        - FileServerHostName
+      - Label:
+          default: Virtual Machines
+        Parameters:
+        - EC2AMI
+        - LOBBYAMI        
+
+    ParameterLabels:
+      KeyPairName:
+        default: "Key Pair: https://console.aws.amazon.com/ec2/v2/home?#KeyPairs:sort=keyName"
+      YourIPv4:
+        default: "IPv4 address: http://checkip.amazonaws.com"
+      EC2AMI:
+        default: "Server virtual machine image"
+      LOBBYAMI:
+        default: "Lobby virtual machine image"
+      Players:
+        default: "Comma separated list of player names"
+      FileServerHostName:
+        default: "File server host name"
+      TimeZone:
+        default: "Time zone"
+      WeekdayStartSchedule:
+        default: "Server weekday start schedule"
+      WeekdayStopSchedule:
+        default: "Server weekday stop schedule"
+      WeekendStartSchedule:
+        default: "Server weekend start schedule"
+      WeekendStopSchedule:        
+        default: "Server weekend stop schedule"
+
+Resources:
+
+  Vpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.100.0.0/26
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+
+  SubnetA:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Select
+      - 0
+      - !GetAZs
+        Ref: 'AWS::Region'
+      CidrBlock: !Select
+      - 0
+      - Fn::Cidr:
+        - 10.100.0.0/26
+        - 4
+        - 4
+      VpcId: !Ref Vpc
+
+  SubnetARoute:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref RouteTable
+      SubnetId: !Ref SubnetA
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties: {}
+
+  InternetGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref InternetGateway
+      VpcId: !Ref Vpc
+
+  RouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref Vpc
+
+  Route:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+      RouteTableId: !Ref RouteTable
+
+  ElasticIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: !Ref Vpc
+    DependsOn: InternetGatewayAttachment
+
+  AuxElasticIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: !Ref Vpc
+    DependsOn: InternetGatewayAttachment
+
+  Efs:
+    Type: AWS::EFS::FileSystem
+    Properties: {}
+
+  MountA:
+    Type: AWS::EFS::MountTarget
+    Properties:
+      FileSystemId: !Ref Efs
+      SecurityGroups:
+      - !Ref EfsSg
+      SubnetId: !Ref SubnetA
+
+  EfsSg:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub "${AWS::StackName}-EfsSg"
+      GroupDescription: !Sub "${AWS::StackName}-EfsSg"
+      SecurityGroupIngress:
+      - FromPort: 2049
+        ToPort: 2049
+        IpProtocol: tcp
+        SourceSecurityGroupId: !Ref Ec2Sg
+      VpcId: !Ref Vpc
+
+  Ec2Sg:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub "${AWS::StackName}-Ec2Sg"
+      GroupDescription: !Sub "${AWS::StackName}-Ec2Sg"
+      SecurityGroupIngress:
+      - FromPort: 22
+        ToPort: 22
+        IpProtocol: tcp
+        CidrIp: !Sub "${YourIPv4}/32"
+      - FromPort: 25565
+        ToPort: 25565
+        IpProtocol: tcp
+        CidrIp: 0.0.0.0/0
+      - FromPort: 24454
+        ToPort: 24454
+        IpProtocol: udp
+        CidrIp: 0.0.0.0/0
+      - FromPort: 8100
+        ToPort: 8100
+        IpProtocol: tcp
+        CidrIp: 0.0.0.0/0
+      VpcId: !Ref Vpc
+
+  LobbyLaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      LaunchTemplateData:
+        IamInstanceProfile:
+          Arn: !GetAtt InstanceProfile.Arn
+        ImageId: !Ref LOBBYAMI
+        InstanceMarketOptions:
+          MarketType: "spot"
+        InstanceType: t4g.nano
+        KeyName: !Ref KeyPairName
+        NetworkInterfaces:
+          - DeviceIndex: 0
+            AssociatePublicIpAddress: true
+            Groups: [!Ref Ec2Sg]
+            SubnetId: !Ref SubnetA
+        UserData:
+          Fn::Base64: !Sub
+            - |
+              #!/bin/bash -xe
+              yum update -y
+              timedatectl set-timezone ${TimeZone}
+              yum install -y amazon-efs-utils
+              mkdir /efs
+              mount -t efs ${Efs}:/ /efs
+              yum -y install git
+              git clone --single-branch https://github.com/dgolbourn/percycraft.git /opt/percycraft
+              chmod +x /opt/percycraft/lobby/install.sh
+              /opt/percycraft/lobby/install.sh ${SERVER_IP} ${Players}
+            - SERVER_IP: !GetAtt ElasticIP.PublicIp
+
+  LobbyInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      LaunchTemplate:
+        LaunchTemplateId: !Ref LobbyLaunchTemplate
+        Version: !GetAtt LobbyLaunchTemplate.LatestVersionNumber
+
+  EIPAssociation:
+    Type: AWS::EC2::EIPAssociation
+    Properties:
+      AllocationId: !GetAtt AuxElasticIP.AllocationId
+      InstanceId: !Ref LobbyInstance
+
+  LaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      LaunchTemplateData:
+        BlockDeviceMappings:
+          - DeviceName: /dev/xvda
+            Ebs:
+              VolumeSize: 16
+        IamInstanceProfile:
+          Arn: !GetAtt InstanceProfile.Arn
+        ImageId: !Ref EC2AMI
+        InstanceMarketOptions:
+          MarketType: "spot"
+        InstanceType: t3.large
+        KeyName: !Ref KeyPairName
+        NetworkInterfaces:
+          - DeviceIndex: 0
+            AssociatePublicIpAddress: true
+            Groups: [!Ref Ec2Sg]
+        UserData:
+          Fn::Base64: !Sub
+            - |
+              #!/bin/bash -xe
+              yum update -y
+              timedatectl set-timezone ${TimeZone}
+              yum install -y amazon-efs-utils
+              mkdir /efs
+              mount -t efs ${Efs}:/ /efs
+              yum -y install git
+              git clone --single-branch https://github.com/dgolbourn/percycraft.git /opt/percycraft
+              chmod +x /opt/percycraft/aws/ec2/install.sh
+              echo "FILEBUCKETS3URI=s3://${FileBucket}" > /opt/percycraft/service.env
+              echo "FILEBUCKETWEBSITEURL=${FileBucketWebsiteURL}" >> /opt/percycraft/service.env
+              echo "PLAYERLIST=${Players}" >> /opt/percycraft/service.env
+              echo "TZ=${TimeZone}" >> /opt/percycraft/service.env
+              /opt/percycraft/aws/ec2/install.sh
+            - FileBucketWebsiteURL: !GetAtt FileBucket.WebsiteURL
+
+  AutoScalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    DependsOn:
+    - MountA
+    Properties:
+      AutoScalingGroupName: !Sub "${AWS::StackName}-AutoScalingGroup"
+      DesiredCapacity: 0
+      LaunchTemplate:
+        LaunchTemplateId: !Ref LaunchTemplate
+        Version: !GetAtt LaunchTemplate.LatestVersionNumber
+      NewInstancesProtectedFromScaleIn: false
+      MaxSize: 1
+      MinSize: 0
+      VPCZoneIdentifier:
+        - !Ref SubnetA
+    Metadata:
+      LaunchEvent: !GetAtt LaunchEvent.Arn
+
+  AutoScalingLifecycleHook:
+    Type: AWS::AutoScaling::LifecycleHook
+    DependsOn: AutoScalingGroup
+    Properties:
+      AutoScalingGroupName: !Sub "${AWS::StackName}-AutoScalingGroup"
+      DefaultResult: CONTINUE
+      HeartbeatTimeout: 600
+      LifecycleHookName: !Sub "${AWS::StackName}-AutoScalingLifecycleHook"
+      LifecycleTransition: autoscaling:EC2_INSTANCE_TERMINATING
+
+  SchedulerRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+              - scheduler.amazonaws.com
+            Action:
+            - sts:AssumeRole
+        Policies:
+          - PolicyName: root
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: "Allow"
+                  Action: "lambda:InvokeFunction"
+                  Resource:
+                  - !GetAtt LockStopLambda.Arn
+                  - !GetAtt LockStartLambda.Arn
+
+  WeekdayStopScheduler:
+    Type: AWS::Scheduler::Schedule
+    Condition: WeekdayStopScheduleProvided
+    Properties:
+      FlexibleTimeWindow:
+        MaximumWindowInMinutes: 5
+        Mode: FLEXIBLE
+      ScheduleExpression: !Ref WeekdayStopSchedule
+      ScheduleExpressionTimezone: !Ref TimeZone
+      State: ENABLED
+      Target:
+        Arn: !GetAtt LockStopLambda.Arn
+        RoleArn: !GetAtt SchedulerRole.Arn
+
+  WeekendStopScheduler:
+    Type: AWS::Scheduler::Schedule
+    Condition: WeekendStopScheduleProvided    
+    Properties:
+      FlexibleTimeWindow:
+        MaximumWindowInMinutes: 5
+        Mode: FLEXIBLE
+      ScheduleExpression: !Ref WeekendStopSchedule
+      ScheduleExpressionTimezone: !Ref TimeZone
+      State: ENABLED
+      Target:
+        Arn: !GetAtt LockStopLambda.Arn
+        RoleArn: !GetAtt SchedulerRole.Arn
+
+  WeekdayStartScheduler:
+    Type: AWS::Scheduler::Schedule
+    Condition: WeekdayStartScheduleProvided    
+    Properties:
+      FlexibleTimeWindow:
+        MaximumWindowInMinutes: 5
+        Mode: FLEXIBLE
+      ScheduleExpression: !Ref WeekdayStartSchedule
+      ScheduleExpressionTimezone: !Ref TimeZone
+      State: ENABLED
+      Target:
+        Arn: !GetAtt LockStartLambda.Arn
+        RoleArn: !GetAtt SchedulerRole.Arn
+
+  WeekendStartScheduler:
+    Type: AWS::Scheduler::Schedule
+    Condition: WeekendStartScheduleProvided
+    Properties:
+      FlexibleTimeWindow:
+        MaximumWindowInMinutes: 5
+        Mode: FLEXIBLE
+      ScheduleExpression: !Ref WeekendStartSchedule
+      ScheduleExpressionTimezone: !Ref TimeZone
+      State: ENABLED
+      Target:
+        Arn: !GetAtt LockStartLambda.Arn
+        RoleArn: !GetAtt SchedulerRole.Arn
+
+  InstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - ec2.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action: "lambda:InvokeFunction"
+                Resource:
+                - !GetAtt StopLambda.Arn
+                - !GetAtt StartLambda.Arn
+
+  InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - !Ref InstanceRole
+
+  GracefulShutdownLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action: "autoscaling:CompleteLifecycleAction"
+                Resource: "*"
+              - Effect: "Allow"
+                Action: "ssm:GetCommandInvocation"
+                Resource: "*"
+              - Effect: "Allow"
+                Action: "ssm:SendCommand"
+                Resource: "*"
+
+  GracefulShutdownLambda:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      Code:
+        ZipFile: |
+          import boto3
+          import json
+          import os
+          def lambda_handler(event, context):
+              print(json.dumps(event, sort_keys=True, default=str))
+              ssm_client = boto3.client('ssm')
+              response = ssm_client.send_command(
+                  InstanceIds=[event['detail']['EC2InstanceId']],
+                  DocumentName='AWS-RunShellScript',
+                  Parameters={
+                      'commands': [
+                          'systemctl stop percycraft.service'
+                      ]
+                  }
+              )
+              print(json.dumps(response, sort_keys=True, default=str))
+              ssm_client.get_waiter("command_executed").wait(
+                CommandId=response['Command']['CommandId'],
+                InstanceId=event['detail']['EC2InstanceId'],
+                WaiterConfig={
+                  'Delay': 480/60,
+                  'MaxAttempts': 60
+                }
+              )
+              as_client = boto3.client('autoscaling')
+              response = as_client.complete_lifecycle_action(
+                  LifecycleHookName=event['detail']['LifecycleHookName'],
+                  AutoScalingGroupName=event['detail']['AutoScalingGroupName'],
+                  LifecycleActionToken=event['detail']['LifecycleActionToken'],
+                  LifecycleActionResult='CONTINUE',
+                  InstanceId=event['detail']['EC2InstanceId']
+              )
+              print(json.dumps(response, sort_keys=True, default=str))
+      FunctionName: !Sub "${AWS::StackName}-GracefulShutdownLambda"
+      Handler: index.lambda_handler
+      MemorySize: 128
+      Role: !GetAtt GracefulShutdownLambdaRole.Arn
+      Runtime: python3.9
+      Timeout: 600
+
+  LockStartStopLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action: "autoscaling:UpdateAutoScalingGroup"
+                Resource: "*"
+              - Effect: "Allow"
+                Action: "autoscaling:DescribeAutoScalingInstances"
+                Resource: "*"
+              - Effect: "Allow"
+                Action: "autoscaling:SetInstanceProtection"
+                Resource: "*"
+
+  LockStartLambda:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      Environment:
+        Variables:
+          AutoScalingGroupName: !Sub "${AWS::StackName}-AutoScalingGroup"
+      Code:
+        ZipFile: |
+          import boto3
+          import os
+          import json
+          def lambda_handler(event, context):
+            as_client = boto3.client('autoscaling')
+            response = as_client.describe_auto_scaling_instances()
+            print(json.dumps(response, sort_keys=True, default=str))
+            instances = response['AutoScalingInstances']
+            instance_ids = [instance['InstanceId'] for instance in instances if instance['AutoScalingGroupName'] == os.environ['AutoScalingGroupName']]
+            print(json.dumps(instance_ids, sort_keys=True, default=str))
+            if instance_ids:
+              response = as_client.set_instance_protection(
+                  AutoScalingGroupName=os.environ['AutoScalingGroupName'],
+                  InstanceIds=instance_ids,
+                  ProtectedFromScaleIn=True
+              )
+              print(json.dumps(response, sort_keys=True, default=str))
+            response = as_client.update_auto_scaling_group(
+                AutoScalingGroupName=os.environ['AutoScalingGroupName'],
+                DesiredCapacity=1,
+                NewInstancesProtectedFromScaleIn=True
+            )
+            print(json.dumps(response, sort_keys=True, default=str))
+      FunctionName: !Sub "${AWS::StackName}-LockStartLambda"
+      Handler: index.lambda_handler
+      MemorySize: 128
+      Role: !GetAtt LockStartStopLambdaRole.Arn
+      Runtime: python3.9
+
+  LockStopLambda:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      Environment:
+        Variables:
+          AutoScalingGroupName: !Sub "${AWS::StackName}-AutoScalingGroup"
+      Code:
+        ZipFile: |
+          import boto3
+          import os
+          import json
+          def lambda_handler(event, context):
+            as_client = boto3.client('autoscaling')
+            response = as_client.describe_auto_scaling_instances()
+            print(json.dumps(response, sort_keys=True, default=str))
+            instances = response['AutoScalingInstances']
+            instance_ids = [instance['InstanceId'] for instance in instances if instance['AutoScalingGroupName'] == os.environ['AutoScalingGroupName']]
+            print(json.dumps(instance_ids, sort_keys=True, default=str))
+            if instance_ids:
+              response = as_client.set_instance_protection(
+                  AutoScalingGroupName=os.environ['AutoScalingGroupName'],
+                  InstanceIds=instance_ids,
+                  ProtectedFromScaleIn=False
+              )
+              print(json.dumps(response, sort_keys=True, default=str))
+            response = as_client.update_auto_scaling_group(
+                AutoScalingGroupName=os.environ['AutoScalingGroupName'],
+                DesiredCapacity=0,
+                NewInstancesProtectedFromScaleIn=False
+            )
+            print(json.dumps(response, sort_keys=True, default=str))
+      FunctionName: !Sub "${AWS::StackName}-LockStopLambda"
+      Handler: index.lambda_handler
+      MemorySize: 128
+      Role: !GetAtt LockStartStopLambdaRole.Arn
+      Runtime: python3.9
+
+  StartStopLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action: "autoscaling:SetDesiredCapacity"
+                Resource: "*"
+
+  StartLambda:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      Environment:
+        Variables:
+          AutoScalingGroupName: !Sub "${AWS::StackName}-AutoScalingGroup"
+      Code:
+        ZipFile: |
+          import boto3
+          import os
+          def lambda_handler(event, context):
+            boto3.client('autoscaling').set_desired_capacity(
+                AutoScalingGroupName=os.environ['AutoScalingGroupName'],
+                DesiredCapacity=1,
+                HonorCooldown=False
+            )
+      FunctionName: !Sub "${AWS::StackName}-StartLambda"
+      Handler: index.lambda_handler
+      MemorySize: 128
+      Role: !GetAtt StartStopLambdaRole.Arn
+      Runtime: python3.9
+      Timeout: 30
+
+  StopLambda:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      Environment:
+        Variables:
+          AutoScalingGroupName: !Sub "${AWS::StackName}-AutoScalingGroup"
+      Code:
+        ZipFile: |
+          import boto3
+          import os
+          def lambda_handler(event, context):
+            boto3.client('autoscaling').set_desired_capacity(
+                AutoScalingGroupName=os.environ['AutoScalingGroupName'],
+                DesiredCapacity=0,
+                HonorCooldown=False
+            )
+      FunctionName: !Sub "${AWS::StackName}-StopLambda"
+      Handler: index.lambda_handler
+      MemorySize: 128
+      Role: !GetAtt StartStopLambdaRole.Arn
+      Runtime: python3.9
+      Timeout: 30
+
+  AssociateElasticIPLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action: "ec2:AssociateAddress"
+                Resource: "*"
+              - Effect: "Allow"
+                Action: "ec2:DescribeInstance*"
+                Resource: "*"
+
+  AssociateElasticIPLambda:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      Environment:
+        Variables:
+          AllocationId: !GetAtt ElasticIP.AllocationId
+      Code:
+        ZipFile: |
+          import boto3
+          import os
+          def handler(event, context):
+            boto3.client('ec2').associate_address(
+                AllocationId=os.environ['AllocationId'],
+                InstanceId=event['detail']['EC2InstanceId']
+            )
+      FunctionName: !Sub "${AWS::StackName}-AssociateElasticIPLambda"
+      Handler: index.handler
+      MemorySize: 128
+      Role: !GetAtt AssociateElasticIPLambdaRole.Arn
+      Runtime: python3.9
+      Timeout: 30
+
+  LaunchEvent:
+    Type: AWS::Events::Rule
+    Properties:
+      EventPattern:
+        source:
+        - aws.autoscaling
+        detail-type:
+        - EC2 Instance Launch Successful
+        detail:
+          AutoScalingGroupName:
+          - !Sub "${AWS::StackName}-AutoScalingGroup"
+      State: ENABLED
+      Targets:
+        - Arn: !GetAtt AssociateElasticIPLambda.Arn
+          Id: !Sub "${AWS::StackName}-AssociateElasticIPLambda"
+
+  LaunchEventLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt AssociateElasticIPLambda.Arn
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt LaunchEvent.Arn
+
+  TerminateEvent:
+    Type: AWS::Events::Rule
+    Properties:
+      EventPattern:
+        source:
+        - aws.autoscaling
+        detail-type:
+        - EC2 Instance-terminate Lifecycle Action
+        detail:
+          AutoScalingGroupName:
+          - !Sub "${AWS::StackName}-AutoScalingGroup"
+      State: ENABLED
+      Targets:
+        - Arn: !GetAtt GracefulShutdownLambda.Arn
+          Id: !Sub "${AWS::StackName}-GracefulShutdownLambda"
+
+  TerminateEventLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt GracefulShutdownLambda.Arn
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt TerminateEvent.Arn
+
+  FileBucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Ref FileServerHostName
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: ObjectWriter
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: error.html
+    DeletionPolicy: Retain
+
+  FileBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref FileBucket
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Action:
+              - 's3:GetObject'
+            Effect: Allow
+            Resource: !Join
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Ref FileBucket
+                - /*
+            Principal: '*'
+
+Outputs:
+  PublicIP:
+    Description: Server IP address
+    Value: !GetAtt ElasticIP.PublicIp
+  LobbyIP:
+    Description: Server IP address
+    Value: !GetAtt AuxElasticIP.PublicIp
+  WebsiteURL:
+    Value: !GetAtt FileBucket.WebsiteURL
+    Description: URL for file server
