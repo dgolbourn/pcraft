@@ -1,0 +1,12 @@
+[Unit]
+Description=Vector Journald to Cloudwatch
+After=network-online.target
+Requires=network-online.target
+
+[Service]
+ExecStart=/usr/bin/vector
+Restart=no
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+
+[Install]
+WantedBy=multi-user.target

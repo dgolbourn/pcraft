@@ -28,6 +28,16 @@ chmod +x /opt/percycraft/aws/ec2/image.sh
 chmod +x /opt/percycraft/mc_init/bluemap/overworld.sh
 chmod 777 /opt/percycraft/installer/
 cp /opt/percycraft/aws/ec2/percycraft.service /etc/systemd/system/percycraft.service
+mkdir -p /opt/vector
+curl -o /opt/vector/setup.sh 'https://repositories.timber.io/public/vector/cfg/setup/bash.rpm.sh'
+chmod +x /opt/vector/setup.sh
+/opt/vector/setup.sh
+yum install -y vector
+yum upgrade -y vector
+cp /opt/percycraft/aws/ec2/vector.toml /etc/vector
+cp /opt/percycraft/aws/ec2/vector.service /etc/systemd/system/vector.service
+systemctl enable vector.service
+systemctl start vector.service
 systemctl enable docker.service
 systemctl enable percycraft.service
 systemctl start docker.service

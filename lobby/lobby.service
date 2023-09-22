@@ -1,5 +1,7 @@
 [Unit]
 Description=Percycraft lobby
+After=vector.service
+Requires=vector.service
 
 [Service]
 Restart=no

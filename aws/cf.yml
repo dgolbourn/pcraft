@@ -218,6 +218,12 @@ Resources:
         CidrIp: 0.0.0.0/0
       VpcId: !Ref Vpc
 
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties: 
+      LogGroupName: percycraft
+      RetentionInDays: 7
+
   LobbyLaunchTemplate:
     Type: AWS::EC2::LaunchTemplate
     Properties:

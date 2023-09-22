@@ -23,6 +23,16 @@ done
 echo ${ALLOW%,*} >> /opt/lazymc/whitelist.json
 echo "]" >> /opt/lazymc/whitelist.json
 sed -i "s/\"id\"/\"uuid\"/g" /opt/lazymc/whitelist.json
+mkdir -p /opt/vector
+curl -o /opt/vector/setup.sh 'https://repositories.timber.io/public/vector/cfg/setup/bash.rpm.sh'
+chmod +x /opt/vector/setup.sh
+/opt/vector/setup.sh
+yum install -y vector
+yum upgrade -y vector
+cp /opt/percycraft/lobby/vector.toml /etc/vector
+cp /opt/percycraft/lobby/vector.service /etc/systemd/system/vector.service
 cp /opt/percycraft/lobby/lobby.service /etc/systemd/system/lobby.service
+systemctl enable vector.service
+systemctl start vector.service
 systemctl enable lobby.service
 systemctl start lobby.service

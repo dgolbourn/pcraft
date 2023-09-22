@@ -1,7 +1,9 @@
 [Unit]
 Description=Percycraft cluster
-Requires=docker.service
 After=docker.service
+Requires=docker.service
+After=vector.service
+Requires=vector.service
 
 [Service]
 EnvironmentFile=/opt/percycraft/service.env

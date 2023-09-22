@@ -1,0 +1,10 @@
+[sources.lobby]
+type = "journald"
+include_units = ["percycraft"]
+
+[sinks.cloudwatch]
+type = "aws_cloudwatch_logs"
+inputs = ["percrycraft"]
+group_name = "percycraft"
+stream_name = "{{ host }}"
+encoding.codec = "json"
