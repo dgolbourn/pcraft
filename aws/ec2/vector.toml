@@ -1,4 +1,4 @@
-[sources.lobby]
+[sources.percycraft]
 type = "journald"
 include_units = ["percycraft"]
 
