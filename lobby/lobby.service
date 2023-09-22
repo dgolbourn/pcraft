@@ -1,9 +1,0 @@
-[Unit]
-Description=Percycraft lobby
-
-[Service]
-Restart=no
-ExecStart=/opt/lazymc/lazymc -c /opt/lazymc/lazymc.toml
-
-[Install]
-WantedBy=multi-user.target
