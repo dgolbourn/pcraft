@@ -4,7 +4,7 @@ include_units = ["percycraft"]
 
 [sinks.cloudwatch]
 type = "aws_cloudwatch_logs"
-inputs = ["percrycraft"]
+inputs = ["percycraft"]
 group_name = "percycraft"
 stream_name = "percycraft"
 encoding.codec = "json"
