@@ -6,5 +6,5 @@ include_units = ["percycraft"]
 type = "aws_cloudwatch_logs"
 inputs = ["percrycraft"]
 group_name = "percycraft"
-stream_name = "{{ host }}"
+stream_name = "percycraft"
 encoding.codec = "json"
