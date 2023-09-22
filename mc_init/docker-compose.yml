@@ -20,13 +20,10 @@ services:
         simple-voice-chat
         tooltipfix
         fabricquilt-chunk-pregenerator
-        bluemap
-        bmarker:u3dsZxOj
+        pl3xmap
         shulkerboxtooltip
         where-items-owo
         lmd
-        fabric-language-kotlin
-        silk
       MODRINTH_ALLOWED_VERSION_TYPE: beta
       TZ: ${TZ}
       ICON: /resources/server-icon.png
