@@ -31,7 +31,7 @@ directory = "/opt/lazymc"
 
 # Command to start the server.
 # Warning: if using a bash script read: https://git.io/JMIKH
-command = "/opt/lazymc/server.sh"
+command = "/opt/lazymc/server.sh percycraft"
 
 # Freeze the server process instead of restarting it when no players online, making it resume faster.
 # Only works on Unix (Linux or MacOS), ignored on Windows
