@@ -23,8 +23,9 @@ services:
         shulkerboxtooltip
         lmd
         friendly-fire
-        bookshelf
+        bookshelf-lib
         directionhud
+        better-fabric-console
       MODRINTH_ALLOWED_VERSION_TYPE: beta
       TZ: ${TZ}
       ICON: /resources/server-icon.png
