@@ -14,7 +14,6 @@ services:
       MODRINTH_PROJECTS: |
         fabric-api
         chat-signing-hider
-        coord-finder
         lambdynamiclights
         raised
         simple-voice-chat
@@ -25,6 +24,7 @@ services:
         where-items-owo
         lmd
         friendly-fire
+        directionhud
       MODRINTH_ALLOWED_VERSION_TYPE: beta
       TZ: ${TZ}
       ICON: /resources/server-icon.png
