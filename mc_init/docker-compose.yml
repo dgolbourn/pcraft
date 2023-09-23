@@ -22,9 +22,9 @@ services:
         fabricquilt-chunk-pregenerator
         pl3xmap
         shulkerboxtooltip
-        where-items-owo
         lmd
         friendly-fire
+        bookshelf
       MODRINTH_ALLOWED_VERSION_TYPE: beta
       TZ: ${TZ}
       ICON: /resources/server-icon.png
