@@ -21,7 +21,6 @@ services:
         fabricquilt-chunk-pregenerator
         pl3xmap
         shulkerboxtooltip
-        where-items-owo
         lmd
         friendly-fire
         directionhud
