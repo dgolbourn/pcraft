@@ -24,6 +24,7 @@ services:
         shulkerboxtooltip
         where-items-owo
         lmd
+        friendly-fire
       MODRINTH_ALLOWED_VERSION_TYPE: beta
       TZ: ${TZ}
       ICON: /resources/server-icon.png

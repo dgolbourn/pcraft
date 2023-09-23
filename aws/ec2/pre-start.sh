@@ -51,9 +51,8 @@ cd -
 cp -r /opt/percycraft/filebucket/* /opt/web
 aws s3 cp /opt/web $FILEBUCKETS3URI --recursive
 rm -rf /opt/web
-cp -r /opt/percycraft/mc_init/bluemap/core.conf /opt/data/config/bluemap/core.conf
-cp -r /opt/percycraft/mc_init/bluemap/webapp.conf /opt/data/config/bluemap/webapp.conf
-/opt/percycraft/mc_init/bluemap/overworld.sh > /opt/data/config/bluemap/maps/overworld.conf
-rm -f /opt/data/config/bluemap/maps/end.conf
-rm -f /opt/data/config/bluemap/maps/nether.conf
+cd /opt/percycraft/friendly-fire
+zip -r ../friendly-fire .
+cd -
+mv /opt/percycraft/friendly-fire.zip /opt/data/world/datapacks
 echo "Pre-start complete"
