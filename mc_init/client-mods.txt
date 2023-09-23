@@ -1,4 +1,3 @@
 fabric-api
 voicechat-fabric
 shulkerboxtooltip
-where-is-my-stuff
