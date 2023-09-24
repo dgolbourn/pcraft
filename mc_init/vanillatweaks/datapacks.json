@@ -7,8 +7,7 @@
             "afk display",
             "multiplayer sleep",
             "durability ping",
-            "nether portal coords",
-            "coordinates hud"
+            "nether portal coords"
         ],
         "mobs": [
             "anti enderman grief",

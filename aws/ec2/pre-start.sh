@@ -23,8 +23,8 @@ echo -n > /opt/percycraft/installer/files.iss
 while read p; do
   MOD=$(ls $p*)
   cp -f /opt/data/mods/$MOD /opt/web/mods/
-  echo "DownloadPage.Add('${FILEBUCKETWEBSITEURL}/mods/${MOD}', '${MOD}', '');" >> downloads.iss
-  echo "Source: "{tmp}\\${MOD}"; DestDir: "{app}"; Flags: external" >> files.iss
+  echo "DownloadPage.Add('${FILEBUCKETWEBSITEURL}/mods/${MOD}', '${MOD}', '');" >> /opt/percycraft/installer/downloads.iss
+  echo "Source: "{tmp}\\${MOD}"; DestDir: "{app}"; Flags: external" >> /opt/percycraft/installer/files.iss
 done < /opt/percycraft/mc_init/client-mods.txt
 if [ -f "/efs/album/latest.png" ]
 then
