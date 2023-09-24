@@ -22,7 +22,6 @@ services:
         pl3xmap
         shulkerboxtooltip
         lmd
-        friendly-fire
 
       MODRINTH_ALLOWED_VERSION_TYPE: beta
       TZ: ${TZ}
