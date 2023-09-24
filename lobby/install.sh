@@ -12,6 +12,7 @@ chmod +x /opt/percycraft/lobby/server.sh
 cp /opt/percycraft/lobby/server.sh /opt/lazymc
 cp /opt/percycraft/lobby/server.properties /opt/lazymc
 cp /opt/percycraft/lobby/lazymc.toml /opt/lazymc
+cp /opt/percycraft/lobby/server-icon.png /opt/lazymc
 sed -i "s/percycraft/$1/g" /opt/lazymc/lazymc.toml
 echo "[" > /opt/lazymc/whitelist.json
 ALLOW=""
