@@ -80,7 +80,7 @@ Metadata:
           default: Virtual Machines
         Parameters:
         - EC2AMI
-        - LOBBYAMI        
+        - LOBBYAMI
 
     ParameterLabels:
       KeyPairName:
@@ -103,7 +103,7 @@ Metadata:
         default: "Server weekday stop schedule"
       WeekendStartSchedule:
         default: "Server weekend start schedule"
-      WeekendStopSchedule:        
+      WeekendStopSchedule:
         default: "Server weekend stop schedule"
 
 Resources:
@@ -348,8 +348,8 @@ Resources:
                 - Effect: "Allow"
                   Action: "lambda:InvokeFunction"
                   Resource:
-                  - !GetAtt LockStopLambda.Arn
-                  - !GetAtt LockStartLambda.Arn
+                  - !GetAtt StopLambda.Arn
+                  - !GetAtt StartLambda.Arn
 
   WeekdayStopScheduler:
     Type: AWS::Scheduler::Schedule
@@ -362,12 +362,12 @@ Resources:
       ScheduleExpressionTimezone: !Ref TimeZone
       State: ENABLED
       Target:
-        Arn: !GetAtt LockStopLambda.Arn
+        Arn: !GetAtt StopLambda.Arn
         RoleArn: !GetAtt SchedulerRole.Arn
 
   WeekendStopScheduler:
     Type: AWS::Scheduler::Schedule
-    Condition: WeekendStopScheduleProvided    
+    Condition: WeekendStopScheduleProvided
     Properties:
       FlexibleTimeWindow:
         MaximumWindowInMinutes: 5
@@ -376,12 +376,12 @@ Resources:
       ScheduleExpressionTimezone: !Ref TimeZone
       State: ENABLED
       Target:
-        Arn: !GetAtt LockStopLambda.Arn
+        Arn: !GetAtt StopLambda.Arn
         RoleArn: !GetAtt SchedulerRole.Arn
 
   WeekdayStartScheduler:
     Type: AWS::Scheduler::Schedule
-    Condition: WeekdayStartScheduleProvided    
+    Condition: WeekdayStartScheduleProvided
     Properties:
       FlexibleTimeWindow:
         MaximumWindowInMinutes: 5
@@ -390,7 +390,7 @@ Resources:
       ScheduleExpressionTimezone: !Ref TimeZone
       State: ENABLED
       Target:
-        Arn: !GetAtt LockStartLambda.Arn
+        Arn: !GetAtt StartLambda.Arn
         RoleArn: !GetAtt SchedulerRole.Arn
 
   WeekendStartScheduler:
@@ -404,7 +404,7 @@ Resources:
       ScheduleExpressionTimezone: !Ref TimeZone
       State: ENABLED
       Target:
-        Arn: !GetAtt LockStartLambda.Arn
+        Arn: !GetAtt StartLambda.Arn
         RoleArn: !GetAtt SchedulerRole.Arn
 
   InstanceRole:
@@ -512,109 +512,6 @@ Resources:
       Runtime: python3.9
       Timeout: 600
 
-  LockStartStopLambdaRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-        - Effect: Allow
-          Principal:
-            Service:
-            - lambda.amazonaws.com
-          Action:
-          - sts:AssumeRole
-      ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-      Policies:
-        - PolicyName: root
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: "Allow"
-                Action: "autoscaling:UpdateAutoScalingGroup"
-                Resource: "*"
-              - Effect: "Allow"
-                Action: "autoscaling:DescribeAutoScalingInstances"
-                Resource: "*"
-              - Effect: "Allow"
-                Action: "autoscaling:SetInstanceProtection"
-                Resource: "*"
-
-  LockStartLambda:
-    Type: "AWS::Lambda::Function"
-    Properties:
-      Environment:
-        Variables:
-          AutoScalingGroupName: !Sub "${AWS::StackName}-AutoScalingGroup"
-      Code:
-        ZipFile: |
-          import boto3
-          import os
-          import json
-          def lambda_handler(event, context):
-            as_client = boto3.client('autoscaling')
-            response = as_client.describe_auto_scaling_instances()
-            print(json.dumps(response, sort_keys=True, default=str))
-            instances = response['AutoScalingInstances']
-            instance_ids = [instance['InstanceId'] for instance in instances if instance['AutoScalingGroupName'] == os.environ['AutoScalingGroupName']]
-            print(json.dumps(instance_ids, sort_keys=True, default=str))
-            if instance_ids:
-              response = as_client.set_instance_protection(
-                  AutoScalingGroupName=os.environ['AutoScalingGroupName'],
-                  InstanceIds=instance_ids,
-                  ProtectedFromScaleIn=True
-              )
-              print(json.dumps(response, sort_keys=True, default=str))
-            response = as_client.update_auto_scaling_group(
-                AutoScalingGroupName=os.environ['AutoScalingGroupName'],
-                DesiredCapacity=1,
-                NewInstancesProtectedFromScaleIn=True
-            )
-            print(json.dumps(response, sort_keys=True, default=str))
-      FunctionName: !Sub "${AWS::StackName}-LockStartLambda"
-      Handler: index.lambda_handler
-      MemorySize: 128
-      Role: !GetAtt LockStartStopLambdaRole.Arn
-      Runtime: python3.9
-
-  LockStopLambda:
-    Type: "AWS::Lambda::Function"
-    Properties:
-      Environment:
-        Variables:
-          AutoScalingGroupName: !Sub "${AWS::StackName}-AutoScalingGroup"
-      Code:
-        ZipFile: |
-          import boto3
-          import os
-          import json
-          def lambda_handler(event, context):
-            as_client = boto3.client('autoscaling')
-            response = as_client.describe_auto_scaling_instances()
-            print(json.dumps(response, sort_keys=True, default=str))
-            instances = response['AutoScalingInstances']
-            instance_ids = [instance['InstanceId'] for instance in instances if instance['AutoScalingGroupName'] == os.environ['AutoScalingGroupName']]
-            print(json.dumps(instance_ids, sort_keys=True, default=str))
-            if instance_ids:
-              response = as_client.set_instance_protection(
-                  AutoScalingGroupName=os.environ['AutoScalingGroupName'],
-                  InstanceIds=instance_ids,
-                  ProtectedFromScaleIn=False
-              )
-              print(json.dumps(response, sort_keys=True, default=str))
-            response = as_client.update_auto_scaling_group(
-                AutoScalingGroupName=os.environ['AutoScalingGroupName'],
-                DesiredCapacity=0,
-                NewInstancesProtectedFromScaleIn=False
-            )
-            print(json.dumps(response, sort_keys=True, default=str))
-      FunctionName: !Sub "${AWS::StackName}-LockStopLambda"
-      Handler: index.lambda_handler
-      MemorySize: 128
-      Role: !GetAtt LockStartStopLambdaRole.Arn
-      Runtime: python3.9
-
   StartStopLambdaRole:
     Type: AWS::IAM::Role
     Properties:
@@ -637,6 +534,9 @@ Resources:
               - Effect: "Allow"
                 Action: "autoscaling:SetDesiredCapacity"
                 Resource: "*"
+              - Effect: "Allow"
+                Action: "dynamodb:UpdateItem"
+                Resource: "*"                
 
   StartLambda:
     Type: "AWS::Lambda::Function"
@@ -644,16 +544,33 @@ Resources:
       Environment:
         Variables:
           AutoScalingGroupName: !Sub "${AWS::StackName}-AutoScalingGroup"
+          DDBTableName: !Sub "${AWS::StackName}-DDBTable"
       Code:
         ZipFile: |
           import boto3
           import os
+          import json
           def lambda_handler(event, context):
-            boto3.client('autoscaling').set_desired_capacity(
+            print(json.dumps(event, sort_keys=True, default=str))
+            response = boto3.client('dynamodb').update_item(
+                TableName=os.environ['DDBTableName'],
+                Key={'ID': {'S': 'Server'}},
+                ReturnValues='ALL_NEW',
+                UpdateExpression='ADD ReferenceCount :inc',
+                ExpressionAttributeValues={':inc': {'N': '1'}}
+            )
+            print(json.dumps(response, sort_keys=True, default=str))
+            reference_count = int(response['Attributes']['ReferenceCount']['N'])
+            if(reference_count > 0):
+              reference_count = 1
+            else:
+              reference_count = 0
+            response = boto3.client('autoscaling').set_desired_capacity(
                 AutoScalingGroupName=os.environ['AutoScalingGroupName'],
-                DesiredCapacity=1,
+                DesiredCapacity=reference_count,
                 HonorCooldown=False
             )
+            print(json.dumps(response, sort_keys=True, default=str))
       FunctionName: !Sub "${AWS::StackName}-StartLambda"
       Handler: index.lambda_handler
       MemorySize: 128
@@ -667,16 +584,34 @@ Resources:
       Environment:
         Variables:
           AutoScalingGroupName: !Sub "${AWS::StackName}-AutoScalingGroup"
+          DDBTableName: !Sub "${AWS::StackName}-DDBTable"
       Code:
         ZipFile: |
           import boto3
           import os
+          import json
           def lambda_handler(event, context):
-            boto3.client('autoscaling').set_desired_capacity(
+            print(json.dumps(event, sort_keys=True, default=str))
+            response = boto3.client('dynamodb').update_item(
+                TableName=os.environ['DDBTableName'],
+                Key={'ID': {'S': 'Server'}},
+                ReturnValues='ALL_NEW',
+                UpdateExpression='ADD ReferenceCount :inc',
+                ExpressionAttributeValues={':inc': {'N': '-1'}, ':zero': {'N': '0'}},
+                ConditionExpression='ReferenceCount > :zero'
+            )
+            print(json.dumps(response, sort_keys=True, default=str))
+            reference_count = int(response['Attributes']['ReferenceCount']['N'])
+            if(reference_count > 0):
+              reference_count = 1
+            else:
+              reference_count = 0
+            response = boto3.client('autoscaling').set_desired_capacity(
                 AutoScalingGroupName=os.environ['AutoScalingGroupName'],
-                DesiredCapacity=0,
+                DesiredCapacity=reference_count,
                 HonorCooldown=False
             )
+            print(json.dumps(response, sort_keys=True, default=str))
       FunctionName: !Sub "${AWS::StackName}-StopLambda"
       Handler: index.lambda_handler
       MemorySize: 128
@@ -810,6 +745,20 @@ Resources:
                 - !Ref FileBucket
                 - /*
             Principal: '*'
+
+  DDBTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub "${AWS::StackName}-DDBTable"
+      AttributeDefinitions:
+        -
+          AttributeName: "ID"
+          AttributeType: "S"
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        -
+          AttributeName: "ID"
+          KeyType: "HASH"
 
 Outputs:
   PublicIP:
