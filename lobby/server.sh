@@ -10,8 +10,8 @@ startup() {
 
 shutdown() {
     kill $PID
-    iptables -A INPUT -s $IP -j DROP
     aws lambda invoke --function-name percycraft-StopLambda /dev/null
+    iptables -A INPUT -s $IP -j DROP
     echo "Server complete"
 }
 
