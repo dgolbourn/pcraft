@@ -17,6 +17,8 @@ services:
       STOP_DURATION: 240
       RCON_PASSWORD: ${PASSWORD}
       RCON_CMDS_STARTUP: |-
+        /persistentgroup add percycraft open
+        /autojoingroup set percycraft
         /gamerule playersSleepingPercentage 0
         /pregen start 25
       RCON_CMDS_FIRST_CONNECT: |-
