@@ -18,11 +18,12 @@ services:
       RCON_PASSWORD: ${PASSWORD}
       RCON_CMDS_STARTUP: |-
         /persistentgroup add percycraft open
-        /autojoingroup set percycraft
         /gamerule playersSleepingPercentage 0
         /pregen start 25
       RCON_CMDS_FIRST_CONNECT: |-
         /pregen stop
+      RCON_CMDS_ON_CONNECT: |-
+        /autojoingroup set percycraft
       RCON_CMDS_LAST_DISCONNECT: |-
         /function kill_empty_boats:run
         /pregen start 25
