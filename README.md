@@ -33,9 +33,10 @@ For players
 1. Tell the admin (me) your Minecraft user name so I can add you to the allow list
 2. Install the [Fabric Loader](https://fabricmc.net/use/); this will enable you to select the Fabric version of Minecraft in the Minecraft Launcher when you start the game
 3. *Windows*: Install the [client mods](http://cdn.pcraft.co.uk/percycraft-installer.exe)
+
    *Others*: download the client mods from [here](http://cdn.pcraft.co.uk/mods) and place them in the `/mods` directory of your Minecraft
-4. Launch the game, choose Multiplayer, and add the Percycraft server lobby `lobby.pcraft.co.uk`.
-5. **Congratulations, you've joined the Percycraft server!**
+5. Launch the game, choose Multiplayer, and add the Percycraft server lobby `lobby.pcraft.co.uk`.
+6. **Congratulations, you've joined the Percycraft server!**
 
 For server admins
 -----------------
