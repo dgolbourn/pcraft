@@ -19,10 +19,12 @@ services:
       RCON_CMDS_STARTUP: |-
         /gamerule playersSleepingPercentage 0
         /pregen start 25
-        /execute store success score percycraft percycraft run scoreboard objectives add percycraft dummy
+        /team add New
+        /team add Percycraft        
+        /scoreboard objectives add success dumnmy
+        /scoreboard players set percycraft success 0
+        /execute store success score percycraft success run scoreboard objectives add percycraft dummy
         /execute if score percycraft percycraft matches 1 run persistentgroup add Percycraft open
-        /execute if score percycraft percycraft matches 1 run team add New
-        /execute if score percycraft percycraft matches 1 run team add Percycraft
       RCON_CMDS_ON_CONNECT: |-
         /team join New @a[team=]
         /execute as @a[team=New] run autojoingroup set Percycraft
