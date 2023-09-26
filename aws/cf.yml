@@ -331,7 +331,7 @@ Resources:
       VPCZoneIdentifier:
         - !Ref SubnetA
     Metadata:
-      LaunchEvent: !GetAtt LaunchEvent.Arn
+      LaunchEvent: !GetAtt LobbyLaunchEvent.Arn
 
   SchedulerRole:
       Type: AWS::IAM::Role
