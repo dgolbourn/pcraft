@@ -333,16 +333,6 @@ Resources:
     Metadata:
       LaunchEvent: !GetAtt LaunchEvent.Arn
 
-  LobbyAutoScalingLifecycleHook:
-    Type: AWS::AutoScaling::LifecycleHook
-    DependsOn: LobbyAutoScalingGroup
-    Properties:
-      AutoScalingGroupName: !Sub "${AWS::StackName}-LobbyAutoScalingGroup"
-      DefaultResult: CONTINUE
-      HeartbeatTimeout: 30
-      LifecycleHookName: !Sub "${AWS::StackName}-LobbyAutoScalingLifecycleHook"
-      LifecycleTransition: autoscaling:EC2_INSTANCE_TERMINATING
-
   SchedulerRole:
       Type: AWS::IAM::Role
       Properties:
