@@ -17,13 +17,17 @@ services:
       STOP_DURATION: 240
       RCON_PASSWORD: ${PASSWORD}
       RCON_CMDS_STARTUP: |-
-        /persistentgroup add percycraft open
         /gamerule playersSleepingPercentage 0
         /pregen start 25
+        /team add New
+        /team add Old
+      RCON_CMDS_ON_CONNECT: |-
+        /team join New @a[team=]
+        /execute as @a[team=New] run autojoingroup set Percycraft
+        /execute as @a[team=New] run voicechat join Percycraft        
+        /team join Old @a[team=New]
       RCON_CMDS_FIRST_CONNECT: |-
         /pregen stop
-      RCON_CMDS_ON_CONNECT: |-
-        /autojoingroup set percycraft
       RCON_CMDS_LAST_DISCONNECT: |-
         /function kill_empty_boats:run
         /pregen start 25

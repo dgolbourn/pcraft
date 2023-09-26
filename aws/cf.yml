@@ -32,11 +32,11 @@ Parameters:
 
   WeekdayStartSchedule:
     Type: String
-    Default: ''
+    Default: 'cron(0 17 ? * 6 *)'
 
   WeekdayStopSchedule:
     Type: String
-    Default: cron(0 22 ? * 1-5 *)
+    Default: cron(0 22 ? * 1 *)
 
   WeekendStartSchedule:
     Type: String
@@ -249,19 +249,6 @@ Resources:
               /opt/percycraft/lobby/install.sh ${SERVER_IP} ${Players}
             - SERVER_IP: !GetAtt ElasticIP.PublicIp
 
-  LobbyInstance:
-    Type: AWS::EC2::Instance
-    Properties:
-      LaunchTemplate:
-        LaunchTemplateId: !Ref LobbyLaunchTemplate
-        Version: !GetAtt LobbyLaunchTemplate.LatestVersionNumber
-
-  EIPAssociation:
-    Type: AWS::EC2::EIPAssociation
-    Properties:
-      AllocationId: !GetAtt AuxElasticIP.AllocationId
-      InstanceId: !Ref LobbyInstance
-
   LaunchTemplate:
     Type: AWS::EC2::LaunchTemplate
     Properties:
@@ -326,6 +313,34 @@ Resources:
       DefaultResult: CONTINUE
       HeartbeatTimeout: 600
       LifecycleHookName: !Sub "${AWS::StackName}-AutoScalingLifecycleHook"
+      LifecycleTransition: autoscaling:EC2_INSTANCE_TERMINATING
+
+  LobbyAutoScalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    DependsOn:
+    - MountA
+    Properties:
+      AutoScalingGroupName: !Sub "${AWS::StackName}-LobbyAutoScalingGroup"
+      DesiredCapacity: 1
+      LaunchTemplate:
+        LaunchTemplateId: !Ref LobbyLaunchTemplate
+        Version: !GetAtt LobbyLaunchTemplate.LatestVersionNumber
+      NewInstancesProtectedFromScaleIn: false
+      MaxSize: 1
+      MinSize: 0
+      VPCZoneIdentifier:
+        - !Ref SubnetA
+    Metadata:
+      LaunchEvent: !GetAtt LaunchEvent.Arn
+
+  LobbyAutoScalingLifecycleHook:
+    Type: AWS::AutoScaling::LifecycleHook
+    DependsOn: LobbyAutoScalingGroup
+    Properties:
+      AutoScalingGroupName: !Sub "${AWS::StackName}-LobbyAutoScalingGroup"
+      DefaultResult: CONTINUE
+      HeartbeatTimeout: 30
+      LifecycleHookName: !Sub "${AWS::StackName}-LobbyAutoScalingLifecycleHook"
       LifecycleTransition: autoscaling:EC2_INSTANCE_TERMINATING
 
   SchedulerRole:
@@ -688,6 +703,52 @@ Resources:
     Properties:
       Action: lambda:InvokeFunction
       FunctionName: !GetAtt AssociateElasticIPLambda.Arn
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt LaunchEvent.Arn
+
+  AssociateAuxElasticIPLambda:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      Environment:
+        Variables:
+          AllocationId: !GetAtt AuxElasticIP.AllocationId
+      Code:
+        ZipFile: |
+          import boto3
+          import os
+          def handler(event, context):
+            boto3.client('ec2').associate_address(
+                AllocationId=os.environ['AllocationId'],
+                InstanceId=event['detail']['EC2InstanceId']
+            )
+      FunctionName: !Sub "${AWS::StackName}-AssociateAuxElasticIPLambda"
+      Handler: index.handler
+      MemorySize: 128
+      Role: !GetAtt AssociateAuxElasticIPLambdaRole.Arn
+      Runtime: python3.9
+      Timeout: 30
+
+  LobbyLaunchEvent:
+    Type: AWS::Events::Rule
+    Properties:
+      EventPattern:
+        source:
+        - aws.autoscaling
+        detail-type:
+        - Lobby Launch Successful
+        detail:
+          AutoScalingGroupName:
+          - !Sub "${AWS::StackName}-LobbyAutoScalingGroup"
+      State: ENABLED
+      Targets:
+        - Arn: !GetAtt AssociateAuxElasticIPLambda.Arn
+          Id: !Sub "${AWS::StackName}-AssociateAuxElasticIPLambda"
+
+  LobbyLaunchEventLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt AssociateAuxElasticIPLambda.Arn
       Principal: events.amazonaws.com
       SourceArn: !GetAtt LaunchEvent.Arn
 
