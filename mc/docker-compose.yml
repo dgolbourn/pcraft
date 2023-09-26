@@ -24,12 +24,7 @@ services:
         /scoreboard objectives add success dummy
         /scoreboard players set percycraft success 0
         /execute store success score percycraft success run scoreboard objectives add percycraft dummy
-        /execute if score percycraft percycraft matches 1 run persistentgroup add Percycraft open
-      RCON_CMDS_ON_CONNECT: |-
-        /team join New @a[team=]
-        /execute as @a[team=New] run autojoingroup set Percycraft
-        /execute as @a[team=New] run voicechat join Percycraft        
-        /team join Percycraft @a[team=New]
+        /execute if score percycraft success matches 1 run persistentgroup add Percycraft open
       RCON_CMDS_FIRST_CONNECT: |-
         /pregen stop
       RCON_CMDS_LAST_DISCONNECT: |-
