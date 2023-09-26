@@ -750,7 +750,7 @@ Resources:
       Action: lambda:InvokeFunction
       FunctionName: !GetAtt AssociateAuxElasticIPLambda.Arn
       Principal: events.amazonaws.com
-      SourceArn: !GetAtt LaunchEvent.Arn
+      SourceArn: !GetAtt LobbyLaunchEvent.Arn
 
   TerminateEvent:
     Type: AWS::Events::Rule
