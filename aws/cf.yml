@@ -677,6 +677,14 @@ Resources:
       Principal: events.amazonaws.com
       SourceArn: !GetAtt LaunchEvent.Arn
 
+  LobbyLaunchEventLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt AssociateElasticIPLambda.Arn
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt LobbyLaunchEvent.Arn      
+
   TerminateEvent:
     Type: AWS::Events::Rule
     Properties:
