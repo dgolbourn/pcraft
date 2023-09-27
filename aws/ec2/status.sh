@@ -11,7 +11,7 @@ status() {
     PLAYERS=0
     while true; do
         COUNT=$(get_player_count)
-        COUNT=$((0+$COUNT))
+        COUNT=$(($COUNT+0))
         if (( $COUNT > 0 )); then
             SECONDS=0
             if (( $COUNT != $PLAYERS )); then
