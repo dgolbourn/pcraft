@@ -58,11 +58,13 @@ mv /opt/percycraft/friendly-fire.zip /opt/data/world/datapacks
 cp /opt/percycraft/mc_init/enhancedgroups/persistent-groups.json /opt/data/config/enhancedgroups
 GROUP=(cat /opt/percycraft/mc_init/enhancedgroups/persistent-groups.json | jq .[0].id)
 echo { > /opt/data/config/enhancedgroups/auto-join-groups.json
+AUTOJOIN=""
 for i in ${PLAYERLIST//,/ }
 do
     UUID=$(curl https://api.mojang.com/users/profiles/minecraft/$i | jq .id)
-    echo $UUID:$GROUP >> /opt/data/config/enhancedgroups/auto-join-groups.json
+    AUTOJOIN+=$UUID:$GROUP,
 done
+echo ${AUTOJOIN%,*} >> /opt/data/config/enhancedgroups/auto-join-groups.json
 echo } >> /opt/data/config/enhancedgroups/auto-join-groups.json
 cp /opt/percycraft/mc_init/enhancedgroups/persistent-groups.json /opt/data/config/enhancedgroups
 echo "Pre-start complete"
