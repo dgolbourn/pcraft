@@ -1,7 +1,6 @@
 #!/bin/bash
 startup() {
-    echo "Server started"
-    iptables -D INPUT -s $IP -j DROP
+    echo "Lobby started"
     aws lambda invoke --function-name percycraft-StartLambda /dev/null
     while true; do
         sleep 1
@@ -10,9 +9,7 @@ startup() {
 
 shutdown() {
     kill $PID
-    aws lambda invoke --function-name percycraft-StopLambda /dev/null
-    iptables -A INPUT -s $IP -j DROP
-    echo "Server complete"
+    echo "Lobby complete"
 }
 
 trap shutdown TERM INT

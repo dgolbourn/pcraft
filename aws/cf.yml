@@ -500,6 +500,7 @@ Resources:
       Environment:
         Variables:
           AutoScalingGroupName: !Sub "${AWS::StackName}-AutoScalingGroup"
+          LobbyAutoScalingGroupName: !Sub "${AWS::StackName}-LobbyAutoScalingGroup"
           DDBTableName: !Sub "${AWS::StackName}-DDBTable"
       Code:
         ZipFile: |
@@ -527,6 +528,12 @@ Resources:
                 HonorCooldown=False
             )
             print(json.dumps(response, sort_keys=True, default=str))
+            response = boto3.client('autoscaling').set_desired_capacity(
+                AutoScalingGroupName=os.environ['LobbyAutoScalingGroupName'],
+                DesiredCapacity=reference_count ^ 1,
+                HonorCooldown=False
+            )
+            print(json.dumps(response, sort_keys=True, default=str))            
       FunctionName: !Sub "${AWS::StackName}-StartLambda"
       Handler: index.lambda_handler
       MemorySize: 128
@@ -540,6 +547,7 @@ Resources:
       Environment:
         Variables:
           AutoScalingGroupName: !Sub "${AWS::StackName}-AutoScalingGroup"
+          LobbyAutoScalingGroupName: !Sub "${AWS::StackName}-LobbyAutoScalingGroup"          
           DDBTableName: !Sub "${AWS::StackName}-DDBTable"
       Code:
         ZipFile: |
@@ -568,6 +576,12 @@ Resources:
                 HonorCooldown=False
             )
             print(json.dumps(response, sort_keys=True, default=str))
+            response = boto3.client('autoscaling').set_desired_capacity(
+                AutoScalingGroupName=os.environ['LobbyAutoScalingGroupName'],
+                DesiredCapacity=reference_count ^ 1,
+                HonorCooldown=False
+            )
+            print(json.dumps(response, sort_keys=True, default=str))              
       FunctionName: !Sub "${AWS::StackName}-StopLambda"
       Handler: index.lambda_handler
       MemorySize: 128
@@ -744,8 +758,7 @@ Resources:
               yum -y install git
               git clone --single-branch https://github.com/dgolbourn/percycraft.git /opt/percycraft
               chmod +x /opt/percycraft/lobby/install.sh
-              /opt/percycraft/lobby/install.sh ${SERVER_IP} ${Players}
-            - SERVER_IP: !GetAtt ElasticIP.PublicIp
+              /opt/percycraft/lobby/install.sh ${Players}
 
   LobbyAutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
@@ -763,61 +776,12 @@ Resources:
       VPCZoneIdentifier:
         - !Ref SubnetA
     Metadata:
-      LaunchEvent: !GetAtt LobbyLaunchEvent.Arn
-
-  AssociateAuxElasticIPLambda:
-    Type: "AWS::Lambda::Function"
-    Properties:
-      Environment:
-        Variables:
-          AllocationId: !GetAtt AuxElasticIP.AllocationId
-      Code:
-        ZipFile: |
-          import boto3
-          import os
-          def handler(event, context):
-            boto3.client('ec2').associate_address(
-                AllocationId=os.environ['AllocationId'],
-                InstanceId=event['detail']['EC2InstanceId']
-            )
-      FunctionName: !Sub "${AWS::StackName}-AssociateAuxElasticIPLambda"
-      Handler: index.handler
-      MemorySize: 128
-      Role: !GetAtt AssociateElasticIPLambdaRole.Arn
-      Runtime: python3.9
-      Timeout: 30
-
-  LobbyLaunchEvent:
-    Type: AWS::Events::Rule
-    Properties:
-      EventPattern:
-        source:
-        - aws.autoscaling
-        detail-type:
-        - EC2 Instance Launch Successful
-        detail:
-          AutoScalingGroupName:
-          - !Sub "${AWS::StackName}-LobbyAutoScalingGroup"
-      State: ENABLED
-      Targets:
-        - Arn: !GetAtt AssociateAuxElasticIPLambda.Arn
-          Id: !Sub "${AWS::StackName}-AssociateAuxElasticIPLambda"
-
-  LobbyLaunchEventLambdaPermission:
-    Type: AWS::Lambda::Permission
-    Properties:
-      Action: lambda:InvokeFunction
-      FunctionName: !GetAtt AssociateAuxElasticIPLambda.Arn
-      Principal: events.amazonaws.com
-      SourceArn: !GetAtt LobbyLaunchEvent.Arn
+      LaunchEvent: !GetAtt LaunchEvent.Arn
 
 Outputs:
   PublicIP:
     Description: Server IP address
     Value: !GetAtt ElasticIP.PublicIp
-  LobbyIP:
-    Description: Server IP address
-    Value: !GetAtt AuxElasticIP.PublicIp
   WebsiteURL:
     Value: !GetAtt FileBucket.WebsiteURL
     Description: URL for file server

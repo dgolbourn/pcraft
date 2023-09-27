@@ -1,6 +1,6 @@
 [sources.percycraft]
 type = "journald"
-include_units = ["percycraft"]
+include_units = ["percycraft", "status"]
 
 [sinks.cloudwatch]
 type = "aws_cloudwatch_logs"

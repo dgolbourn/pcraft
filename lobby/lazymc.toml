@@ -24,7 +24,7 @@ protocol = 763
 [server]
 # Server address. Internal IP and port of server started by lazymc to proxy to.
 # Port must be different from public port.
-address = "percycraft:25565"
+address = "127.0.0.1:25566"
 
 # Server directory, defaults to current directory.
 directory = "/opt/lazymc"

@@ -35,10 +35,15 @@ yum install -y vector
 yum upgrade -y vector
 cp /opt/percycraft/aws/ec2/vector.toml /etc/vector
 cp /opt/percycraft/aws/ec2/vector.service /etc/systemd/system/vector.service
-systemctl enable vector.service
-systemctl start vector.service
+yum install -y nc
+chmod +x /opt/percycraft/aws/ec2/status.sh
+cp /opt/percycraft/aws/ec2/status.service /etc/systemd/system/status.service
 systemctl enable docker.service
+systemctl enable vector.service
 systemctl enable percycraft.service
+systemctl enable status.service
 systemctl start docker.service
+systemctl start vector.service
 systemctl start percycraft.service
+systemctl start status.service
 echo "Install complete"

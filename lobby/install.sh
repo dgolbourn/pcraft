@@ -1,10 +1,4 @@
 #!/bin/bash
-yum install -y iptables-services
-echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
-sysctl -p
-iptables -t nat -A POSTROUTING -j MASQUERADE
-iptables -t nat -A PREROUTING -p udp --dport 24454 -j DNAT --to-destination $1:24454
-iptables -A INPUT -s $1 -j DROP
 mkdir -p /opt/lazymc
 sudo curl -fsSL -o /opt/lazymc/lazymc https://github.com/timvisee/lazymc/releases/download/v0.2.10/lazymc-v0.2.10-linux-aarch64
 chmod +x /opt/lazymc/lazymc
@@ -13,10 +7,9 @@ cp /opt/percycraft/lobby/server.sh /opt/lazymc
 cp /opt/percycraft/lobby/server.properties /opt/lazymc
 cp /opt/percycraft/lobby/lazymc.toml /opt/lazymc
 cp /opt/percycraft/lobby/server-icon.png /opt/lazymc
-sed -i "s/percycraft/$1/g" /opt/lazymc/lazymc.toml
 echo "[" > /opt/lazymc/whitelist.json
 ALLOW=""
-for i in ${2//,/ }
+for i in ${1//,/ }
 do
     PERSON=$(curl https://api.mojang.com/users/profiles/minecraft/$i)
     ALLOW+=$PERSON,
