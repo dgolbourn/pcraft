@@ -66,5 +66,4 @@ do
 done
 echo ${AUTOJOIN%,*} >> /opt/data/config/enhancedgroups/auto-join-groups.json
 echo } >> /opt/data/config/enhancedgroups/auto-join-groups.json
-cp /opt/percycraft/mc_init/enhancedgroups/persistent-groups.json /opt/data/config/enhancedgroups
 echo "Pre-start complete"
