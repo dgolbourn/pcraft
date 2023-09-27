@@ -130,11 +130,53 @@ Resources:
         - 4
       VpcId: !Ref Vpc
 
+  SubnetB:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Select
+      - 1
+      - !GetAZs
+        Ref: 'AWS::Region'
+      CidrBlock: !Select
+      - 1
+      - Fn::Cidr:
+        - 10.100.0.0/26
+        - 4
+        - 4
+      VpcId: !Ref Vpc
+
+  SubnetC:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Select
+      - 2
+      - !GetAZs
+        Ref: 'AWS::Region'
+      CidrBlock: !Select
+      - 2
+      - Fn::Cidr:
+        - 10.100.0.0/26
+        - 4
+        - 4
+      VpcId: !Ref Vpc      
+
   SubnetARoute:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
       RouteTableId: !Ref RouteTable
       SubnetId: !Ref SubnetA
+
+  SubnetBRoute:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref RouteTable
+      SubnetId: !Ref SubnetB
+
+  SubnetCRoute:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref RouteTable
+      SubnetId: !Ref SubnetC            
 
   InternetGateway:
     Type: AWS::EC2::InternetGateway
@@ -175,6 +217,22 @@ Resources:
       SecurityGroups:
       - !Ref EfsSg
       SubnetId: !Ref SubnetA
+
+  MountB:
+    Type: AWS::EFS::MountTarget
+    Properties:
+      FileSystemId: !Ref Efs
+      SecurityGroups:
+      - !Ref EfsSg
+      SubnetId: !Ref SubnetB
+
+  MountC:
+    Type: AWS::EFS::MountTarget
+    Properties:
+      FileSystemId: !Ref Efs
+      SecurityGroups:
+      - !Ref EfsSg
+      SubnetId: !Ref SubnetC            
 
   EfsSg:
     Type: AWS::EC2::SecurityGroup
@@ -254,6 +312,8 @@ Resources:
     Type: AWS::AutoScaling::AutoScalingGroup
     DependsOn:
     - MountA
+    - MountB
+    - MountC        
     Properties:
       AutoScalingGroupName: !Sub "${AWS::StackName}-AutoScalingGroup"
       DesiredCapacity: 0
@@ -265,6 +325,8 @@ Resources:
       MinSize: 0
       VPCZoneIdentifier:
         - !Ref SubnetA
+        - !Ref SubnetB
+        - !Ref SubnetC
     Metadata:
       LaunchEvent: !GetAtt LaunchEvent.Arn
 
@@ -763,7 +825,6 @@ Resources:
           - DeviceIndex: 0
             AssociatePublicIpAddress: true
             Groups: [!Ref Ec2Sg]
-            SubnetId: !Ref SubnetA
         UserData:
           Fn::Base64: !Sub |
               #!/bin/bash -xe
@@ -781,6 +842,8 @@ Resources:
     Type: AWS::AutoScaling::AutoScalingGroup
     DependsOn:
     - MountA
+    - MountB
+    - MountC        
     Properties:
       AutoScalingGroupName: !Sub "${AWS::StackName}-LobbyAutoScalingGroup"
       DesiredCapacity: 1
@@ -792,6 +855,8 @@ Resources:
       MinSize: 0
       VPCZoneIdentifier:
         - !Ref SubnetA
+        - !Ref SubnetB
+        - !Ref SubnetC        
     Metadata:
       LaunchEvent: !GetAtt LobbyLaunchEvent.Arn
 
