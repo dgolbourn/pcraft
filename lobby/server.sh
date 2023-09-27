@@ -7,15 +7,4 @@ startup() {
     done
 }
 
-shutdown() {
-    kill $PID
-    echo "Server complete"
-}
-
-trap shutdown TERM INT
-IP=$1
 startup &
-PID=$!
-wait $PID
-trap - TERM INT
-wait $PID
