@@ -19,17 +19,8 @@ services:
       RCON_CMDS_STARTUP: |-
         /gamerule playersSleepingPercentage 0
         /pregen start 25
-        /team add Percycraft
-        /scoreboard objectives add success dummy
-        /scoreboard players set percycraft success 0
-        /execute store success score percycraft success run scoreboard objectives add percycraft dummy
-        /execute if score percycraft success matches 1 run persistentgroup add Percycraft open
       RCON_CMDS_FIRST_CONNECT: |-
         /pregen stop
-      RCON_CMDS_ON_CONNECT: |-
-        /execute as @a[team=] run autojoingroup set Percycraft
-        /execute as @a[team=] run voicechat join Percycraft
-        /team join Percycraft @a[team=]
       RCON_CMDS_LAST_DISCONNECT: |-
         /function kill_empty_boats:run
         /pregen start 25
