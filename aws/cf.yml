@@ -492,7 +492,7 @@ Resources:
                 Resource: "*"
               - Effect: "Allow"
                 Action: "dynamodb:UpdateItem"
-                Resource: "*"                
+                Resource: "*"
 
   StartLambda:
     Type: "AWS::Lambda::Function"
@@ -533,7 +533,7 @@ Resources:
                 DesiredCapacity=reference_count ^ 1,
                 HonorCooldown=False
             )
-            print(json.dumps(response, sort_keys=True, default=str))            
+            print(json.dumps(response, sort_keys=True, default=str))
       FunctionName: !Sub "${AWS::StackName}-StartLambda"
       Handler: index.lambda_handler
       MemorySize: 128
@@ -547,7 +547,7 @@ Resources:
       Environment:
         Variables:
           AutoScalingGroupName: !Sub "${AWS::StackName}-AutoScalingGroup"
-          LobbyAutoScalingGroupName: !Sub "${AWS::StackName}-LobbyAutoScalingGroup"          
+          LobbyAutoScalingGroupName: !Sub "${AWS::StackName}-LobbyAutoScalingGroup"
           DDBTableName: !Sub "${AWS::StackName}-DDBTable"
       Code:
         ZipFile: |
@@ -581,7 +581,7 @@ Resources:
                 DesiredCapacity=reference_count ^ 1,
                 HonorCooldown=False
             )
-            print(json.dumps(response, sort_keys=True, default=str))              
+            print(json.dumps(response, sort_keys=True, default=str))
       FunctionName: !Sub "${AWS::StackName}-StopLambda"
       Handler: index.lambda_handler
       MemorySize: 128
@@ -648,6 +648,22 @@ Resources:
         detail:
           AutoScalingGroupName:
           - !Sub "${AWS::StackName}-AutoScalingGroup"
+      State: ENABLED
+      Targets:
+        - Arn: !GetAtt AssociateElasticIPLambda.Arn
+          Id: !Sub "${AWS::StackName}-AssociateElasticIPLambda"
+
+  LobbyLaunchEvent:
+    Type: AWS::Events::Rule
+    Properties:
+      EventPattern:
+        source:
+        - aws.autoscaling
+        detail-type:
+        - EC2 Instance Launch Successful
+        detail:
+          AutoScalingGroupName:
+          - !Sub "${AWS::StackName}-LobbyAutoScalingGroup"
       State: ENABLED
       Targets:
         - Arn: !GetAtt AssociateElasticIPLambda.Arn
@@ -775,7 +791,7 @@ Resources:
       VPCZoneIdentifier:
         - !Ref SubnetA
     Metadata:
-      LaunchEvent: !GetAtt LaunchEvent.Arn
+      LaunchEvent: !GetAtt LobbyLaunchEvent.Arn
 
 Outputs:
   PublicIP:
