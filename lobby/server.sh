@@ -1,6 +1,6 @@
 #!/bin/bash
 startup() {
-    echo "Lobby started"
+    echo "Server started"
     aws lambda invoke --function-name percycraft-StartLambda /dev/null
     while true; do
         sleep 1
@@ -9,7 +9,7 @@ startup() {
 
 shutdown() {
     kill $PID
-    echo "Lobby complete"
+    echo "Server complete"
 }
 
 trap shutdown TERM INT
