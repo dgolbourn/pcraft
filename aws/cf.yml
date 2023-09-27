@@ -747,8 +747,7 @@ Resources:
             Groups: [!Ref Ec2Sg]
             SubnetId: !Ref SubnetA
         UserData:
-          Fn::Base64: !Sub
-            - |
+          Fn::Base64: !Sub |
               #!/bin/bash -xe
               yum update -y
               timedatectl set-timezone ${TimeZone}
