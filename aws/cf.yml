@@ -164,12 +164,6 @@ Resources:
       Domain: !Ref Vpc
     DependsOn: InternetGatewayAttachment
 
-  AuxElasticIP:
-    Type: AWS::EC2::EIP
-    Properties:
-      Domain: !Ref Vpc
-    DependsOn: InternetGatewayAttachment
-
   Efs:
     Type: AWS::EFS::FileSystem
     Properties: {}
