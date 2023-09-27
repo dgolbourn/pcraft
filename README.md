@@ -9,17 +9,15 @@ Despite what some on the internet may say, one cannot run a simultaneous multipl
 
 Percycraft deploys to AWS a Java Minecraft server with mods loaded via Fabric.
 
-To control costs, while balancing the user experience, Percycraft takes the following approach:
+Therefore, to control costs, while balancing the user experience, Percycraft takes the approach of running the game server on demand.
 
-By default Percycraft is only continuously running minimal services: backup storage, file server and the lobby.
+When one connects to Percycraft, if the server is not currently active, instead they connect to the lobby. Attempting to join the lobby will start up the Percycraft server, shut down the lobby, and then the player can connect as normal after a few minutes.
 
-When one connects to Percycraft they are going via the lobby. If Percycraft is currently running, the request is proxied forward transparently and Minecraft starts as normal. Otherwise, the Minecraft server is started up as a Spot Instance, and then the player can connect as normal after a few minutes.
-
-Once the last player disconnects, if the server is idle for more than an hour it shuts down.
+Once the last player disconnects, if the server is idle for more than an hour, it shuts down and the lobby starts up again in its place.
 
 At shutdown the Minecraft server is backed up.
 
-As the server was set up with my son in mind, to mitigate his lack of patience, Percycraft is also configured to start up at certain likely usage times (weekends and evenings) so it is immediately ready even if no one has recently tried to connect.
+As the server was set up with my son in mind, to mitigate his lack of patience, the Percycraft server is also configured to start up at certain times (e.g. weekends) so it is immediately ready even if no one has recently tried to connect.
 
 The selection of mods I've chosen is motivated by the desire to track the look and feel of my favourite Minecraft Youtubers such as those on the [Hermitcraft](https://hermitcraft.com/) series.
 
@@ -35,7 +33,7 @@ For players
 3. *Windows*: Install the [client mods](http://cdn.pcraft.co.uk/percycraft-installer.exe)
 
    *Others*: download the client mods from [here](http://cdn.pcraft.co.uk/mods) and place them in the `/mods` directory of your Minecraft
-5. Launch the game, choose Multiplayer, and add the Percycraft server lobby `lobby.pcraft.co.uk`.
+5. Launch the game, choose Multiplayer, and add the Percycraft server `pcraft.co.uk`.
 6. **Congratulations, you've joined the Percycraft server!**
 
 For server admins
