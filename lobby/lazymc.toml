@@ -90,7 +90,7 @@ minimum_online_time = 3600
 # Read about all methods and configure them below.
 # Methods are used in order, if none is set, the client disconnects without a message.
 methods = [
-    "hold",
+#    "hold",
     "kick",
 ]
 
