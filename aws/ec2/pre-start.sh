@@ -8,7 +8,6 @@ echo "RESOURCE_PACK=${FILEBUCKETWEBSITEURL}/${OUTPUTS[1]}" >> /opt/percycraft/.e
 echo "PASSWORD=$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 20; echo;)" >> /opt/percycraft/.env
 echo "WHITELIST=${PLAYERLIST}" >> /opt/percycraft/.env
 echo "TZ=${TZ}" >> /opt/percycraft/.env
-cd /opt/data
 PATTERN="*.jar"
 JARS=( $PATTERN )
 cd -

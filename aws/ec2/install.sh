@@ -3,7 +3,7 @@ echo "Install started"
 yum install -y docker
 curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
-curl -fsSL -o mcrcon.tar.gz https://github.com/Tiiffi/mcrcon/releases/download/v0.7.2/mcrcon-0.7.2-linux-x86-64.tar.gz  
+curl -fsSL -o mcrcon.tar.gz https://github.com/Tiiffi/mcrcon/releases/download/v0.7.2/mcrcon-0.7.2-linux-x86-64.tar.gz
 tar -xvzf mcrcon.tar.gz
 mv mcrcon /usr/local/bin/
 rm mcrcon.tar.gz
@@ -14,7 +14,7 @@ curl -o javafx.tar.gz https://cdn.azul.com/zulu/bin/zulu17.30.15-ca-fx-jre17.0.1
 tar -xvzf javafx.tar.gz
 mv zulu* /opt/mca-selector
 rm javafx.tar.gz
-curl -fsSL -o mca-selector.jar https://github.com/Querz/mcaselector/releases/download/2.2.2/mcaselector-2.2.2.jar        
+curl -fsSL -o mca-selector.jar https://github.com/Querz/mcaselector/releases/download/2.2.2/mcaselector-2.2.2.jar
 mv mca-selector.jar /opt/mca-selector/lib/mca-selector.jar
 mkdir -p /opt/data
 mkdir -p /efs/backups

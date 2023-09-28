@@ -158,7 +158,7 @@ Resources:
         - 10.100.0.0/26
         - 4
         - 4
-      VpcId: !Ref Vpc      
+      VpcId: !Ref Vpc
 
   SubnetARoute:
     Type: AWS::EC2::SubnetRouteTableAssociation
@@ -176,7 +176,7 @@ Resources:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
       RouteTableId: !Ref RouteTable
-      SubnetId: !Ref SubnetC            
+      SubnetId: !Ref SubnetC
 
   InternetGateway:
     Type: AWS::EC2::InternetGateway
@@ -232,7 +232,7 @@ Resources:
       FileSystemId: !Ref Efs
       SecurityGroups:
       - !Ref EfsSg
-      SubnetId: !Ref SubnetC            
+      SubnetId: !Ref SubnetC
 
   EfsSg:
     Type: AWS::EC2::SecurityGroup
@@ -313,7 +313,7 @@ Resources:
     DependsOn:
     - MountA
     - MountB
-    - MountC        
+    - MountC
     Properties:
       AutoScalingGroupName: !Sub "${AWS::StackName}-AutoScalingGroup"
       DesiredCapacity: 0
@@ -739,7 +739,7 @@ Resources:
       Action: lambda:InvokeFunction
       FunctionName: !GetAtt AssociateElasticIPLambda.Arn
       Principal: events.amazonaws.com
-      SourceArn: !GetAtt LobbyLaunchEvent.Arn      
+      SourceArn: !GetAtt LobbyLaunchEvent.Arn
 
   TerminateEvent:
     Type: AWS::Events::Rule
@@ -843,7 +843,7 @@ Resources:
     DependsOn:
     - MountA
     - MountB
-    - MountC        
+    - MountC
     Properties:
       AutoScalingGroupName: !Sub "${AWS::StackName}-LobbyAutoScalingGroup"
       DesiredCapacity: 1
@@ -856,7 +856,7 @@ Resources:
       VPCZoneIdentifier:
         - !Ref SubnetA
         - !Ref SubnetB
-        - !Ref SubnetC        
+        - !Ref SubnetC
     Metadata:
       LaunchEvent: !GetAtt LobbyLaunchEvent.Arn
 
