@@ -1,13 +1,16 @@
 Percycraft
 ==========
 
+Percycraft deploys to AWS a Java Minecraft server with Fabric mods.
+
 I made this Minecraft server so that my son and I can play Minecraft together, with various mods and so on. 
 
 This project is indebted to the fine work of [docker-minecraft-server](https://github.com/itzg/docker-minecraft-server), [minecraft-spot-pricing](https://github.com/vatertime/minecraft-spot-pricing) and [lazymc](https://github.com/timvisee/lazymc).
 
-Despite what some on the internet may say, one cannot run a survival multiplayer server on a potato. In Minecraft, single threaded performance is king and, when running mods, a generous side of RAM is needed too.
+About
+-----
 
-Percycraft deploys to AWS a Java Minecraft server with Fabric mods.
+Despite what some on the internet may say, one cannot run a survival multiplayer server on a potato. In Minecraft, single threaded performance is king and, when running mods, a generous side of RAM is needed too.
 
 Therefore, to control costs, while balancing the user experience, Percycraft takes the approach of running the server on demand.
 
@@ -24,6 +27,8 @@ The selection of mods I've chosen is motivated by the desire to track the look a
 There is also a file server to host the client-side resource packs and mods.
 
 [Here](http://cdn.pcraft.co.uk/album/latest.png) is the world so far!
+
+[Here](https://github.com/dgolbourn/percycraft/wiki/Mods) is more information about the modifications of Percycraft compared to vanilla Minecraft
 
 For players
 -----------
