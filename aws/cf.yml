@@ -283,7 +283,7 @@ Resources:
         ImageId: !Ref EC2AMI
         InstanceMarketOptions:
           MarketType: "spot"
-        InstanceType: t3.large
+        InstanceType: t3a.large
         KeyName: !Ref KeyPairName
         NetworkInterfaces:
           - DeviceIndex: 0
