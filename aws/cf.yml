@@ -578,7 +578,7 @@ Resources:
             reference_count = False
             for k, v in response['Attributes'].items():
               if(k != 'ID'):
-                reference_count |= bool(v['BOOL']))
+                reference_count |= bool(v['BOOL'])
             response = boto3.client('autoscaling').set_desired_capacity(
                 AutoScalingGroupName=os.environ['AutoScalingGroupName'],
                 DesiredCapacity=int(reference_count),
