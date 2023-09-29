@@ -67,4 +67,5 @@ do
 done
 echo ${AUTOJOIN%,*} >> /opt/data/config/enhancedgroups/auto-join-groups.json
 echo } >> /opt/data/config/enhancedgroups/auto-join-groups.json
+chown -R 1000:1000 /opt/data
 echo "Pre-start complete"
