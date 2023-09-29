@@ -567,32 +567,27 @@ Resources:
           import json
           def lambda_handler(event, context):
             print(json.dumps(event, sort_keys=True, default=str))
-            increment = '-1'
-            if(event['start']):
-              increment = '1'
             response = boto3.client('dynamodb').update_item(
                 TableName=os.environ['DDBTableName'],
                 Key={'ID': {'S': 'Server'}},
                 ReturnValues='ALL_NEW',
-                UpdateExpression='ADD ' + event['referrer'] + ' :inc',
-                ExpressionAttributeValues={':inc': {'N': increment}},
+                UpdateExpression='SET ' + event['referrer'] + ' :state',
+                ExpressionAttributeValues={':state': {'BOOL': event['start']}},
             )
             print(json.dumps(response, sort_keys=True, default=str))
-            reference_count = 0
+            reference_count = False
             for k, v in response['Attributes'].items():
               if(k != 'ID'):
-                reference_count = max(reference_count, int(v['N']))
-            if(reference_count > 0):
-              reference_count = 1
+                reference_count |= bool(v['BOOL']))
             response = boto3.client('autoscaling').set_desired_capacity(
                 AutoScalingGroupName=os.environ['AutoScalingGroupName'],
-                DesiredCapacity=reference_count,
+                DesiredCapacity=int(reference_count),
                 HonorCooldown=False
             )
             print(json.dumps(response, sort_keys=True, default=str))
             response = boto3.client('autoscaling').set_desired_capacity(
                 AutoScalingGroupName=os.environ['LobbyAutoScalingGroupName'],
-                DesiredCapacity=reference_count ^ 1,
+                DesiredCapacity=int(reference_count ^ True),
                 HonorCooldown=False
             )
             print(json.dumps(response, sort_keys=True, default=str))
