@@ -10,9 +10,7 @@ This project is indebted to the fine work of [docker-minecraft-server](https://g
 About
 -----
 
-Despite what some on the internet may say, one cannot run a survival multiplayer server on a potato. In Minecraft, single threaded performance is king and, when running mods, a generous side of RAM is needed too.
-
-Therefore, to control costs, while balancing the user experience, Percycraft takes the approach of running the server on demand.
+To control costs, while balancing the user experience, Percycraft takes the approach of running the server on demand.
 
 When one connects to Percycraft, if the server is not active, they connect to the lobby. Starting the game from the lobby will start up the server, shut down the lobby, and then the player can connect as normal after a few minutes.
 
