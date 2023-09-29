@@ -54,7 +54,8 @@ cd /opt/percycraft/friendly-fire
 zip -r ../friendly-fire .
 cd -
 mv /opt/percycraft/friendly-fire.zip /opt/data/world/datapacks
-cp /opt/percycraft/mc_init/enhancedgroups/persistent-groups.json /opt/data/config/enhancedgroups
+mkdir -p /opt/data/config/enhancedgroups
+cp /opt/percycraft/mc_init/enhancedgroups/persistent-groups.json /opt/data/config/enhancedgroups/
 GROUP=$(cat /opt/percycraft/mc_init/enhancedgroups/persistent-groups.json | jq .[0].id)
 echo { > /opt/data/config/enhancedgroups/auto-join-groups.json
 AUTOJOIN=""

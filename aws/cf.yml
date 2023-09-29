@@ -376,6 +376,7 @@ Resources:
       Target:
         Arn: !GetAtt StopLambda.Arn
         RoleArn: !GetAtt SchedulerRole.Arn
+        Input: "{\"start\":false,\"referrer\":\"scheduler\"}"
 
   WeekendStopScheduler:
     Type: AWS::Scheduler::Schedule
@@ -390,6 +391,7 @@ Resources:
       Target:
         Arn: !GetAtt StopLambda.Arn
         RoleArn: !GetAtt SchedulerRole.Arn
+        Input: "{\"start\":false,\"referrer\":\"scheduler\"}"
 
   WeekdayStartScheduler:
     Type: AWS::Scheduler::Schedule
@@ -404,6 +406,7 @@ Resources:
       Target:
         Arn: !GetAtt StartLambda.Arn
         RoleArn: !GetAtt SchedulerRole.Arn
+        Input: "{\"start\":true,\"referrer\":\"scheduler\"}"
 
   WeekendStartScheduler:
     Type: AWS::Scheduler::Schedule
@@ -418,6 +421,7 @@ Resources:
       Target:
         Arn: !GetAtt StartLambda.Arn
         RoleArn: !GetAtt SchedulerRole.Arn
+        Input: "{\"start\":true,\"referrer\":\"scheduler\"}"
 
   InstanceRole:
     Type: AWS::IAM::Role

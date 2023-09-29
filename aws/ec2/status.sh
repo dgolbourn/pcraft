@@ -21,13 +21,13 @@ status() {
             if (( $DONE )); then
                 DONE=false
                 echo active
-                aws lambda invoke --function-name percycraft-StartLambda /dev/null
+                aws lambda invoke --function-name percycraft-StartLambda --payload "{\"start\":true,\"referrer\":\"server\"}" /dev/null
             fi
         elif (( $SECONDS > 3600 )); then
             if (( !$DONE )); then
                 DONE=true
                 echo idle
-                aws lambda invoke --function-name percycraft-StopLambda /dev/null
+                aws lambda invoke --function-name percycraft-StopLambda --payload "{\"start\":false,\"referrer\":\"server\"}" /dev/null
             fi
         else
             if (( $COUNT != $PLAYERS )); then
