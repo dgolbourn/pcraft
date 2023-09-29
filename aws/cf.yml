@@ -360,8 +360,7 @@ Resources:
                 - Effect: "Allow"
                   Action: "lambda:InvokeFunction"
                   Resource:
-                  - !GetAtt StopLambda.Arn
-                  - !GetAtt StartLambda.Arn
+                  - !GetAtt StartStopLambda.Arn
 
   WeekdayStopScheduler:
     Type: AWS::Scheduler::Schedule
@@ -374,7 +373,7 @@ Resources:
       ScheduleExpressionTimezone: !Ref TimeZone
       State: ENABLED
       Target:
-        Arn: !GetAtt StopLambda.Arn
+        Arn: !GetAtt StartStopLambda.Arn
         RoleArn: !GetAtt SchedulerRole.Arn
         Input: "{\"start\":false,\"referrer\":\"scheduler\"}"
 
@@ -389,7 +388,7 @@ Resources:
       ScheduleExpressionTimezone: !Ref TimeZone
       State: ENABLED
       Target:
-        Arn: !GetAtt StopLambda.Arn
+        Arn: !GetAtt StartStopLambda.Arn
         RoleArn: !GetAtt SchedulerRole.Arn
         Input: "{\"start\":false,\"referrer\":\"scheduler\"}"
 
@@ -404,7 +403,7 @@ Resources:
       ScheduleExpressionTimezone: !Ref TimeZone
       State: ENABLED
       Target:
-        Arn: !GetAtt StartLambda.Arn
+        Arn: !GetAtt StartStopLambda.Arn
         RoleArn: !GetAtt SchedulerRole.Arn
         Input: "{\"start\":true,\"referrer\":\"scheduler\"}"
 
@@ -419,7 +418,7 @@ Resources:
       ScheduleExpressionTimezone: !Ref TimeZone
       State: ENABLED
       Target:
-        Arn: !GetAtt StartLambda.Arn
+        Arn: !GetAtt StartStopLambda.Arn
         RoleArn: !GetAtt SchedulerRole.Arn
         Input: "{\"start\":true,\"referrer\":\"scheduler\"}"
 
@@ -445,8 +444,7 @@ Resources:
               - Effect: "Allow"
                 Action: "lambda:InvokeFunction"
                 Resource:
-                - !GetAtt StopLambda.Arn
-                - !GetAtt StartLambda.Arn
+                - !GetAtt StartStopLambda.Arn
 
   InstanceProfile:
     Type: AWS::IAM::InstanceProfile
@@ -554,7 +552,7 @@ Resources:
                 Action: "dynamodb:UpdateItem"
                 Resource: "*"
 
-  StartLambda:
+  StartStopLambda:
     Type: "AWS::Lambda::Function"
     Properties:
       Environment:
@@ -569,19 +567,23 @@ Resources:
           import json
           def lambda_handler(event, context):
             print(json.dumps(event, sort_keys=True, default=str))
+            increment = '-1'
+            if(event[start]):
+              increment = '1'
             response = boto3.client('dynamodb').update_item(
                 TableName=os.environ['DDBTableName'],
                 Key={'ID': {'S': 'Server'}},
                 ReturnValues='ALL_NEW',
-                UpdateExpression='ADD ReferenceCount :inc',
-                ExpressionAttributeValues={':inc': {'N': '1'}}
+                UpdateExpression='ADD ' + event['referrer'] + ' :inc',
+                ExpressionAttributeValues={':inc': {'N': increment}, ':zero': {'N': '0'}},
+                ConditionExpression=event['referrer'] + ' > :zero'
             )
             print(json.dumps(response, sort_keys=True, default=str))
-            reference_count = int(response['Attributes']['ReferenceCount']['N'])
+            reference_count = 0
+            for v in response['Attributes'].values():
+              reference_count = max(reference_count, int(v['N']))
             if(reference_count > 0):
               reference_count = 1
-            else:
-              reference_count = 0
             response = boto3.client('autoscaling').set_desired_capacity(
                 AutoScalingGroupName=os.environ['AutoScalingGroupName'],
                 DesiredCapacity=reference_count,
@@ -594,55 +596,7 @@ Resources:
                 HonorCooldown=False
             )
             print(json.dumps(response, sort_keys=True, default=str))
-      FunctionName: !Sub "${AWS::StackName}-StartLambda"
-      Handler: index.lambda_handler
-      MemorySize: 128
-      Role: !GetAtt StartStopLambdaRole.Arn
-      Runtime: python3.9
-      Timeout: 30
-
-  StopLambda:
-    Type: "AWS::Lambda::Function"
-    Properties:
-      Environment:
-        Variables:
-          AutoScalingGroupName: !Sub "${AWS::StackName}-AutoScalingGroup"
-          LobbyAutoScalingGroupName: !Sub "${AWS::StackName}-LobbyAutoScalingGroup"
-          DDBTableName: !Sub "${AWS::StackName}-DDBTable"
-      Code:
-        ZipFile: |
-          import boto3
-          import os
-          import json
-          def lambda_handler(event, context):
-            print(json.dumps(event, sort_keys=True, default=str))
-            response = boto3.client('dynamodb').update_item(
-                TableName=os.environ['DDBTableName'],
-                Key={'ID': {'S': 'Server'}},
-                ReturnValues='ALL_NEW',
-                UpdateExpression='ADD ReferenceCount :inc',
-                ExpressionAttributeValues={':inc': {'N': '-1'}, ':zero': {'N': '0'}},
-                ConditionExpression='ReferenceCount > :zero'
-            )
-            print(json.dumps(response, sort_keys=True, default=str))
-            reference_count = int(response['Attributes']['ReferenceCount']['N'])
-            if(reference_count > 0):
-              reference_count = 1
-            else:
-              reference_count = 0
-            response = boto3.client('autoscaling').set_desired_capacity(
-                AutoScalingGroupName=os.environ['AutoScalingGroupName'],
-                DesiredCapacity=reference_count,
-                HonorCooldown=False
-            )
-            print(json.dumps(response, sort_keys=True, default=str))
-            response = boto3.client('autoscaling').set_desired_capacity(
-                AutoScalingGroupName=os.environ['LobbyAutoScalingGroupName'],
-                DesiredCapacity=reference_count ^ 1,
-                HonorCooldown=False
-            )
-            print(json.dumps(response, sort_keys=True, default=str))
-      FunctionName: !Sub "${AWS::StackName}-StopLambda"
+      FunctionName: !Sub "${AWS::StackName}-StartStopLambda"
       Handler: index.lambda_handler
       MemorySize: 128
       Role: !GetAtt StartStopLambdaRole.Arn
