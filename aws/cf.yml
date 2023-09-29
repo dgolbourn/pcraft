@@ -571,7 +571,7 @@ Resources:
                 TableName=os.environ['DDBTableName'],
                 Key={'ID': {'S': 'Server'}},
                 ReturnValues='ALL_NEW',
-                UpdateExpression='SET ' + event['referrer'] + ' :state',
+                UpdateExpression='SET ' + event['referrer'] + ' = :state',
                 ExpressionAttributeValues={':state': {'BOOL': event['start']}},
             )
             print(json.dumps(response, sort_keys=True, default=str))
