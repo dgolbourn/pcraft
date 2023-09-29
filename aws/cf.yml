@@ -568,7 +568,7 @@ Resources:
           def lambda_handler(event, context):
             print(json.dumps(event, sort_keys=True, default=str))
             increment = '-1'
-            if(event[start]):
+            if(event['start']):
               increment = '1'
             response = boto3.client('dynamodb').update_item(
                 TableName=os.environ['DDBTableName'],
