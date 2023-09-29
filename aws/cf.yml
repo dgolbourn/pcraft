@@ -575,13 +575,13 @@ Resources:
                 Key={'ID': {'S': 'Server'}},
                 ReturnValues='ALL_NEW',
                 UpdateExpression='ADD ' + event['referrer'] + ' :inc',
-                ExpressionAttributeValues={':inc': {'N': increment}, ':zero': {'N': '0'}},
-                ConditionExpression=event['referrer'] + ' > :zero'
+                ExpressionAttributeValues={':inc': {'N': increment}},
             )
             print(json.dumps(response, sort_keys=True, default=str))
             reference_count = 0
-            for v in response['Attributes'].values():
-              reference_count = max(reference_count, int(v['N']))
+            for k, v in response['Attributes'].items():
+              if(k != 'ID'):
+                reference_count = max(reference_count, int(v['N']))
             if(reference_count > 0):
               reference_count = 1
             response = boto3.client('autoscaling').set_desired_capacity(
