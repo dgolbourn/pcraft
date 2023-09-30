@@ -20,7 +20,7 @@ At shutdown the server is backed up.
 
 As Percyraft was set up with my son in mind, to mitigate his lack of patience, the server is also configured to start up at certain times (e.g. weekends) so it is immediately ready even if no one has recently tried to connect.
 
-The selection of mods I've chosen is motivated by the desire to track the look and feel of my favourite Minecraft Youtubers such as those on the [Hermitcraft](https://hermitcraft.com/) series.
+The selection of mods I've chosen is motivated by the desire to track the look and feel of my favourite Minecraft Youtubers such as [Forge Labs](https://www.youtube.com/channel/UCiSVf-UpLC9rRjAT1qRTW0g) and those of the [Hermitcraft](https://hermitcraft.com/) series.
 
 There is also a file server to host the client-side resource packs and mods.
 
@@ -36,6 +36,7 @@ For players
 3. *Windows*: Install the [client mods](http://cdn.pcraft.co.uk/percycraft-installer.exe)
 
    *Others*: download the client mods from [here](http://cdn.pcraft.co.uk/mods) and place them in the `/mods` directory of your Minecraft
+4. **OPTIONAL** Download these [shaders](https://sonicether.com/shaders/download/renewed-v1-0-1) and place them in the `/shaderpacks` directory of your Minecraft
 5. Launch the game, choose Multiplayer, and add the Percycraft server `pcraft.co.uk`.
 6. **Congratulations, you've joined the Percycraft server!**
 
