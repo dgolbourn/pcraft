@@ -3,7 +3,8 @@
     "version": "1.20",
     "packs": {
         "quality of life": [
-            "universal dyeing"
+            "universal dyeing",
+            "rotten flesh to leather"
         ],
         "craftables": [
             "craftable name tags"

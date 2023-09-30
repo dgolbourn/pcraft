@@ -2,11 +2,42 @@
     "type": "resourcepacks",
     "version": "1.20",
     "packs": {
+        "aesthetic.more-zombies": [
+            "MZNoor",
+            "MZSunny",
+            "MZZuri",
+            "MZMakena",
+            "MZEfe",
+            "MZKai",
+            "MZAlex",
+            "MZAri",
+            "MZSteve"
+        ],
         "aesthetic": [
-            "GoldenCrown"
+            "GoldenCrown",
+            "RedIronGolemFlowers",
+            "AccurateSpyglass",
+            "UniqueDyes"
+        ],
+        "utility": [
+            "HungerPreview",
+            "NoteblockBanners",
+            "CompassLodestone",
+            "BrewingGuide",
+            "VisualHoney",
+            "BetterObservers",
+            "DirectionalDispensersDroppers",
+            "DirectionalHoppers",
+            "Age25Kelp",
+            "SuspiciousSandGravelBorders"
         ],
         "hud": [
+            "NumberedHotbar",
             "PingColorIndicator"
+        ],
+        "unobtrusive": [
+            "InvisibleTotem",
+            "LowerShield"
         ]
     },
     "result": "ok"
