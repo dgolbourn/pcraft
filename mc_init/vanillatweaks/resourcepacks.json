@@ -2,17 +2,6 @@
     "type": "resourcepacks",
     "version": "1.20",
     "packs": {
-        "aesthetic.more-zombies": [
-            "MZNoor",
-            "MZSunny",
-            "MZZuri",
-            "MZMakena",
-            "MZEfe",
-            "MZKai",
-            "MZAlex",
-            "MZAri",
-            "MZSteve"
-        ],
         "aesthetic": [
             "GoldenCrown",
             "RedIronGolemFlowers",
