@@ -5,19 +5,6 @@ get_player_count() {
     echo ${tmp[4]}
 }
 
-ready() {
-    echo waiting
-    while true; do
-        nc -w 10s -z 127.0.0.1 25565 < /dev/null
-        if (( $? == 0 )); then
-            echo ready
-            INSTANCEID=$(ec2-metadata -i | cut -d " " -f 2)
-            aws lambda invoke --function-name percycraft-ServerReadyLambda --payload "{\"detail\":{\"EC2InstanceId\":\"$INSTANCEID\"}}" --cli-binary-format raw-in-base64-out /dev/null
-            break
-        fi
-    done
-}
-
 status() {
     SECONDS=0
     DONE=false
@@ -51,7 +38,5 @@ status() {
         sleep 10
     done
 }
-
-ready
 
 status
