@@ -1,7 +1,7 @@
 Percycraft
 ==========
 
-Percycraft deploys to AWS a Java Minecraft server with Fabric mods.
+Percycraft deploys to AWS a Java Minecraft server with Fabric [mods](https://github.com/dgolbourn/percycraft/wiki/Mods).
 
 I made this Minecraft server so that my son and I can play Minecraft together, with various mods and so on. 
 
