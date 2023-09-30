@@ -46,6 +46,10 @@ Parameters:
     Type: String
     Default: cron(0 22 ? * 6-7 *)
 
+  Repository:
+    Type: String
+    Default: https://github.com/dgolbourn/percycraft.git
+
 Conditions:
   WeekdayStartScheduleProvided: !Not [ !Equals [ !Ref WeekdayStartSchedule, '' ] ]
   WeekdayStopScheduleProvided: !Not [ !Equals [ !Ref WeekdayStopSchedule, '' ] ]
@@ -60,11 +64,6 @@ Metadata:
         Parameters:
         - Players
       - Label:
-          default: SSH Configuration
-        Parameters:
-        - KeyPairName
-        - YourIPv4
-      - Label:
           default: Schedule
         Parameters:
         - TimeZone
@@ -72,6 +71,15 @@ Metadata:
         - WeekdayStopSchedule
         - WeekendStartSchedule
         - WeekendStopSchedule
+      - Label:
+          default: SSH Configuration
+        Parameters:
+        - KeyPairName
+        - YourIPv4        
+      - Label:
+          default: Repository
+        Parameters:
+        - Repository
       - Label:
           default: Host names
         Parameters:
@@ -105,6 +113,8 @@ Metadata:
         default: "Server weekend start schedule"
       WeekendStopSchedule:
         default: "Server weekend stop schedule"
+      Repository:
+        default: "Location of the Percycraft source code"
 
 Resources:
 
@@ -299,7 +309,7 @@ Resources:
               mkdir /efs
               mount -t efs ${Efs}:/ /efs
               yum -y install git
-              git clone --single-branch https://github.com/dgolbourn/percycraft.git /opt/percycraft
+              git clone --single-branch ${Repository} /opt/percycraft
               chmod +x /opt/percycraft/aws/ec2/install.sh
               echo "FILEBUCKETS3URI=s3://${FileBucket}" > /opt/percycraft/service.env
               echo "FILEBUCKETWEBSITEURL=${FileBucketWebsiteURL}" >> /opt/percycraft/service.env
@@ -787,7 +797,7 @@ Resources:
               mkdir /efs
               mount -t efs ${Efs}:/ /efs
               yum -y install git
-              git clone --single-branch https://github.com/dgolbourn/percycraft.git /opt/percycraft
+              git clone --single-branch ${Repository} /opt/percycraft
               chmod +x /opt/percycraft/lobby/install.sh
               /opt/percycraft/lobby/install.sh ${Players}
 
