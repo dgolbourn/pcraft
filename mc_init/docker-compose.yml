@@ -30,7 +30,6 @@ services:
         lithium
         sodium
         iris
-        ushader
       MODRINTH_ALLOWED_VERSION_TYPE: beta
       TZ: ${TZ}
       ICON: /resources/server-icon.png
