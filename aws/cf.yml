@@ -610,7 +610,7 @@ Resources:
                   DesiredCapacity=1,
                   HonorCooldown=False
               )
-              print(json.dumps(response, sort_keys=True, default=str))
+              print(json.dresponseumps(, sort_keys=True, default=str))
       FunctionName: !Sub "${AWS::StackName}-StartStopLambda"
       Handler: index.lambda_handler
       MemorySize: 128
