@@ -11,8 +11,6 @@ ExecStart=/usr/local/bin/docker-compose -f /opt/percycraft/mc/docker-compose.yml
 ExecStop=/usr/local/bin/docker-compose -f /opt/percycraft/mc/docker-compose.yml --env-file /opt/data/percycraft.env down
 ExecStop=/opt/percycraft/aws/ec2/backup.sh
 ExecStop=/opt/percycraft/aws/ec2/image.sh
-ExecReload=/usr/local/bin/docker-compose -f /opt/percycraft/mc/docker-compose.yml --env-file /opt/data/percycraft.env down
-ExecReload=/usr/local/bin/docker-compose -f /opt/percycraft/mc/docker-compose.yml --env-file /opt/data/percycraft.env up
 TimeoutStartSec=900
 TimeoutStopSec=600
 
