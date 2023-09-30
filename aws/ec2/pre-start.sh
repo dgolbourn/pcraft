@@ -12,27 +12,44 @@ PATTERN="*.jar"
 JARS=( $PATTERN )
 cd -
 echo "CUSTOM_SERVER=/data/${JARS[0]}" >> /opt/percycraft/.env
-rm -rf /opt/web/*
-mkdir -p /opt/web/resourcepacks
-mkdir -p /opt/web/mods
-cp "/opt/data/${OUTPUTS[1]}" /opt/web/resourcepacks/
-cd /opt/data/mods 
+rm -rf /tmp/percycraft/web/*
+mkdir -p /tmp/percycraft/web/resourcepacks
+mkdir -p /tmp/percycraft/web/mods
+mkdir -p /tmp/percycraft/web/shaderpacks
+cp "/opt/data/${OUTPUTS[1]}" /tmp/percycraft/web/resourcepacks/
+cd /opt/data/mods
 echo -n > /opt/percycraft/installer/downloads.iss
 echo -n > /opt/percycraft/installer/files.iss
 while read p; do
   MOD=$(ls $p*)
-  cp -f /opt/data/mods/$MOD /opt/web/mods/
+  cp -f /opt/data/mods/$MOD /tmp/percycraft/web/mods/
   echo "DownloadPage.Add('${FILEBUCKETWEBSITEURL}/mods/${MOD}', '${MOD}', '');" >> /opt/percycraft/installer/downloads.iss
-  echo "Source: "{tmp}\\${MOD}"; DestDir: "{app}"; Flags: external" >> /opt/percycraft/installer/files.iss
+  echo "Source: "{tmp}\\${MOD}"; DestDir: "{app}\\mods"; Flags: external" >> /opt/percycraft/installer/files.iss
 done < /opt/percycraft/mc_init/client-mods.txt
+cd /tmp/percycraft/web/shaderpacks
+while read p; do
+  parray=($p)
+  shader=${parray[0]}
+  url=${parray[1]}
+  curl -o $shader $url
+  echo "DownloadPage.Add('${FILEBUCKETWEBSITEURL}/shaderpacks/${shader}', '${shader}', '');" >> /opt/percycraft/installer/downloads.iss
+  echo "Source: "{tmp}\\${shader}"; DestDir: "{app}\\shaderpacks"; Flags: external" >> /opt/percycraft/installer/files.iss  
+done < /opt/percycraft/mc_init/client-shaders.txt
+cd -
+cat << EOF > /opt/percycraft/installer/app.iss
+AppVersion=$(git describe --tags --long --dirty=dev --always)
+AppName=Percycraft
+AppPublisher=Diane Marigold
+AppPublisherURL=$(git config --get remote.origin.url)
+EOF
 if [ -f "/efs/album/latest.png" ]
 then
-  mkdir -p /opt/web/album
-  cp /efs/album/latest.png /opt/web/album
+  mkdir -p /tmp/percycraft/web/album
+  cp /efs/album/latest.png /tmp/percycraft/web/album
 fi
 docker run --rm -i -v "/opt/percycraft/installer:/work" amake/innosetup percycraft.iss
-cp /opt/percycraft/installer/Output/percycraft-installer.exe /opt/web
-cd /opt/web/
+cp /opt/percycraft/installer/Output/percycraft-installer.exe /tmp/percycraft/web
+cd /tmp/percycraft/web/
 find . -type d -print -exec sh -c 'tree "$0" \
     -H "." \
     -L 1 \
@@ -47,9 +64,9 @@ find . -type d -print -exec sh -c 'tree "$0" \
     -D \
     -o "$0/index.html"' {} \;
 cd -
-cp -r /opt/percycraft/filebucket/* /opt/web
-aws s3 cp /opt/web $FILEBUCKETS3URI --recursive
-rm -rf /opt/web
+cp -r /opt/percycraft/filebucket/* /tmp/percycraft/web
+aws s3 cp /tmp/percycraft/web $FILEBUCKETS3URI --recursive
+rm -rf /tmp/percycraft/web
 cd /opt/percycraft/friendly-fire
 zip -r ../friendly-fire .
 cd -

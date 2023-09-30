@@ -1,10 +1,7 @@
 [Setup]
-AppName=Percycraft
-AppVersion=0.1
+#include "app.iss"
 WizardStyle=modern
-AppPublisher=Diane Marigold
-AppPublisherURL=pcraft.co.uk
-DefaultDirName={userappdata}\.minecraft\mods
+DefaultDirName={userappdata}\.minecraft
 PrivilegesRequired=lowest
 OutputBaseFilename=percycraft-installer
 SetupIconFile=server-icon.ico
