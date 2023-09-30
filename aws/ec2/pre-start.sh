@@ -35,13 +35,14 @@ while read p; do
   echo "DownloadPage.Add('${FILEBUCKETWEBSITEURL}/shaderpacks/${shader}', '${shader}', '');" >> /opt/percycraft/installer/downloads.iss
   echo "Source: "{tmp}\\${shader}"; DestDir: "{app}\\shaderpacks"; Flags: external" >> /opt/percycraft/installer/files.iss  
 done < /opt/percycraft/mc_init/client-shaders.txt
-cd -
+cd /opt/percycraft
 cat << EOF > /opt/percycraft/installer/app.iss
 AppVersion=$(git describe --tags --long --dirty=dev --always)
 AppName=Percycraft
 AppPublisher=Diane Marigold
 AppPublisherURL=$(git config --get remote.origin.url)
 EOF
+cd -
 if [ -f "/efs/album/latest.png" ]
 then
   mkdir -p /tmp/percycraft/web/album
