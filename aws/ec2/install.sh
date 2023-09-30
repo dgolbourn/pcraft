@@ -44,6 +44,7 @@ systemctl enable percycraft.service
 systemctl enable status.service
 systemctl start docker.service
 systemctl start vector.service
+/opt/percycraft/aws/ec2/pre-start.sh
 systemctl start percycraft.service
 systemctl start status.service
 echo "Install complete"
