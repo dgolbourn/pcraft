@@ -26,7 +26,6 @@ else
   rm -rf /tmp/percycraft/web/*
   mkdir -p /tmp/percycraft/web/resourcepacks
   mkdir -p /tmp/percycraft/web/mods
-  mkdir -p /tmp/percycraft/web/shaderpacks
   cp "/opt/data/${OUTPUTS[1]}" /tmp/percycraft/web/resourcepacks/
   cd /opt/data/mods
   echo -n > /opt/percycraft/installer/downloads.iss
@@ -37,15 +36,6 @@ else
     echo "DownloadPage.Add('${FILEBUCKETWEBSITEURL}/mods/${MOD}', '${MOD}', '');" >> /opt/percycraft/installer/downloads.iss
     echo "Source: "{tmp}\\${MOD}"; DestDir: "{app}\\mods"; Flags: external" >> /opt/percycraft/installer/files.iss
   done < /opt/percycraft/mc_init/client-mods.txt
-  cd /tmp/percycraft/web/shaderpacks
-  while read p; do
-    parray=($p)
-    shader=${parray[0]}
-    url=${parray[1]}
-    curl -o $shader $url
-    echo "DownloadPage.Add('${FILEBUCKETWEBSITEURL}/shaderpacks/${shader}', '${shader}', '');" >> /opt/percycraft/installer/downloads.iss
-    echo "Source: "{tmp}\\${shader}"; DestDir: "{app}\\shaderpacks"; Flags: external" >> /opt/percycraft/installer/files.iss  
-  done < /opt/percycraft/mc_init/client-shaders.txt
   cd /opt/percycraft
   cat << EOF > /opt/percycraft/installer/app.iss
 AppVersion=$PERCYCRAFT_VERSION
