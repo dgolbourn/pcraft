@@ -2,8 +2,9 @@
 mkdir -p /opt/lazymc
 sudo curl -fsSL -o /opt/lazymc/lazymc https://github.com/timvisee/lazymc/releases/download/v0.2.10/lazymc-v0.2.10-linux-aarch64
 chmod +x /opt/lazymc/lazymc
-chmod +x /opt/percycraft/lobby/server.sh
+yum install -y nc
 cp /opt/percycraft/lobby/server.sh /opt/lazymc
+chmod +x /opt/lazymc/server.sh
 cp /opt/percycraft/lobby/server.properties /opt/lazymc
 cp /opt/percycraft/lobby/lazymc.toml /opt/lazymc
 cp /opt/percycraft/lobby/server-icon.png /opt/lazymc
