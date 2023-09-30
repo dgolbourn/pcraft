@@ -81,6 +81,7 @@ EOF
   rm -rf /tmp/percycraft/web
   cd /opt/percycraft/friendly-fire
   zip -r ../friendly-fire .
+  cp /opt/percycraft/mc_init/friendly-fire/friendlyfire.json /opt/data/config/
   cd -
   mv /opt/percycraft/friendly-fire.zip /opt/data/world/datapacks
   mkdir -p /opt/data/config/enhancedgroups
