@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "Pre-start started"
-source /opt/percycraft/service.env
+source /opt/.env
 cd /opt/percycraft
 PERCYCRAFT_VERSION=$(git describe --tags --long --dirty=dev --always)
 cd -

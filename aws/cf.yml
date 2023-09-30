@@ -311,10 +311,10 @@ Resources:
               yum -y install git
               git clone --single-branch ${Repository} /opt/percycraft
               chmod +x /opt/percycraft/aws/ec2/install.sh
-              echo "FILEBUCKETS3URI=s3://${FileBucket}" > /opt/percycraft/service.env
-              echo "FILEBUCKETWEBSITEURL=${FileBucketWebsiteURL}" >> /opt/percycraft/service.env
-              echo "PLAYERLIST=${Players}" >> /opt/percycraft/service.env
-              echo "TZ=${TimeZone}" >> /opt/percycraft/service.env
+              echo "FILEBUCKETS3URI=s3://${FileBucket}" > /opt/.env
+              echo "FILEBUCKETWEBSITEURL=${FileBucketWebsiteURL}" >> /opt/.env
+              echo "PLAYERLIST=${Players}" >> /opt/.env
+              echo "TZ=${TimeZone}" >> /opt/.env
               /opt/percycraft/aws/ec2/install.sh
             - FileBucketWebsiteURL: !GetAtt FileBucket.WebsiteURL
 
