@@ -26,8 +26,6 @@ There is also a file server to host the client-side resource packs and mods.
 
 [Here](http://cdn.pcraft.co.uk/album/latest.png) is the world so far!
 
-[Here](https://github.com/dgolbourn/percycraft/wiki/Mods) is more information about the modifications of Percycraft compared to vanilla Minecraft
-
 For players
 -----------
 
