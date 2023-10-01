@@ -6,7 +6,7 @@ services:
       EULA: "TRUE"
       TYPE: FABRIC
       SETUP_ONLY: "TRUE"
-      VERSION: "1.20.1"
+      VERSION: "1.20.2"
       VANILLATWEAKS_FILE: |
         /vanillatweaks/datapacks.json,
         /vanillatweaks/resourcepacks.json
