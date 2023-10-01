@@ -7,9 +7,9 @@ cd -
 /opt/percycraft/aws/ec2/restore.sh
 RESTORE_VERSION=$(cat /opt/data/percycraft.version)
 if [ "$PERCYCRAFT_VERSION" = "$RESTORE_VERSION" ]; then
-  echo "Continuing with existing Percycraft version"
+  echo "Continuing with existing Percycraft version $PERCYCRAFT_VERSION"
 else
-  echo "Refreshing Percycraft version"
+  echo "Restored Percycraft version $RESTORE_VERSION, changing to version $PERCYCRAFT_VERSION"
   /usr/local/bin/docker-compose -f /opt/percycraft/mc_init/docker-compose.yml up
   cd /opt/data
   OUTPUT=$(sha1sum resourcepacks/*)
