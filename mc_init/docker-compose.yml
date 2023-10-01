@@ -30,6 +30,7 @@ services:
         lithium
         sodium
         iris
+        corgilib
         enhanced-celestials
       MODRINTH_ALLOWED_VERSION_TYPE: beta
       ICON: /resources/server-icon.png
