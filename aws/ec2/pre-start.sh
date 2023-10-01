@@ -2,7 +2,7 @@
 echo "Pre-start started"
 source /opt/.env
 cd /opt/percycraft
-PERCYCRAFT_VERSION=$(git describe --tags --long --dirty=dev --always)
+PERCYCRAFT_VERSION=$(git describe --tags --long --always)
 cd -
 /opt/percycraft/aws/ec2/restore.sh
 RESTORE_VERSION=$(cat /opt/data/percycraft.version)
@@ -71,9 +71,9 @@ EOF
   rm -rf /tmp/percycraft/web
   cd /opt/percycraft/friendly-fire
   zip -r ../friendly-fire .
-  cp /opt/percycraft/mc_init/friendly-fire/friendlyfire.json /opt/data/config/
   cd -
   mv /opt/percycraft/friendly-fire.zip /opt/data/world/datapacks
+  cp /opt/percycraft/mc_init/friendly-fire/friendlyfire.json /opt/data/config/
   mkdir -p /opt/data/config/enhancedgroups
   cp /opt/percycraft/mc_init/enhancedgroups/persistent-groups.json /opt/data/config/enhancedgroups/
   GROUP=$(cat /opt/percycraft/mc_init/enhancedgroups/persistent-groups.json | jq .[0].id)
@@ -87,6 +87,10 @@ EOF
   done
   echo ${AUTOJOIN%,*} >> /opt/data/config/enhancedgroups/auto-join-groups.json
   echo } >> /opt/data/config/enhancedgroups/auto-join-groups.json
+  cd /opt/percycraft/enhancedcelestials
+  zip -r ../enhancedcelestials .
+  cd -
+  mv /opt/percycraft/enhancedcelestials.zip /opt/data/world/datapacks  
   echo $PERCYCRAFT_VERSION > /opt/data/percycraft.version
 fi
 chown -R 1000:1000 /opt/data
