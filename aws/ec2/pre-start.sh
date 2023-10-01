@@ -44,11 +44,6 @@ AppPublisher=Diane Marigold
 AppPublisherURL=$(git config --get remote.origin.url)
 EOF
   cd -
-  if [ -f "/efs/album/latest.png" ]
-  then
-    mkdir -p /tmp/percycraft/web/album
-    cp /efs/album/latest.png /tmp/percycraft/web/album
-  fi
   docker run --rm -i -v "/opt/percycraft/installer:/work" amake/innosetup percycraft.iss
   cp /opt/percycraft/installer/Output/percycraft-installer.exe /tmp/percycraft/web
   cd /tmp/percycraft/web/
