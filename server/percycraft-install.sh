@@ -38,7 +38,7 @@ percycraft-env() {
     OUTPUT=$(sha1sum resourcepacks/*)
     OUTPUTS=($OUTPUT)
     JARS=(*.jar)
-    cat << EOF > /opt/data/percycraft.env
+    cat <<EOF >/opt/data/percycraft.env
 RESOURCE_PACK_SHA1=${OUTPUTS[0]}
 RESOURCE_PACK=${FILEBUCKETWEBSITEURL}/${OUTPUTS[1]}
 PASSWORD=$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 20; echo;)
@@ -62,8 +62,7 @@ client-installer() {
         echo "DownloadPage.Add('${FILEBUCKETWEBSITEURL}/mods/${MOD}', '${MOD}', '');" >> /tmp/installer/downloads.iss
         echo "Source: "{tmp}\\${MOD}"; DestDir: "{app}\\mods"; Flags: external" >> /tmp/installer/files.iss
     done < /opt/percycraft/client-mods/client-mods.txt
-    cd /opt/percycraft
-    cat << EOF > /tmp/installer/app.iss
+    cat <<EOF >/tmp/installer/app.iss
 AppVersion=$PERCYCRAFT_VERSION
 AppName=Percycraft
 AppPublisher=golbourn@gmail.com
@@ -73,7 +72,7 @@ EOF
     docker run --rm -i -v "/tmp/installer:/work" amake/innosetup percycraft.iss
     mkdir -p /tmp/percycraft/web
     cp /tmp/installer/Output/percycraft-installer.exe /tmp/percycraft/web
-    rm -rf tmp/installer
+    #rm -rf tmp/installer
     cd -
     echo client-installer complete >&2
 }
