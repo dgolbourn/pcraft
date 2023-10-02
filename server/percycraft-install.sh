@@ -118,7 +118,7 @@ friendlyfire() {
     cd /opt/percycraft/friendly-fire/friendly-fire
     zip -r ../friendly-fire .
     cd -
-    mv /opt/percycraft/friendly-fire.zip /opt/data/world/datapacks
+    mv /opt/percycraft/friendly-fire/friendly-fire.zip /opt/data/world/datapacks
     cp /opt/percycraft/friendly-fire/friendly-fire/friendlyfire.json /opt/data/config/
 }
 
@@ -140,10 +140,10 @@ enhancedgroups() {
 }
 
 enhancedcelestials() {
-    cd /opt/percycraft/enhancedcelestials
+    cd /opt/percycraft/enhancedcelestials/enhancedcelestials
     zip -r ../enhancedcelestials .
     cd -
-    mv /opt/percycraft/enhancedcelestials.zip /opt/data/world/datapacks    
+    mv /opt/percycraft/enhancedcelestials/enhancedcelestials.zip /opt/data/world/datapacks    
 }
 
 PERCYCRAFT_VERSION=$(version)

@@ -1,5 +1,5 @@
 #!/bin/bash
-
+echo Provision lobby started >&2
 allowlist() {
     echo "[" > /opt/lazymc/whitelist.json
     ALLOW=""
@@ -34,7 +34,7 @@ lobby() {
 
 vector() {
     mkdir -p /opt/vector
-    curl -o /opt/vector/setup.sh 'https://repositories.timber.io/public/vector/cfg/setup/bash.rpm.sh'
+    curl -o /opt/vector/setup.sh https://repositories.timber.io/public/vector/cfg/setup/bash.rpm.sh
     chmod +x /opt/vector/setup.sh
     /opt/vector/setup.sh
     yum install -y vector
@@ -47,3 +47,4 @@ vector() {
 
 vector
 lobby
+echo Provision lobby complete >&2

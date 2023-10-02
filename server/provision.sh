@@ -1,5 +1,5 @@
 #!/bin/bash
-echo Install started
+echo Provision server started
 
 docker() {
     echo Install docker started >&2
@@ -82,4 +82,4 @@ vector
 percycraft
 status
 
-echo Install complete
+echo Provision server complete
