@@ -38,14 +38,12 @@ percycraft-env() {
     OUTPUT=$(sha1sum resourcepacks/*)
     OUTPUTS=($OUTPUT)
     JARS=(*.jar)
-    cat <<EOF >/opt/data/percycraft.env
-RESOURCE_PACK_SHA1=${OUTPUTS[0]}
-RESOURCE_PACK=${FILEBUCKETWEBSITEURL}/${OUTPUTS[1]}
-PASSWORD=$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 20; echo;)
-WHITELIST=${PLAYERLIST}
-TZ=${TZ}
-CUSTOM_SERVER=/data/${JARS[0]}
-EOF
+    echo RESOURCE_PACK_SHA1=${OUTPUTS[0]} > /opt/data/percycraft.env
+    echo RESOURCE_PACK=${FILEBUCKETWEBSITEURL}/${OUTPUTS[1]} >> /opt/data/percycraft.env
+    echo PASSWORD=$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 20; echo;) >> /opt/data/percycraft.env
+    echo WHITELIST=${PLAYERLIST} >> /opt/data/percycraft.env
+    echo TZ=${TZ} >> /opt/data/percycraft.env
+    echo CUSTOM_SERVER=/data/${JARS[0]} >> /opt/data/percycraft.env
     cd -
     echo percycraft-env complete >&2
 }
@@ -62,15 +60,12 @@ client-installer() {
         echo "DownloadPage.Add('${FILEBUCKETWEBSITEURL}/mods/${MOD}', '${MOD}', '');" >> /tmp/installer/downloads.iss
         echo "Source: "{tmp}\\${MOD}"; DestDir: "{app}\\mods"; Flags: external" >> /tmp/installer/files.iss
     done < /opt/percycraft/client-mods/client-mods.txt
-    cat <<EOF >/tmp/installer/app.iss
-AppVersion=$PERCYCRAFT_VERSION
-AppName=Percycraft
-AppPublisher=golbourn@gmail.com
-AppPublisherURL=$(url)
-EOF
+    echo AppVersion=${PERCYCRAFT_VERSION} > /tmp/installer/app.iss
+    echo AppName=Percycraft >> /tmp/installer/app.iss
+    echo AppPublisher=golbourn@gmail.com  >> /tmp/installer/app.iss
+    echo AppPublisherURL=$(url)  >> /tmp/installer/app.iss
     chmod -R 777 /tmp/installer
     docker run --rm -i -v "/tmp/installer:/work" amake/innosetup percycraft.iss
-    mkdir -p /tmp/percycraft/web
     cp /tmp/installer/Output/percycraft-installer.exe /tmp/percycraft/web
     #rm -rf tmp/installer
     cd -
@@ -116,6 +111,7 @@ fileserver-static() {
 
 web() {
     echo web started >&2
+    mkdir -p /tmp/percycraft/web
     client-installer
     client-resourcepacks
     client-mods
