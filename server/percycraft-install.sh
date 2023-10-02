@@ -36,13 +36,13 @@ percycraft-env() {
     OUTPUTS=($OUTPUT)
     JARS=(*.jar)
     cat << EOF > /opt/data/percycraft.env
-RESOURCE_PACK_SHA1=${OUTPUTS[0]}"
+RESOURCE_PACK_SHA1=${OUTPUTS[0]}
 RESOURCE_PACK=${FILEBUCKETWEBSITEURL}/${OUTPUTS[1]}
 PASSWORD=$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 20; echo;)
 WHITELIST=${PLAYERLIST}
 TZ=${TZ}
 CUSTOM_SERVER=/data/${JARS[0]}
-EOF    
+EOF
     cd -
 }
 
@@ -74,7 +74,7 @@ EOF
 
 client-resourcepacks() {
     mkdir -p /tmp/percycraft/web/resourcepacks
-    cp /opt/data/resourcepacks/* /tmp/percycraft/web/resourcepacks/    
+    cp /opt/data/resourcepacks/* /tmp/percycraft/web/resourcepacks/
 }
 
 client-mods() {
@@ -143,7 +143,7 @@ enhancedcelestials() {
     cd /opt/percycraft/enhancedcelestials/enhancedcelestials
     zip -r ../enhancedcelestials .
     cd -
-    mv /opt/percycraft/enhancedcelestials/enhancedcelestials.zip /opt/data/world/datapacks    
+    mv /opt/percycraft/enhancedcelestials/enhancedcelestials.zip /opt/data/world/datapacks
 }
 
 PERCYCRAFT_VERSION=$(version)
