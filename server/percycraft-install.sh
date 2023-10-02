@@ -27,7 +27,7 @@ restore() {
 }
 
 install-minecraft() {
-    /usr/local/bin/docker-compose -f /opt/percycraft/mc_init/docker-compose.yml up
+    /usr/local/bin/docker-compose -f /opt/percycraft/install-minecraft/docker-compose.yml up
 }
 
 percycraft-env() {
@@ -48,7 +48,7 @@ EOF
 
 client-installer() {
     mkdir -p /tmp/installer
-    cp /opt/percycraft/installer/* /tmp/installer
+    cp /opt/percycraft/client-installer/* /tmp/installer
     echo -n > /tmp/installer/downloads.iss
     echo -n > /tmp/installer/files.iss
     cd /opt/data/mods
@@ -56,7 +56,7 @@ client-installer() {
         MOD=$(ls $p*)
         echo "DownloadPage.Add('${FILEBUCKETWEBSITEURL}/mods/${MOD}', '${MOD}', '');" >> /tmp/installer/downloads.iss
         echo "Source: "{tmp}\\${MOD}"; DestDir: "{app}\\mods"; Flags: external" >> /tmp/installer/files.iss
-    done < /opt/percycraft/mc_init/client-mods.txt
+    done < /opt/percycraft/client-mods/client-mods.txt
     cd /opt/percycraft
     cat << EOF > /tmp/installer/app.iss
 AppVersion=$PERCYCRAFT_VERSION
@@ -83,7 +83,7 @@ client-mods() {
     while read p; do
         MOD=$(ls $p*)
         cp -f /opt/data/mods/$MOD /tmp/percycraft/web/mods/
-    done < /opt/percycraft/mc_init/client-mods.txt
+    done < /opt/percycraft/client-mods/client-mods.txt
 }
 
 fileserver-static() {
@@ -115,17 +115,17 @@ web() {
 }
 
 friendlyfire() {
-    cd /opt/percycraft/friendly-fire
+    cd /opt/percycraft/friendly-fire/friendly-fire
     zip -r ../friendly-fire .
     cd -
     mv /opt/percycraft/friendly-fire.zip /opt/data/world/datapacks
-    cp /opt/percycraft/mc_init/friendly-fire/friendlyfire.json /opt/data/config/
+    cp /opt/percycraft/friendly-fire/friendly-fire/friendlyfire.json /opt/data/config/
 }
 
 enhancedgroups() {
     mkdir -p /opt/data/config/enhancedgroups
-    cp /opt/percycraft/mc_init/enhancedgroups/persistent-groups.json /opt/data/config/enhancedgroups/
-    GROUP=$(cat /opt/percycraft/mc_init/enhancedgroups/persistent-groups.json | jq .[0].id)
+    cp /opt/percycraft/enhancedgroups/persistent-groups.json /opt/data/config/enhancedgroups/
+    GROUP=$(cat /opt/percycraft/enhancedgroups/persistent-groups.json | jq .[0].id)
     echo { > /opt/data/config/enhancedgroups/auto-join-groups.json
     AUTOJOIN=""
     for i in ${PLAYERLIST//,/ }

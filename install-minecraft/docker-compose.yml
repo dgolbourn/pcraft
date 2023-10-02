@@ -1,6 +1,6 @@
 version: "3.8"
 services:
-  mc_init:
+  install-minecraft:
     image: itzg/minecraft-server
     environment:
       EULA: "TRUE"
@@ -37,6 +37,6 @@ services:
       OVERRIDE_ICON: "TRUE"      
     volumes:
       - /opt/data:/data
-      - /opt/percycraft/mc_init/vanillatweaks:/vanillatweaks:ro
-      - /opt/percycraft/mc_init/resources/:/resources:ro  
+      - /opt/percycraft/install-minecraft/vanillatweaks:/vanillatweaks:ro
+      - /opt/percycraft/install-minecraft/resources/:/resources:ro  
     restart: no

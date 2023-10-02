@@ -2,7 +2,7 @@
 
 stop-server() {
     echo Stop server started >&2
-    /usr/local/bin/docker-compose -f /opt/percycraft/mc/docker-compose.yml --env-file /opt/data/percycraft.env down
+    /usr/local/bin/docker-compose -f /opt/percycraft/minecraft/docker-compose.yml --env-file /opt/data/percycraft.env down
     echo Stop server complete >&2
 }
 
