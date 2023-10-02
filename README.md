@@ -18,7 +18,7 @@ Once the last player disconnects, if the server is idle for more than an hour, i
 
 At shutdown the server is backed up.
 
-As Percyraft was set up with my son in mind, to mitigate his lack of patience, the server is also configured to start up at certain times (e.g. weekends) so it is immediately ready even if no one has recently tried to connect.
+As Percycraft was set up with my son in mind, to mitigate his lack of patience, the server is also configured to start up at certain times (e.g. weekends) so it is immediately ready even if no one has recently tried to connect.
 
 The selection of mods I've chosen is motivated by the desire to track the look and feel of my favourite Minecraft Youtubers such as [Forge Labs](https://www.youtube.com/channel/UCiSVf-UpLC9rRjAT1qRTW0g) and those of the [Hermitcraft](https://hermitcraft.com/) series.
 
