@@ -15,22 +15,25 @@ url() {
 }
 
 restore() {
-    echo Restore started >&2
+    echo restore started >&2
     if (( $(ls /efs/backups | wc -l) > 0 )); then
         src=$(ls -t /efs/backups | head -1)
         rm -rf /opt/data
         mkdir -p /opt/data
         tar xf /efs/backups/$src -C /opt/data
     fi
-    echo Restore complete >&2
+    echo restore complete >&2
     cat /opt/data/percycraft.version
 }
 
 install-minecraft() {
+    echo install-minecraft started >&2
     /usr/local/bin/docker-compose -f /opt/percycraft/install-minecraft/docker-compose.yml up
+    echo install-minecraft complete >&2
 }
 
 percycraft-env() {
+    echo percycraft-env started >&2
     cd /opt/data
     OUTPUT=$(sha1sum resourcepacks/*)
     OUTPUTS=($OUTPUT)
@@ -44,9 +47,11 @@ TZ=${TZ}
 CUSTOM_SERVER=/data/${JARS[0]}
 EOF
     cd -
+    echo percycraft-env complete >&2
 }
 
 client-installer() {
+    echo client-installer started >&2
     mkdir -p /tmp/installer
     cp /opt/percycraft/client-installer/* /tmp/installer
     echo -n > /tmp/installer/downloads.iss
@@ -64,26 +69,31 @@ AppName=Percycraft
 AppPublisher=golbourn@gmail.com
 AppPublisherURL=$(url)
 EOF
-    chmod 777 /tmp/installer
+    chmod -R 777 /tmp/installer
     docker run --rm -i -v "/tmp/installer:/work" amake/innosetup percycraft.iss
     mkdir -p /tmp/percycraft/web
     cp /tmp/installer/Output/percycraft-installer.exe /tmp/percycraft/web
     rm -rf tmp/installer
     cd -
+    echo client-installer complete >&2
 }
 
 client-resourcepacks() {
+    echo client-resourcepacks started >&2
     mkdir -p /tmp/percycraft/web/resourcepacks
     cp /opt/data/resourcepacks/* /tmp/percycraft/web/resourcepacks/
+    echo client-resourcepacks complete >&2
 }
 
 client-mods() {
+    echo client-mods started >&2
     mkdir -p /tmp/percycraft/web/mods
     cd /opt/data/mods
     while read p; do
         MOD=$(ls $p*)
         cp -f /opt/data/mods/$MOD /tmp/percycraft/web/mods/
     done < /opt/percycraft/client-mods/client-mods.txt
+    echo client-mods complete >&2
 }
 
 fileserver-static() {
@@ -106,12 +116,14 @@ fileserver-static() {
 }
 
 web() {
+    echo web started >&2
     client-installer
     client-resourcepacks
     client-mods
     fileserver-static
     aws s3 cp /tmp/percycraft/web $FILEBUCKETS3URI --recursive
     rm -rf /tmp/percycraft/web
+    echo web complete >&2
 }
 
 friendlyfire() {
