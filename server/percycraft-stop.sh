@@ -1,4 +1,5 @@
 #!/bin/bash
+source /opt/.env
 
 stop-server() {
     echo Stop server started >&2
@@ -27,7 +28,6 @@ backup-efs() {
 
 generate-image() {
     echo Generating png of world started >&2
-    source /opt/.env
     ts=$(date +"%Y%m%d")
     imageFile="/efs/album/world-${ts}.png"
     /opt/mca-selector/bin/java -D/opt/mca-selector/bin -Xmx6g -jar /opt/mca-selector/lib/mca-selector.jar --mode select --world /opt/data/world --query "InhabitedTime > \"2 minutes\"" --radius 5 --output selection.csv

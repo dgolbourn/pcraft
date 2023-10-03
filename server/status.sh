@@ -1,4 +1,6 @@
 #!/bin/bash
+source /opt/.env
+
 get_player_count() {
     IFS=','
     read -a tmp <<< $(echo -n -e "\xFE\x01" | nc 127.0.0.1 25565 | sed 's/\x0\x0\x0/,/g'| sed 's/\x0//g')
@@ -32,13 +34,13 @@ status() {
             if (( $DONE )); then
                 DONE=false
                 echo active >&2
-                aws lambda invoke --function-name percycraft-StartStopLambda --payload "{\"start\":true,\"referrer\":\"server\"}" --cli-binary-format raw-in-base64-out /dev/null
+                aws lambda invoke --function-name $STARTSTOPLAMBDA --payload "{\"start\":true,\"referrer\":\"server\"}" --cli-binary-format raw-in-base64-out /dev/null
             fi
         elif (( $SECONDS > 3600 )); then
             if (( !$DONE )); then
                 DONE=true
                 echo idle >&2
-                aws lambda invoke --function-name percycraft-StartStopLambda --payload "{\"start\":false,\"referrer\":\"server\"}" --cli-binary-format raw-in-base64-out /dev/null
+                aws lambda invoke --function-name $STARTSTOPLAMBDA --payload "{\"start\":false,\"referrer\":\"server\"}" --cli-binary-format raw-in-base64-out /dev/null
             fi
         else
             if (( $COUNT != $PLAYERS )); then
@@ -52,5 +54,4 @@ status() {
 }
 
 ready
-
 status
