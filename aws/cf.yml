@@ -310,7 +310,8 @@ Resources:
               mount -t efs ${Efs}:/ /efs
               yum -y install git
               git clone --single-branch ${Repository} /opt/percycraft
-              echo "FILEBUCKETS3URI=s3://${FileBucket}" > /opt/.env
+              echo "DATABUCKETS3URI=s3://${DataBucket}" > /opt/.env
+              echo "FILEBUCKETS3URI=s3://${FileBucket}" >> /opt/.env
               echo "FILEBUCKETWEBSITEURL=${FileBucketWebsiteURL}" >> /opt/.env
               echo "PLAYERLIST=${Players}" >> /opt/.env
               echo "TZ=${TimeZone}" >> /opt/.env
@@ -727,6 +728,19 @@ Resources:
       FunctionName: !GetAtt GracefulShutdownLambda.Arn
       Principal: events.amazonaws.com
       SourceArn: !GetAtt TerminateEvent.Arn
+
+  DataBucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      AccessControl: Private
+      LifecycleConfiguration:
+        Rules:
+          - Id: FixedNumberOfVersions
+            Status: Enabled
+            NoncurrentVersionExpiration:
+              NoncurrentDays: 1
+              NewerNoncurrentVersions: 6
+    DeletionPolicy: Retain
 
   FileBucket:
     Type: 'AWS::S3::Bucket'
