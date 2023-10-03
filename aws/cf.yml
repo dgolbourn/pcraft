@@ -75,7 +75,7 @@ Metadata:
           default: SSH Configuration
         Parameters:
         - KeyPairName
-        - YourIPv4        
+        - YourIPv4
       - Label:
           default: Repository
         Parameters:
@@ -411,6 +411,17 @@ Resources:
                 Action: "lambda:InvokeFunction"
                 Resource:
                 - !GetAtt StartStopLambda.Arn
+              - Effect: "Allow"
+                Action: "s3:ListBucketVersions"
+                Resource:
+                - !GetAtt DataBucket.Arn
+              - Effect: "Allow"
+                Action: "s3:GetObjectVersion"
+                Resource: !Join
+                  - ''
+                  - - 'arn:aws:s3:::'
+                    - !Ref DataBucket
+                    - /*
 
   InstanceProfile:
     Type: AWS::IAM::InstanceProfile
@@ -688,7 +699,7 @@ Resources:
     Type: 'AWS::S3::Bucket'
     Properties:
       VersioningConfiguration:
-        Status: Enabled    
+        Status: Enabled
       AccessControl: Private
       LifecycleConfiguration:
         Rules:
@@ -703,7 +714,7 @@ Resources:
     Type: 'AWS::S3::Bucket'
     Properties:
       VersioningConfiguration:
-        Status: Enabled    
+        Status: Enabled
       AccessControl: Private
       LifecycleConfiguration:
         Rules:
