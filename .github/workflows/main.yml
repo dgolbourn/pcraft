@@ -26,4 +26,4 @@ jobs:
         uses: aws-actions/aws-cloudformation-github-deploy@v1
         with:
           name: percycraft
-          template: aws/cf.yaml
+          template: aws/cf.yml
