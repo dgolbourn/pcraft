@@ -14,6 +14,14 @@ url() {
 
 restore() {
     echo restore started >&2
+    aws s3 cp $DATABUCKETS3URI/data.tgz /tmp/
+    tar xf /tmp/data.tgz -C /opt/data
+    echo restore complete >&2
+    cat /opt/data/percycraft.version
+}
+
+restore-efs() {
+    echo restore started >&2
     if (( $(ls /efs/backups | wc -l) > 0 )); then
         src=$(ls -t /efs/backups | head -1)
         rm -rf /opt/data
@@ -150,6 +158,7 @@ enhancedcelestials() {
 
 PERCYCRAFT_VERSION=$(version)
 RESTORE_VERSION=$(restore)
+RESTORE_VERSION=$(restore-efs)
 if [ "$PERCYCRAFT_VERSION" = "$RESTORE_VERSION" ]; then
     echo Continuing with existing Percycraft version $PERCYCRAFT_VERSION >&2
 else

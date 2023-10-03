@@ -8,15 +8,20 @@ stop-server() {
 
 backup() {
     echo Backup started >&2
+    tar --gzip -cf /tmp/data.tgz -C /opt/data .
+    aws s3 cp /tmp/data.tgz $DATABUCKETS3URI
+    rm -rf /tmp/data.tgz
+    echo Backup complete >&2
+}
+
+backup-efs() {
+    echo Backup started >&2
     ts=$(date +"%Y%m%d-%H%M%S")
     outFile="/efs/backups/world-${ts}.tgz"
     tar --gzip -cf "${outFile}" -C /opt/data .
     ln -sf ${outFile} /efs/backups/latest.tgz
     cd /efs/backups
     find . -maxdepth 1 -type f -printf '%T@ %p\0' | sort -r -z -n | awk 'BEGIN { RS="\0"; ORS="\0"; FS="" } NR > 8 { sub("^[0-9]*(.[0-9]*)? ", ""); print }' | xargs -0 rm -f
-    tar --gzip -cf /tmp/data.tgz -C /opt/data .
-    aws s3 cp /tmp/data.tgz $DATABUCKETS3URI/data/
-    rm -rf /tmp/data.tgz
     echo Backup complete >&2
 }
 
@@ -35,4 +40,5 @@ generate-image() {
 
 stop-server
 backup
+backup-efs
 generate-image
