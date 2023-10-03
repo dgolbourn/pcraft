@@ -5,13 +5,11 @@ source /opt/.env
 version() {
     cd /opt/percycraft
     git describe --tags --long --always
-    cd -
 }
 
 url() {
     cd /opt/percycraft
     git config --get remote.origin.url
-    cd -
 }
 
 restore() {
@@ -44,7 +42,6 @@ percycraft-env() {
     echo "WHITELIST=${PLAYERLIST}">> /opt/data/percycraft.env
     echo "TZ=${TZ}" >> /opt/data/percycraft.env
     echo "CUSTOM_SERVER=/data/${JARS[0]}" >> /opt/data/percycraft.env
-    cd -
     echo percycraft-env complete >&2
 }
 
@@ -54,6 +51,7 @@ client-installer() {
     cp /opt/percycraft/client-installer/* /tmp/installer
     echo -n > /tmp/installer/downloads.iss
     echo -n > /tmp/installer/files.iss
+    URL=$(url)
     cd /opt/data/mods
     while read p; do
         MOD=$(ls $p*)
@@ -62,37 +60,36 @@ client-installer() {
     done < /opt/percycraft/client-mods/client-mods.txt
     echo "AppVersion=${PERCYCRAFT_VERSION}" > /tmp/installer/app.iss
     echo "AppName=Percycraft" >> /tmp/installer/app.iss
-    echo "AppPublisher=golbourn@gmail.com"  >> /tmp/installer/app.iss
-    echo "AppPublisherURL=$(url)"  >> /tmp/installer/app.iss
+    echo "AppPublisher=golbourn@gmail.com" >> /tmp/installer/app.iss
+    echo "AppPublisherURL=${URL}" >> /tmp/installer/app.iss
     chmod -R 777 /tmp/installer
     docker run --rm -i -v "/tmp/installer:/work" amake/innosetup percycraft.iss
-    cp /tmp/installer/Output/percycraft-installer.exe /tmp/percycraft/web
-    #rm -rf tmp/installer
-    cd -
+    cp /tmp/installer/Output/percycraft-installer.exe /tmp/web
+    rm -rf tmp/installer
     echo client-installer complete >&2
 }
 
 client-resourcepacks() {
     echo client-resourcepacks started >&2
-    mkdir -p /tmp/percycraft/web/resourcepacks
-    cp /opt/data/resourcepacks/* /tmp/percycraft/web/resourcepacks/
+    mkdir -p /tmp/web/resourcepacks
+    cp /opt/data/resourcepacks/* /tmp/web/resourcepacks/
     echo client-resourcepacks complete >&2
 }
 
 client-mods() {
     echo client-mods started >&2
-    mkdir -p /tmp/percycraft/web/mods
+    mkdir -p /tmp/web/mods
     cd /opt/data/mods
     while read p; do
         MOD=$(ls $p*)
-        cp -f /opt/data/mods/$MOD /tmp/percycraft/web/mods/
+        cp -f /opt/data/mods/$MOD /tmp/web/mods/
     done < /opt/percycraft/client-mods/client-mods.txt
     echo client-mods complete >&2
 }
 
 fileserver-static() {
     echo fileserver-static started >&2
-    cd /tmp/percycraft/web/
+    cd /tmp/web/
     find . -type d -print -exec sh -c 'tree "$0" \
         -H "." \
         -L 1 \
@@ -106,27 +103,25 @@ fileserver-static() {
         -s \
         -D \
         -o "$0/index.html"' {} \;
-    cd -
-    cp -r /opt/percycraft/filebucket/* /tmp/percycraft/web
+    cp -r /opt/percycraft/filebucket/* /tmp/web
     echo fileserver-static complete >&2
 }
 
 web() {
     echo web started >&2
-    mkdir -p /tmp/percycraft/web
+    mkdir -p /tmp/web
     client-installer
     client-resourcepacks
     client-mods
     fileserver-static
-    aws s3 cp /tmp/percycraft/web $FILEBUCKETS3URI --recursive
-    rm -rf /tmp/percycraft/web
+    aws s3 cp /tmp/web $FILEBUCKETS3URI --recursive
+    rm -rf /tmp/web
     echo web complete >&2
 }
 
 friendlyfire() {
     cd /opt/percycraft/friendly-fire/friendly-fire
     zip -r ../friendly-fire .
-    cd -
     mv /opt/percycraft/friendly-fire/friendly-fire.zip /opt/data/world/datapacks
     cp /opt/percycraft/friendly-fire/friendly-fire/friendlyfire.json /opt/data/config/
 }
@@ -145,13 +140,11 @@ enhancedgroups() {
     done
     echo ${AUTOJOIN%,*} >> /opt/data/config/enhancedgroups/auto-join-groups.json
     echo } >> /opt/data/config/enhancedgroups/auto-join-groups.json
-    cd -
 }
 
 enhancedcelestials() {
     cd /opt/percycraft/enhancedcelestials/enhancedcelestials
     zip -r ../enhancedcelestials .
-    cd -
     mv /opt/percycraft/enhancedcelestials/enhancedcelestials.zip /opt/data/world/datapacks
 }
 
