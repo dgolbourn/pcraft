@@ -21,19 +21,6 @@ mcrcon() {
     echo Install mcrcon complete >&2
 }
 
-mcaselector() {
-    echo Install mcaselector started >&2
-    yum install -y gtk3-devel
-    yum install -y xorg-x11-server-Xvfb
-    curl -o javafx.tar.gz https://cdn.azul.com/zulu/bin/zulu17.30.15-ca-fx-jre17.0.1-linux_x64.tar.gz
-    tar -xvzf javafx.tar.gz
-    mv zulu* /opt/mca-selector
-    rm javafx.tar.gz
-    curl -fsSL -o mca-selector.jar https://github.com/Querz/mcaselector/releases/download/2.2.2/mcaselector-2.2.2.jar
-    mv mca-selector.jar /opt/mca-selector/lib/mca-selector.jar
-    echo Install mcaselector complete >&2
-}
-
 vector() {
     echo Install vector started >&2
     mkdir -p /opt/vector
@@ -75,7 +62,6 @@ status() {
 
 docker
 mcrcon
-mcaselector
 vector
 percycraft
 status

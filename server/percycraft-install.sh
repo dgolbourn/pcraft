@@ -17,7 +17,6 @@ restore() {
     aws s3 cp $DATABUCKETS3URI/data.tgz /tmp/
     tar xf /tmp/data.tgz -C /opt/data
     echo restore complete >&2
-    cat /opt/data/percycraft.version
 }
 
 install-minecraft() {
@@ -145,7 +144,8 @@ enhancedcelestials() {
 }
 
 PERCYCRAFT_VERSION=$(version)
-RESTORE_VERSION=$(restore)
+restore
+RESTORE_VERSION=$(cat /opt/data/percycraft.version)
 if [ "$PERCYCRAFT_VERSION" = "$RESTORE_VERSION" ]; then
     echo Continuing with existing Percycraft version $PERCYCRAFT_VERSION >&2
 else
