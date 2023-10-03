@@ -21,9 +21,10 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::719158693954:role/Percycraft
           role-session-name: GithubDeployPercycraft
-          aws-region: eu-west-2       
+          aws-region: eu-west-2
       - name: Deploy to AWS CloudFormation
         uses: aws-actions/aws-cloudformation-github-deploy@v1
         with:
           name: percycraft
           template: aws/cf.yml
+          no-execute-changeset: 1
