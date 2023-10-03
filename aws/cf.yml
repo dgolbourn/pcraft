@@ -305,9 +305,6 @@ Resources:
               #!/bin/bash -xe
               yum update -y
               timedatectl set-timezone ${TimeZone}
-              yum install -y amazon-efs-utils
-              mkdir /efs
-              mount -t efs ${Efs}:/ /efs
               yum -y install git
               git clone --single-branch ${Repository} /opt/percycraft
               echo "ALBUMBUCKETS3URI=s3://${AlbumBucket}" > /opt/.env
@@ -734,6 +731,8 @@ Resources:
   AlbumBucket:
     Type: 'AWS::S3::Bucket'
     Properties:
+      VersioningConfiguration:
+        Status: Enabled    
       AccessControl: Private
       LifecycleConfiguration:
         Rules:
@@ -747,6 +746,8 @@ Resources:
   DataBucket:
     Type: 'AWS::S3::Bucket'
     Properties:
+      VersioningConfiguration:
+        Status: Enabled    
       AccessControl: Private
       LifecycleConfiguration:
         Rules:
@@ -822,9 +823,6 @@ Resources:
               #!/bin/bash -xe
               yum update -y
               timedatectl set-timezone ${TimeZone}
-              yum install -y amazon-efs-utils
-              mkdir /efs
-              mount -t efs ${Efs}:/ /efs
               yum -y install git
               git clone --single-branch ${Repository} /opt/percycraft
               echo "PLAYERLIST=${Players}" > /opt/.env

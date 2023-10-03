@@ -20,18 +20,6 @@ restore() {
     cat /opt/data/percycraft.version
 }
 
-restore-efs() {
-    echo restore started >&2
-    if (( $(ls /efs/backups | wc -l) > 0 )); then
-        src=$(ls -t /efs/backups | head -1)
-        rm -rf /opt/data
-        mkdir -p /opt/data
-        tar xf /efs/backups/$src -C /opt/data
-    fi
-    echo restore complete >&2
-    cat /opt/data/percycraft.version
-}
-
 install-minecraft() {
     echo install-minecraft started >&2
     /usr/local/bin/docker-compose -f /opt/percycraft/install-minecraft/docker-compose.yml up
@@ -158,7 +146,6 @@ enhancedcelestials() {
 
 PERCYCRAFT_VERSION=$(version)
 RESTORE_VERSION=$(restore)
-RESTORE_VERSION=$(restore-efs)
 if [ "$PERCYCRAFT_VERSION" = "$RESTORE_VERSION" ]; then
     echo Continuing with existing Percycraft version $PERCYCRAFT_VERSION >&2
 else

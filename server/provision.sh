@@ -52,8 +52,6 @@ vector() {
 percycraft() {
     echo Install percycraft started >&2
     mkdir -p /opt/data
-    mkdir -p /efs/backups
-    mkdir -p /efs/album
     yum install -y tree
     chmod +x /opt/percycraft/server/percycraft-install.sh
     /opt/percycraft/server/percycraft-install.sh
