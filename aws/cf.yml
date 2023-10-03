@@ -798,8 +798,9 @@ Resources:
               mount -t efs ${Efs}:/ /efs
               yum -y install git
               git clone --single-branch ${Repository} /opt/percycraft
+              echo "PLAYERLIST=${Players}" >> /opt/.env
               chmod +x /opt/percycraft/lobby/provision.sh
-              /opt/percycraft/lobby/provision.sh ${Players}
+              /opt/percycraft/lobby/provision.sh
 
   LobbyAutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
