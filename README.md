@@ -24,7 +24,7 @@ The selection of mods I've chosen is motivated by the desire to track the look a
 
 There is also a file server to host the client-side resource packs and mods.
 
-[Here](http://cdn.pcraft.co.uk/album/latest.png) is the world so far!
+[Here](http://cdn.pcraft.co.uk/album/world.png) is the world so far!
 
 For players
 -----------
