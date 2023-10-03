@@ -316,11 +316,10 @@ Resources:
               echo "FILEBUCKETWEBSITEURL=${FileBucketWebsiteURL}" >> /opt/.env
               echo "PLAYERLIST=${Players}" >> /opt/.env
               echo "TZ=${TimeZone}" >> /opt/.env
-              echo "STARTSTOPLAMBDA=${StartStopLambda}" >> /opt/.env
+              echo "STARTSTOPLAMBDA=${AWS::StackName}-StartStopLambda" >> /opt/.env
               chmod +x /opt/percycraft/server/provision.sh
               /opt/percycraft/server/provision.sh
             - FileBucketWebsiteURL: !GetAtt FileBucket.WebsiteURL
-            - StartStopLambda: !Sub "${AWS::StackName}-StartStopLambda"
 
   AutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
@@ -733,7 +732,7 @@ Resources:
       SourceArn: !GetAtt TerminateEvent.Arn
 
   AlbumBucket:
-    Type: AWS::S3::Bucket
+    Type: 'AWS::S3::Bucket'
     Properties:
       AccessControl: Private
       LifecycleConfiguration:
@@ -746,7 +745,7 @@ Resources:
     DeletionPolicy: Retain
 
   DataBucket:
-    Type: AWS::S3::Bucket
+    Type: 'AWS::S3::Bucket'
     Properties:
       AccessControl: Private
       LifecycleConfiguration:
@@ -759,7 +758,7 @@ Resources:
     DeletionPolicy: Retain
 
   FileBucket:
-    Type: AWS::S3::Bucket
+    Type: 'AWS::S3::Bucket'
     Properties:
       BucketName: !Ref FileServerHostName
       PublicAccessBlockConfiguration:
@@ -819,8 +818,7 @@ Resources:
             AssociatePublicIpAddress: true
             Groups: [!Ref Ec2Sg]
         UserData:
-          Fn::Base64: !Sub 
-            - |
+          Fn::Base64: !Sub |
               #!/bin/bash -xe
               yum update -y
               timedatectl set-timezone ${TimeZone}
@@ -830,10 +828,9 @@ Resources:
               yum -y install git
               git clone --single-branch ${Repository} /opt/percycraft
               echo "PLAYERLIST=${Players}" > /opt/.env
-              echo "STARTSTOPLAMBDA=${StartStopLambda}" >> /opt/.env
+              echo "STARTSTOPLAMBDA=${AWS::StackName}-StartStopLambda" >> /opt/.env
               chmod +x /opt/percycraft/lobby/provision.sh
               /opt/percycraft/lobby/provision.sh
-            - StartStopLambda: !Sub "${AWS::StackName}-StartStopLambda"
 
   LobbyAutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
