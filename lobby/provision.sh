@@ -28,7 +28,7 @@ lobby() {
     cp /opt/percycraft/lobby/server.properties /opt/lazymc
     cp /opt/percycraft/lobby/lazymc.toml /opt/lazymc
     cp /opt/percycraft/lobby/server-icon.png /opt/lazymc
-    chmod +x /opt/lazymc/lobby/server.sh    
+    chmod +x /opt/lazymc/server.sh    
     cp /opt/percycraft/lobby/lobby.service /etc/systemd/system/lobby.service
     systemctl enable lobby.service
     systemctl start lobby.service
