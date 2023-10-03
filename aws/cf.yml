@@ -310,7 +310,8 @@ Resources:
               mount -t efs ${Efs}:/ /efs
               yum -y install git
               git clone --single-branch ${Repository} /opt/percycraft
-              echo "DATABUCKETS3URI=s3://${DataBucket}" > /opt/.env
+              echo "ALBUMBUCKETS3URI=s3://${AlbumBucket}" > /opt/.env
+              echo "DATABUCKETS3URI=s3://${DataBucket}" >> /opt/.env
               echo "FILEBUCKETS3URI=s3://${FileBucket}" >> /opt/.env
               echo "FILEBUCKETWEBSITEURL=${FileBucketWebsiteURL}" >> /opt/.env
               echo "PLAYERLIST=${Players}" >> /opt/.env
@@ -731,13 +732,26 @@ Resources:
       Principal: events.amazonaws.com
       SourceArn: !GetAtt TerminateEvent.Arn
 
-  DataBucket:
-    Type: 'AWS::S3::Bucket'
+  AlbumBucket:
+    Type: AWS::S3::Bucket
     Properties:
       AccessControl: Private
       LifecycleConfiguration:
         Rules:
-          - Id: FixedNumberOfVersions
+          - Id: ArchiveRule
+            Status: Enabled
+            NoncurrentVersionTransition:
+              TransitionInDays: 1
+              StorageClass: DEEP_ARCHIVE
+    DeletionPolicy: Retain
+
+  DataBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      AccessControl: Private
+      LifecycleConfiguration:
+        Rules:
+          - Id: FixedNumberOfVersionsRule
             Status: Enabled
             NoncurrentVersionExpiration:
               NoncurrentDays: 1
@@ -745,7 +759,7 @@ Resources:
     DeletionPolicy: Retain
 
   FileBucket:
-    Type: 'AWS::S3::Bucket'
+    Type: AWS::S3::Bucket
     Properties:
       BucketName: !Ref FileServerHostName
       PublicAccessBlockConfiguration:
