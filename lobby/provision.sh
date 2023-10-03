@@ -1,9 +1,11 @@
 #!/bin/bash
 echo Provision lobby started >&2
+source /opt/.env
+
 allowlist() {
     echo "[" > /opt/lazymc/whitelist.json
     ALLOW=""
-    for i in ${1//,/ }
+    for i in ${PLAYERLIST//,/ }
     do
         PERSON=$(curl https://api.mojang.com/users/profiles/minecraft/$i)
         ALLOW+=$PERSON,
