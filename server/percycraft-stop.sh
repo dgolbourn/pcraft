@@ -30,5 +30,5 @@ generate-image() {
 }
 
 stop-server
-#backup
-#generate-image
+backup
+generate-image
