@@ -27,4 +27,5 @@ jobs:
         with:
           name: percycraft
           template: aws/cf.yml
+          parameter-overrides: "KeyPairName=${{ secrets.KEYPAIRNAME }},YourIPv4=${{ secrets.YOURIPV4 }},Players=${{ secrets.PLAYERS }}"
           no-execute-changeset: 1
