@@ -44,6 +44,7 @@ percycraft() {
     /opt/percycraft/server/percycraft-install.sh
     chmod +x /opt/percycraft/server/percycraft-start.sh
     chmod +x /opt/percycraft/server/percycraft-stop.sh
+    chmod +x /opt/percycraft/server/force-stop.sh
     cp /opt/percycraft/server/percycraft.service /etc/systemd/system/percycraft.service
     systemctl enable percycraft.service
     systemctl start percycraft.service
