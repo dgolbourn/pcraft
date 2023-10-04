@@ -599,7 +599,7 @@ Resources:
                 HonorCooldown=False
             )
             print(json.dumps(response, sort_keys=True, default=str))
-            if(!reference_count):
+            if(reference_count == False):
               response = boto3.client('autoscaling').set_desired_capacity(
                   AutoScalingGroupName=os.environ['LobbyAutoScalingGroupName'],
                   DesiredCapacity=1,
