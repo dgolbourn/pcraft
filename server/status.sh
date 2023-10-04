@@ -3,16 +3,18 @@ source /opt/.env
 
 get_player_count() {
     IFS=','
-    read -a tmp <<< $(echo -n -e "\xFE\x01" | nc 127.0.0.1 25565 | sed 's/\x0\x0\x0/,/g'| sed 's/\x0//g')
+    read -a tmp <<< $(echo -n -e "\xFE\x01" | nc -w 60s 127.0.0.1 25565 | sed 's/\x0\x0\x0/,/g'| sed 's/\x0//g')
     echo ${tmp[4]}
 }
 
 ready() {
     echo waiting
     while true; do
-        nc -w 10s -z 127.0.0.1 25565 < /dev/null
+        nc -w 60s -z 127.0.0.1 25565 < /dev/null
         if (( $? == 0 )); then
             echo ready >&2
+            INSTANCE_ID=$(ec2-metadata --instance-id | cut -d " " -f 2)
+            aws lambda invoke --function-name $STARTCONTINUELAMBDA --payload "{\"detail\":{\"EC2InstanceId\":\"$INSTANCE_ID\"}}" --cli-binary-format raw-in-base64-out /dev/null
             break
         fi
     done
