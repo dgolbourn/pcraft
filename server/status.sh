@@ -17,7 +17,7 @@ status() {
     while true; do
         COUNT=$(get_player_count)
         if [[ $COUNT =~ $REGEX ]]; then
-            if (( !$READY )); then
+            if [ "$READY" = false ]; then
                 READY=true
                 echo ready >&2
                 echo $COUNT
@@ -30,13 +30,13 @@ status() {
                     PLAYERS=$COUNT
                     echo $COUNT
                 fi
-                if (( $DONE )); then
+                if [ "$DONE" = true ]; then
                     DONE=false
                     echo active >&2
                     aws lambda invoke --function-name $STARTSTOPLAMBDA --payload "{\"start\":true,\"referrer\":\"server\"}" --cli-binary-format raw-in-base64-out /dev/null
                 fi
             elif (( $SECONDS > 3600 )); then
-                if (( !$DONE )); then
+                if [ "$DONE" = false ]; then
                     DONE=true
                     echo idle >&2
                     aws lambda invoke --function-name $STARTSTOPLAMBDA --payload "{\"start\":false,\"referrer\":\"server\"}" --cli-binary-format raw-in-base64-out /dev/null
