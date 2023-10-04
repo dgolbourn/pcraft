@@ -54,8 +54,6 @@ client-installer() {
         echo "Source: "{tmp}\\${MOD}"; DestDir: "{app}\\mods"; Flags: external" >> /tmp/installer/files.iss
     done < /opt/percycraft/client-mods/client-mods.txt
     echo "AppVersion=${PERCYCRAFT_VERSION}" > /tmp/installer/app.iss
-    echo "AppName=Percycraft" >> /tmp/installer/app.iss
-    echo "AppPublisher=golbourn@gmail.com" >> /tmp/installer/app.iss
     echo "AppPublisherURL=${URL}" >> /tmp/installer/app.iss
     chmod -R 777 /tmp/installer
     docker run --rm -i -v "/tmp/installer:/work" amake/innosetup percycraft.iss

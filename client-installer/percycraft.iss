@@ -1,4 +1,7 @@
 [Setup]
+AppId=Percycraft
+AppName=Percycraft Installer
+AppPublisher=golbourn@gmail.com
 #include "app.iss"
 WizardStyle=modern
 DefaultDirName={userappdata}\.minecraft
