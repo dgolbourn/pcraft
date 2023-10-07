@@ -34,7 +34,7 @@ percycraft-env() {
     echo "RESOURCE_PACK_SHA1=${OUTPUTS[0]}" > /opt/data/percycraft.env
     echo "RESOURCE_PACK=${FILEBUCKETWEBSITEURL}/${OUTPUTS[1]}" >> /opt/data/percycraft.env
     echo "PASSWORD=$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 20; echo;)" >> /opt/data/percycraft.env
-    echo "WHITELIST=${PLAYERLIST}">> /opt/data/percycraft.env
+    echo "WHITELIST=${PLAYERLIST}" >> /opt/data/percycraft.env
     echo "TZ=${TZ}" >> /opt/data/percycraft.env
     echo "CUSTOM_SERVER=/data/${JARS[0]}" >> /opt/data/percycraft.env
     echo percycraft-env complete >&2
@@ -107,19 +107,22 @@ web() {
     client-resourcepacks
     client-mods
     fileserver-static
-    aws s3 cp /tmp/web $FILEBUCKETS3URI --recursive
+    aws s3 sync /tmp/web $FILEBUCKETS3URI --delete --exclude "/album/*"
     rm -rf /tmp/web
     echo web complete >&2
 }
 
-friendlyfire() {
+friendly-fire() {
+    echo friendly-fire started >&2
     cd /opt/percycraft/friendly-fire/friendly-fire
     zip -r ../friendly-fire .
     mv /opt/percycraft/friendly-fire/friendly-fire.zip /opt/data/world/datapacks
     cp /opt/percycraft/friendly-fire/friendly-fire/friendlyfire.json /opt/data/config/
+    echo friendly-fire complete >&2
 }
 
 enhancedgroups() {
+    echo enhancedgroups started >&2
     mkdir -p /opt/data/config/enhancedgroups
     cp /opt/percycraft/enhancedgroups/persistent-groups.json /opt/data/config/enhancedgroups/
     GROUP=$(cat /opt/percycraft/enhancedgroups/persistent-groups.json | jq .[0].id)
@@ -133,12 +136,7 @@ enhancedgroups() {
     done
     echo ${AUTOJOIN%,*} >> /opt/data/config/enhancedgroups/auto-join-groups.json
     echo } >> /opt/data/config/enhancedgroups/auto-join-groups.json
-}
-
-enhancedcelestials() {
-    cd /opt/percycraft/enhancedcelestials/enhancedcelestials
-    zip -r ../enhancedcelestials .
-    mv /opt/percycraft/enhancedcelestials/enhancedcelestials.zip /opt/data/world/datapacks
+    echo enhancedgroups complete >&2
 }
 
 PERCYCRAFT_VERSION=$(version)
@@ -151,9 +149,8 @@ else
     install-minecraft
     percycraft-env
     web
-    friendlyfire
+    friendly-fire
     enhancedgroups
-    enhancedcelestials
     echo $PERCYCRAFT_VERSION > /opt/data/percycraft.version
 fi
 chown -R 1000:1000 /opt/data

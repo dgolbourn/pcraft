@@ -21,7 +21,6 @@
             "SuspiciousSandGravelBorders"
         ],
         "hud": [
-            "NumberedHotbar",
             "PingColorIndicator"
         ],
         "unobtrusive": [

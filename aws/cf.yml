@@ -422,6 +422,13 @@ Resources:
                   - - 'arn:aws:s3:::'
                     - !Ref DataBucket
                     - /*
+              - Effect: "Allow"
+                Action: "s3:DeleteObject"
+                Resource: !Join
+                  - ''
+                  - - 'arn:aws:s3:::'
+                    - !Ref FileBucket
+                    - /*                    
 
   InstanceProfile:
     Type: AWS::IAM::InstanceProfile
