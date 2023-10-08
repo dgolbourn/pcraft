@@ -428,7 +428,7 @@ Resources:
                   - ''
                   - - 'arn:aws:s3:::'
                     - !Ref FileBucket
-                    - /*                    
+                    - /*
 
   InstanceProfile:
     Type: AWS::IAM::InstanceProfile
@@ -494,8 +494,7 @@ Resources:
                   'MaxAttempts': 60
                 }
               )
-              as_client = boto3.client('autoscaling')
-              response = as_client.complete_lifecycle_action(
+              response = boto3.client('autoscaling').complete_lifecycle_action(
                   LifecycleHookName=event['detail']['LifecycleHookName'],
                   AutoScalingGroupName=event['detail']['AutoScalingGroupName'],
                   LifecycleActionToken=event['detail']['LifecycleActionToken'],
@@ -556,10 +555,11 @@ Resources:
           import json
           def lambda_handler(event, context):
             print(json.dumps(event, sort_keys=True, default=str))
-            boto3.client('ec2').associate_address(
+            response = boto3.client('ec2').associate_address(
                 AllocationId=os.environ['AllocationId'],
                 InstanceId=event['detail']['EC2InstanceId']
             )
+            print(json.dumps(response, sort_keys=True, default=str))
             response = boto3.client('autoscaling').set_desired_capacity(
                 AutoScalingGroupName=os.environ['LobbyAutoScalingGroupName'],
                 DesiredCapacity=0,
