@@ -4,5 +4,3 @@ shulkerboxtooltip
 Bookshelf
 iris
 sodium
-CorgiLib
-Enhanced_Celestials
