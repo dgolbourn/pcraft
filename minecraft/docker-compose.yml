@@ -7,7 +7,7 @@ services:
       TYPE: CUSTOM
       CUSTOM_SERVER: ${CUSTOM_SERVER}
       FAMILY: FABRIC
-      MOTD: Welcome to the Percycraft server!
+      MOTD: §k* §l§6Welcome §fto the §l§cPercycraft §fserver! §k*
       RESOURCE_PACK: ${RESOURCE_PACK}
       RESOURCE_PACK_SHA1: ${RESOURCE_PACK_SHA1}
       WHITELIST: ${WHITELIST}
