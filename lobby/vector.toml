@@ -1,10 +1,10 @@
 [sources.lobby]
 type = "journald"
-include_units = ["lobby"]
+include_units = ["smp", "create"]
 
 [sinks.cloudwatch]
 type = "aws_cloudwatch_logs"
-inputs = ["lobby"]
+inputs = ["smp", "create"]
 group_name = "percycraft"
 stream_name = "lobby"
 encoding.codec = "json"

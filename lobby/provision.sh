@@ -5,7 +5,20 @@ source /opt/.env
 allowlist() {
     echo "[" > /opt/lazymc/whitelist.json
     ALLOW=""
-    for i in ${PLAYERLIST//,/ }
+    for i in ${SMPPLAYERLIST//,/ }
+    do
+        PERSON=$(curl https://api.mojang.com/users/profiles/minecraft/$i)
+        ALLOW+=$PERSON,
+    done
+    echo ${ALLOW%,*} >> /opt/lazymc/whitelist.json
+    echo "]" >> /opt/lazymc/whitelist.json
+    sed -i "s/\"id\"/\"uuid\"/g" /opt/lazymc/whitelist.json
+}
+
+allowlist() {
+    echo "[" > /opt/lazymc/whitelist.json
+    ALLOW=""
+    for i in ${CREATEPLAYERLIST//,/ }
     do
         PERSON=$(curl https://api.mojang.com/users/profiles/minecraft/$i)
         ALLOW+=$PERSON,
@@ -24,14 +37,22 @@ lazymc() {
 lobby() {
     lazymc
     allowlist
-    cp /opt/percycraft/lobby/server.sh /opt/lazymc
-    cp /opt/percycraft/lobby/server.properties /opt/lazymc
-    cp /opt/percycraft/lobby/lazymc.toml /opt/lazymc
-    cp /opt/percycraft/lobby/server-icon.png /opt/lazymc
-    chmod +x /opt/lazymc/server.sh    
-    cp /opt/percycraft/lobby/lobby.service /etc/systemd/system/lobby.service
-    systemctl enable lobby.service
-    systemctl start lobby.service
+
+    cp -r /opt/percycraft/lobby/smp /opt/smp
+    chmod +x /opt/smp/server.sh
+    ln -s /opt/lazymc/lazymc /opt/smp/lazymc
+    ln -s /opt/lazymc/whitelist.json /opt/smp/whitelist.json
+    cp /opt/percycraft/lobby/smp/lobby.service /etc/systemd/system/smp.service
+    systemctl enable smp.service
+    systemctl start smp.service
+
+    cp -r /opt/percycraft/lobby/create /opt/create
+    chmod +x /opt/create/server.sh
+    ln -s /opt/lazymc/lazymc /opt/create/lazymc
+    ln -s /opt/lazymc/whitelist.json /opt/create/whitelist.json
+    cp /opt/percycraft/lobby/create/lobby.service /etc/systemd/system/create.service
+    systemctl enable create.service
+    systemctl start create.service
 }
 
 vector() {

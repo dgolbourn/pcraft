@@ -804,6 +804,7 @@ Resources:
         KeyName: !Ref KeyPairName
         NetworkInterfaces:
           - DeviceIndex: 0
+            SecondaryPrivateIpAddressCount: 1
             AssociatePublicIpAddress: true
             Groups: [!Ref Ec2Sg]
         UserData:

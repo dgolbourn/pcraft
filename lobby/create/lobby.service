@@ -1,0 +1,11 @@
+[Unit]
+Description=Create Anything lobby
+After=vector.service
+Requires=vector.service
+
+[Service]
+Restart=no
+ExecStart=/opt/create/lazymc -c /opt/create/lazymc.toml
+
+[Install]
+WantedBy=multi-user.target
