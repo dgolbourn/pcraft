@@ -19,9 +19,15 @@ restore() {
     echo restore complete >&2
 }
 
+install-env() {
+    echo install-env started >&2
+    echo "CFAPIKEY=${CFAPIKEY}" > /opt/data/install.env
+    echo percycraft-env complete >&2
+}
+
 install-minecraft() {
     echo install-minecraft started >&2
-    /usr/local/bin/docker-compose -f /opt/percycraft/install-minecraft/docker-compose.yml -e CFAPIKEY=${CFAPIKEY} up
+    /usr/local/bin/docker-compose -f /opt/percycraft/install-minecraft/docker-compose.yml -env-file /opt/data/install.env up
     echo install-minecraft complete >&2
 }
 

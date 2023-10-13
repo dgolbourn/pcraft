@@ -107,6 +107,8 @@ Metadata:
         - LOBBYAMI
 
     ParameterLabels:
+      CurseForgeAPIKey:
+        default: "https://console.curseforge.com/#/api-keys"
       KeyPairName:
         default: "Key Pair: https://console.aws.amazon.com/ec2/v2/home?#KeyPairs:sort=keyName"
       YourIPv4:
