@@ -8,7 +8,7 @@ services:
       SETUP_ONLY: "TRUE"
       VERSION: "1.20.1"
       VANILLATWEAKS_FILE: |
-        /vanillatweaks/datapacks.json,
+        /vanillatweaks/datapacks.json
         /vanillatweaks/resourcepacks.json
         /vanillatweaks/craftingtweaks.json
       MODRINTH_PROJECTS: |
@@ -32,6 +32,11 @@ services:
         iris
         individual-keep-inventory
       MODRINTH_ALLOWED_VERSION_TYPE: beta
+      CF_API_KEY: ${CFAPIKEY}
+      CURSEFORGE_FILES: |
+        litematica
+        malilib
+        worldedit        
       ICON: /resources/server-icon.png
       OVERRIDE_ICON: "TRUE"      
     volumes:

@@ -22,11 +22,19 @@ jobs:
           role-to-assume: arn:aws:iam::719158693954:role/Percycraft
           role-session-name: GithubDeployPercycraft
           aws-region: eu-west-2
-      - name: Deploy to AWS CloudFormation
+      - name: Deploy Survival
         uses: aws-actions/aws-cloudformation-github-deploy@v1
         with:
           name: percycraft
           template: aws/cf.yml
-          parameter-overrides: "KeyPairName=${{ secrets.KEYPAIRNAME }},YourIPv4=${{ secrets.YOURIPV4 }},Players=\"${{ secrets.PLAYERS }}\""
+          parameter-overrides: "KeyPairName=${{ secrets.KEYPAIRNAME }},YourIPv4=${{ secrets.YOURIPV4 }},Players=\"${{ secrets.PLAYERS }}\",CurseForgeAPIKey=${{ secrets.CURSEFORGEAPIKEY }},Profile=survival"
           no-execute-changeset: 1
           no-fail-on-empty-changeset: 1
+      - name: Deploy Creative
+        uses: aws-actions/aws-cloudformation-github-deploy@v1
+        with:
+          name: create-anything
+          template: aws/cf.yml
+          parameter-overrides: "KeyPairName=${{ secrets.KEYPAIRNAME }},YourIPv4=${{ secrets.YOURIPV4 }},Players=\"${{ secrets.CREATIVEPLAYERS }}\",CurseForgeAPIKey=${{ secrets.CURSEFORGEAPIKEY }},Profile=creative,FileServerHostName=cdn2.pcraft.co.uk,WeekdayStartSchedule=\"\",WeekdayStopSchedule=\"\",WeekendStartSchedule=\"\",WeekendStopSchedule=\"\""
+          no-execute-changeset: 1
+          no-fail-on-empty-changeset: 1          

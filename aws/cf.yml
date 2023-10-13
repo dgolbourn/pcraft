@@ -26,6 +26,10 @@ Parameters:
     Type: String
     Default: ''
 
+  CurseForgeAPIKey:
+    Type: String
+    Default: ''
+
   TimeZone:
     Type: String
     Default: Europe/London
@@ -49,6 +53,10 @@ Parameters:
   Repository:
     Type: String
     Default: https://github.com/dgolbourn/percycraft.git
+
+  Profile:
+    Type: String
+    Default: survival
 
 Conditions:
   WeekdayStartScheduleProvided: !Not [ !Equals [ !Ref WeekdayStartSchedule, '' ] ]
@@ -80,6 +88,14 @@ Metadata:
           default: Repository
         Parameters:
         - Repository
+      - Label:
+          default: Curse Forge API key
+        Parameters:
+        - CurseForgeAPIKey
+      - Label:
+          default: Profile
+        Parameters:
+        - Profile        
       - Label:
           default: Host names
         Parameters:
@@ -275,6 +291,8 @@ Resources:
               echo "TZ=${TimeZone}" >> /opt/.env
               echo "STARTSTOPLAMBDA=${AWS::StackName}-StartStopLambda" >> /opt/.env
               echo "STARTCONTINUELAMBDA=${AWS::StackName}-StartContinueLambda" >> /opt/.env
+              echo "CFAPIKEY=${CurseForgeAPIKey}" >> /opt/.env
+              echo "PROFILE=${Profile}" >> /opt/.env
               chmod +x /opt/percycraft/server/provision.sh
               /opt/percycraft/server/provision.sh
             - FileBucketWebsiteURL: !GetAtt FileBucket.WebsiteURL

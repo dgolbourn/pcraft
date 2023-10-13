@@ -21,7 +21,7 @@ restore() {
 
 install-minecraft() {
     echo install-minecraft started >&2
-    /usr/local/bin/docker-compose -f /opt/percycraft/install-minecraft/docker-compose.yml up
+    /usr/local/bin/docker-compose -f /opt/percycraft/install-minecraft/docker-compose.yml -e CFAPIKEY=${CFAPIKEY} up
     echo install-minecraft complete >&2
 }
 

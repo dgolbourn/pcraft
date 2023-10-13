@@ -1,0 +1,31 @@
+version: "3.8"
+services:
+  minecraft:
+    image: itzg/minecraft-server
+    environment:
+      EULA: "TRUE"
+      TYPE: CUSTOM
+      CUSTOM_SERVER: ${CUSTOM_SERVER}
+      FAMILY: FABRIC
+      MOTD: Welcome to the Create Anything!
+      RESOURCE_PACK: ${RESOURCE_PACK}
+      RESOURCE_PACK_SHA1: ${RESOURCE_PACK_SHA1}
+      OPS: ${WHITELIST}
+      EXISTING_OPS_FILE: SKIP
+      MEMORY: 6G
+      STOP_SERVER_ANNOUCE_DELAY: 60
+      STOP_DURATION: 240
+      RCON_PASSWORD: ${PASSWORD}
+      TZ: ${TZ}
+      MODE: creative
+    stop_grace_period: 5m
+    volumes:
+      - /opt/data:/data
+    ports:
+      - "25575:25575"
+      - "25565:25565"
+      - "8080:8080"
+      - "24454:24454/udp"
+    stdin_open: true
+    tty: true
+    restart: no

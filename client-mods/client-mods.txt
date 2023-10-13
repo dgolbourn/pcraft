@@ -4,3 +4,5 @@ shulkerboxtooltip
 Bookshelf
 iris
 sodium
+litematica
+malilib
