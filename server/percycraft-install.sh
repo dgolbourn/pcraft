@@ -22,7 +22,7 @@ restore() {
 install-env() {
     echo install-env started >&2
     echo "CFAPIKEY=${CFAPIKEY}" > /opt/data/install.env
-    echo percycraft-env complete >&2
+    echo install-env complete >&2
 }
 
 install-minecraft() {
