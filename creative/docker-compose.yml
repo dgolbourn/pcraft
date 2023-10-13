@@ -7,7 +7,7 @@ services:
       TYPE: CUSTOM
       CUSTOM_SERVER: ${CUSTOM_SERVER}
       FAMILY: FABRIC
-      MOTD: Welcome to the Create Anything!
+      MOTD: Welcome to Create Anything!
       RESOURCE_PACK: ${RESOURCE_PACK}
       RESOURCE_PACK_SHA1: ${RESOURCE_PACK_SHA1}
       OPS: ${WHITELIST}

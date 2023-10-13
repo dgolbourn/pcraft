@@ -16,12 +16,13 @@ restore() {
     echo restore started >&2
     aws s3 cp $DATABUCKETS3URI/data.tgz /tmp/
     tar xf /tmp/data.tgz -C /opt/data
+    echo Restored Percycraft version $RESTORE_VERSION >&2
     echo restore complete >&2
 }
 
 install-env() {
     echo install-env started >&2
-    echo "CFAPIKEY=${CFAPIKEY}" > /opt/data/install.env
+    echo "CF_API_KEY=$CFAPIKEY" > /opt/data/install.env
     echo install-env complete >&2
 }
 
@@ -145,13 +146,7 @@ enhancedgroups() {
     echo enhancedgroups complete >&2
 }
 
-PERCYCRAFT_VERSION=$(version)
-restore
-RESTORE_VERSION=$(cat /opt/data/percycraft.version)
-if [ "$PERCYCRAFT_VERSION" = "$RESTORE_VERSION" ]; then
-    echo Continuing with existing Percycraft version $PERCYCRAFT_VERSION >&2
-else
-    echo Restored Percycraft version $RESTORE_VERSION, changing to version $PERCYCRAFT_VERSION >&2
+install-all() {
     install-env
     install-minecraft
     percycraft-env
@@ -159,6 +154,22 @@ else
     friendly-fire
     enhancedgroups
     echo $PERCYCRAFT_VERSION > /opt/data/percycraft.version
+    cp /opt/env /opt/data/previous.env
+}
+
+PERCYCRAFT_VERSION=$(version)
+restore
+RESTORE_VERSION=$(cat /opt/data/percycraft.version)
+if [ "$PERCYCRAFT_VERSION" = "$RESTORE_VERSION" ]; then
+    if cmp -s /opt/.env /opt/data/previous.env; then
+        echo Continuing with existing Percycraft version >&2
+    else
+        echo Env variables have changed, reinstalling Percycraft >&2
+        install-all
+    fi
+else
+    echo Percycraft version has changed to $PERCYCRAFT_VERSION >&2
+    install-all
 fi
 chown -R 1000:1000 /opt/data
 echo Install server complete >&2
