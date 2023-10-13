@@ -152,6 +152,7 @@ if [ "$PERCYCRAFT_VERSION" = "$RESTORE_VERSION" ]; then
     echo Continuing with existing Percycraft version $PERCYCRAFT_VERSION >&2
 else
     echo Restored Percycraft version $RESTORE_VERSION, changing to version $PERCYCRAFT_VERSION >&2
+    install-env
     install-minecraft
     percycraft-env
     web
