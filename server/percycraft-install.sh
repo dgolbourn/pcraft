@@ -27,7 +27,7 @@ install-env() {
 
 install-minecraft() {
     echo install-minecraft started >&2
-    /usr/local/bin/docker-compose -f /opt/percycraft/install-minecraft/docker-compose.yml -env-file /opt/data/install.env up
+    /usr/local/bin/docker-compose -f /opt/percycraft/install-minecraft/docker-compose.yml --env-file /opt/data/install.env up
     echo install-minecraft complete >&2
 }
 
