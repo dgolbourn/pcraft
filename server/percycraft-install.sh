@@ -154,7 +154,7 @@ install-all() {
     friendly-fire
     enhancedgroups
     echo $PERCYCRAFT_VERSION > /opt/data/percycraft.version
-    cp /opt/env /opt/data/previous.env
+    cp /opt/.env /opt/data/previous.env
 }
 
 PERCYCRAFT_VERSION=$(version)
