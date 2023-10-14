@@ -293,7 +293,7 @@ Resources:
               echo "TZ=${TimeZone}" >> /opt/.env
               echo "STARTSTOPLAMBDA=${AWS::StackName}-StartStopLambda" >> /opt/.env
               echo "STARTCONTINUELAMBDA=${AWS::StackName}-StartContinueLambda" >> /opt/.env
-              echo "CF_API_KEY=\'${CurseForgeAPIKey}\'" >> /opt/.env
+              echo "CF_API_KEY='${CurseForgeAPIKey}'" >> /opt/.env
               echo "PROFILE=${Profile}" >> /opt/.env
               chmod +x /opt/percycraft/server/provision.sh
               /opt/percycraft/server/provision.sh
