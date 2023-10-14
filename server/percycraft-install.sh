@@ -22,7 +22,7 @@ restore() {
 
 install-env() {
     echo install-env started >&2
-    echo "CF_API_KEY=${CF_API_KEY//$/\$\$}" > /opt/data/install.env
+    echo "CF_API_KEY=${CF_API_KEY//£/\$\$}" > /opt/data/install.env
     echo install-env complete >&2
 }
 
