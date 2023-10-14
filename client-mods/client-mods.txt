@@ -6,3 +6,7 @@ iris
 sodium
 litematica
 malilib
+WorldEditCUI
+WorldEditItems
+techutils
+modmenu
