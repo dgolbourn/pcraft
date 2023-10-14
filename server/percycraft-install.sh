@@ -28,6 +28,7 @@ install-env() {
 
 install-minecraft() {
     echo install-minecraft started >&2
+    rm -rf /opt/data/mods
     /usr/local/bin/docker-compose -f /opt/percycraft/install-minecraft/docker-compose.yml --env-file /opt/data/install.env up
     rm -rf /opt/data/.modrinth-manifest.json
     rm -rf /opt/data/.curseforge-files-manifest.json
