@@ -149,6 +149,12 @@ enhancedgroups() {
     echo enhancedgroups complete >&2
 }
 
+worldedit() {
+    echo worldedit started >&2
+    cp /opt/percycraft/worldedit/worldedit.properties /opt/data/config/worldedit/
+    echo worldedit complete >&2
+}
+
 install-all() {
     install-env
     install-minecraft
