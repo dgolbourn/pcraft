@@ -53,7 +53,7 @@ percycraft-env() {
 client-installer() {
     echo client-installer started >&2
     mkdir -p /tmp/installer
-    cp /opt/percycraft/client-installer/* /tmp/installer
+    cp /opt/percycraft/web/client-installer/* /tmp/installer
     echo -n > /tmp/installer/downloads.iss
     echo -n > /tmp/installer/files.iss
     URL=$(url)
@@ -62,7 +62,7 @@ client-installer() {
         MOD=$(ls $p*)
         echo "DownloadPage.Add('${FILEBUCKETWEBSITEURL}/mods/${MOD}', '${MOD}', '');" >> /tmp/installer/downloads.iss
         echo "Source: "{tmp}\\${MOD}"; DestDir: "{app}\\mods"; Flags: external" >> /tmp/installer/files.iss
-    done < /opt/percycraft/client-mods/client-mods.txt
+    done < /opt/percycraft/web/client-mods/client-mods.txt
     echo "AppVersion=${PERCYCRAFT_VERSION}" > /tmp/installer/app.iss
     echo "AppPublisherURL=${URL}" >> /tmp/installer/app.iss
     chmod -R 777 /tmp/installer
@@ -86,7 +86,7 @@ client-mods() {
     while read p; do
         MOD=$(ls $p*)
         cp -f /opt/data/mods/$MOD /tmp/web/mods/
-    done < /opt/percycraft/client-mods/client-mods.txt
+    done < /opt/percycraft/web/client-mods/client-mods.txt
     echo client-mods complete >&2
 }
 
@@ -106,7 +106,7 @@ fileserver-static() {
         -s \
         -D \
         -o "$0/index.html"' {} \;
-    cp -r /opt/percycraft/filebucket/* /tmp/web
+    cp -r /opt/percycraft/web/filebucket/* /tmp/web
     echo fileserver-static complete >&2
 }
 
@@ -124,18 +124,18 @@ web() {
 
 friendly-fire() {
     echo friendly-fire started >&2
-    cd /opt/percycraft/friendly-fire/friendly-fire
+    cd /opt/percycraft/mods/friendly-fire/friendly-fire
     zip -r ../friendly-fire .
-    mv /opt/percycraft/friendly-fire/friendly-fire.zip /opt/data/world/datapacks
-    cp /opt/percycraft/friendly-fire/friendlyfire.json /opt/data/config/
+    mv /opt/percycraft/mods/friendly-fire/friendly-fire.zip /opt/data/world/datapacks
+    cp /opt/percycraft/mods/friendly-fire/friendlyfire.json /opt/data/config/
     echo friendly-fire complete >&2
 }
 
 enhancedgroups() {
     echo enhancedgroups started >&2
     mkdir -p /opt/data/config/enhancedgroups
-    cp /opt/percycraft/enhancedgroups/persistent-groups.json /opt/data/config/enhancedgroups/
-    GROUP=$(cat /opt/percycraft/enhancedgroups/persistent-groups.json | jq .[0].id)
+    cp /opt/percycraft/mods/enhancedgroups/persistent-groups.json /opt/data/config/enhancedgroups/
+    GROUP=$(cat /opt/percycraft/mods/enhancedgroups/persistent-groups.json | jq .[0].id)
     echo { > /opt/data/config/enhancedgroups/auto-join-groups.json
     AUTOJOIN=""
     for i in ${PLAYERLIST//,/ }
@@ -151,7 +151,7 @@ enhancedgroups() {
 
 worldedit() {
     echo worldedit started >&2
-    cp /opt/percycraft/worldedit/worldedit.properties /opt/data/config/worldedit/
+    cp /opt/percycraft/mods/worldedit/worldedit.properties /opt/data/config/worldedit/
     echo worldedit complete >&2
 }
 
