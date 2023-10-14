@@ -27,7 +27,7 @@ jobs:
         with:
           name: percycraft
           template: aws/cf.yml
-          parameter-overrides: "KeyPairName=${{ secrets.KEYPAIRNAME }},YourIPv4=${{ secrets.YOURIPV4 }},Players=\"${{ secrets.PLAYERS }}\",CurseForgeAPIKey=${{ secrets.CURSEFORGEAPIKEY }},Profile=survival"
+          parameter-overrides: "KeyPairName=${{ secrets.KEYPAIRNAME }},YourIPv4=${{ secrets.YOURIPV4 }},Players=\"${{ secrets.PLAYERS }}\",CurseForgeAPIKey=${{ secrets.CURSEFORGEAPIKEY }},Profile=survival,WeekdayStartSchedule=\"\",WeekdayStopSchedule=\"\",WeekendStartSchedule=\"\",WeekendStopSchedule=\"\""
           no-execute-changeset: 1
           no-fail-on-empty-changeset: 1
       - name: Deploy Creative
