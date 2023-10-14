@@ -6,7 +6,6 @@ services:
       EULA: "TRUE"
       TYPE: CUSTOM
       CUSTOM_SERVER: ${CUSTOM_SERVER}
-      REMOVE_OLD_MODS: "FALSE"
       FAMILY: FABRIC
       MOTD: Welcome to Create Anything!
       RESOURCE_PACK: ${RESOURCE_PACK}
