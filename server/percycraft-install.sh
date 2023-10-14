@@ -32,7 +32,7 @@ install-minecraft() {
     /usr/local/bin/docker-compose -f /opt/percycraft/install-minecraft/docker-compose.yml --env-file /opt/data/install.env up
     rm -rf /opt/data/.modrinth-manifest.json
     rm -rf /opt/data/.curseforge-files-manifest.json
-    echo install-minecraft complete >&s2
+    echo install-minecraft complete >&2
 }
 
 percycraft-env() {
