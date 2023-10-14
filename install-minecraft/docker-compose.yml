@@ -31,16 +31,12 @@ services:
         sodium
         iris
         individual-keep-inventory
-        worldedit-items
-        modmenu
-        techutils
       MODRINTH_ALLOWED_VERSION_TYPE: beta
       CF_API_KEY: ${CF_API_KEY}
       CURSEFORGE_FILES: |
         litematica
         malilib
         worldedit
-        worldeditcui-fabric
       ICON: /resources/server-icon.png
       OVERRIDE_ICON: "TRUE"
     volumes:

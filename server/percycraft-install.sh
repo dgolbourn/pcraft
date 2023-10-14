@@ -126,7 +126,7 @@ friendly-fire() {
     cd /opt/percycraft/friendly-fire/friendly-fire
     zip -r ../friendly-fire .
     mv /opt/percycraft/friendly-fire/friendly-fire.zip /opt/data/world/datapacks
-    cp /opt/percycraft/friendly-fire/friendly-fire/friendlyfire.json /opt/data/config/
+    cp /opt/percycraft/friendly-fire/friendlyfire.json /opt/data/config/
     echo friendly-fire complete >&2
 }
 
