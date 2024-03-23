@@ -6,7 +6,7 @@ services:
       EULA: "TRUE"
       TYPE: FABRIC
       SETUP_ONLY: "TRUE"
-      VERSION: "1.20.1"
+      VERSION: "1.20.2"
       VANILLATWEAKS_FILE: |
         /vanillatweaks/datapacks.json
         /vanillatweaks/resourcepacks.json
@@ -31,7 +31,9 @@ services:
         sodium
         iris
         individual-keep-inventory
-      MODRINTH_ALLOWED_VERSION_TYPE: beta
+        distanthorizons
+        bsl-shaders
+      MODRINTH_ALLOWED_VERSION_TYPE: alpha
       CF_API_KEY: ${CF_API_KEY}
       CURSEFORGE_FILES: |
         litematica
