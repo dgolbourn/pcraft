@@ -6,3 +6,4 @@ iris
 sodium
 litematica
 malilib
+DistantHorizons
