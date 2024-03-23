@@ -32,7 +32,6 @@ services:
         iris
         individual-keep-inventory
         distanthorizons
-        bsl-shaders
       MODRINTH_ALLOWED_VERSION_TYPE: alpha
       CF_API_KEY: ${CF_API_KEY}
       CURSEFORGE_FILES: |

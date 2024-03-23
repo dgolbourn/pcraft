@@ -7,4 +7,3 @@ sodium
 litematica
 malilib
 distanthorizons
-bsl-shaders
