@@ -31,8 +31,7 @@ services:
         sodium
         iris
         individual-keep-inventory
-        DistantHorizons
-      MODRINTH_ALLOWED_VERSION_TYPE: alpha
+      MODRINTH_ALLOWED_VERSION_TYPE: beta
       CF_API_KEY: ${CF_API_KEY}
       CURSEFORGE_FILES: |
         litematica
