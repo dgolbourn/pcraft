@@ -23,6 +23,6 @@ build {
     environment_vars = [
       "FOO=hello world",
     ]
-    script = "build/provision-base.sh"
+    script = "sudo build/provision-base.sh"
   }
 }
