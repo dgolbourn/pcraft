@@ -16,7 +16,7 @@ source "amazon-ebs" "percycraft-base" {
 }
 
 build {
-  name    = "percycraft"
+  name    = "percycraft-base"
   sources = ["source.amazon-ebs.percycraft-base"]
   provisioner "shell" {
     environment_vars = [
