@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       build: ${{ steps.build.outputs.src }}
-      aws: ${{ steps.aws.outputs.src }}      
+      aws: ${{ steps.aws.outputs.src }}
     steps:
     - uses: actions/checkout@v3
     - uses: dorny/paths-filter@v3
@@ -26,10 +26,10 @@ jobs:
       with:
         filters: |
           src:
-            - 'aws/**'            
+            - 'aws/**'
   Packer:
     needs: build-trigger
-    if: ${{ needs.build-trigger.outputs.build == 'true' }}
+    if: needs.build-trigger.outputs.build == 'true'
     runs-on: ubuntu-latest
     name: Run Packer
     steps:
@@ -56,8 +56,10 @@ jobs:
         id: build
         run: "packer build build/percycraft-base.pkr.hcl"
   PrepareChangeSet:
-    needs: build-trigger
-    if: ${{ needs.build-trigger.outputs.aws == 'true' }}    
+    needs:
+      - build-trigger
+      - Packer
+    if: needs.build-trigger.outputs.aws == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Git clone the repository
@@ -83,4 +85,4 @@ jobs:
           template: aws/cf.yml
           parameter-overrides: "KeyPairName=${{ secrets.KEYPAIRNAME }},YourIPv4=${{ secrets.YOURIPV4 }},Players=\"${{ secrets.CREATIVEPLAYERS }}\",CurseForgeAPIKey=${{ secrets.CURSEFORGEAPIKEY }},Profile=creative,FileServerHostName=cdn2.pcraft.co.uk,WeekdayStartSchedule=\"\",WeekdayStopSchedule=\"\",WeekendStartSchedule=\"\",WeekendStopSchedule=\"\""
           no-execute-changeset: 1
-          no-fail-on-empty-changeset: 1          
+          no-fail-on-empty-changeset: 1

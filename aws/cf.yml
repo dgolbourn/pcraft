@@ -4,7 +4,7 @@ Parameters:
 
   EC2AMI:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
-    Default: percycraft-base
+    Default: /percycraft/ami-latest/base-x86_64
 
   LOBBYAMI:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>

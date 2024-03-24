@@ -18,14 +18,23 @@ source "amazon-ebs" "percycraft-base" {
   force_delete_snapshot = "true"
 }
 
+
 build {
   name    = "percycraft-base"
   sources = ["source.amazon-ebs.percycraft-base"]
+
   provisioner "shell" {
     environment_vars = [
       "FOO=hello world"
     ]
     execute_command = "sudo env {{ .Vars }} {{ .Path }}"
     script          = "build/provision-base.sh"
+  }
+
+  post-processor "manifest"{}
+
+  post-processor "shell-local" {
+    execute_command = ["sudo env {{ .Vars }} {{ .Path }}"]
+    script = "build/ami-parameter-store.sh"
   }
 }
