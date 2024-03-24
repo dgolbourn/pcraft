@@ -8,12 +8,12 @@ packer {
 }
 
 source "amazon-ebs" "percycraft-base" {
-  ami_name          = "percycraft-base"
-  instance_type     = "t3a.large"
-  region            = "eu-west-2"
-  source_ami        = "ami-0e58172bedd62916b"
-  ssh_username      = "ec2-user"
-  ssh_timeout       = "20m"
+  ami_name      = "percycraft-base"
+  instance_type = "t3a.large"
+  region        = "eu-west-2"
+  source_ami    = "ami-0e58172bedd62916b"
+  ssh_username  = "ec2-user"
+  ssh_timeout   = "20m"
 }
 
 build {
@@ -24,6 +24,6 @@ build {
       "FOO=hello world"
     ]
     execute_command = "sudo env {{ .Vars }} {{ .Path }}"
-    script = "build/provision-base.sh"
+    script          = "build/provision-base.sh"
   }
 }

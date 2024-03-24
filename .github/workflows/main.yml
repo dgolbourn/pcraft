@@ -4,11 +4,32 @@ on:
   - push
 
 permissions:
-      id-token: write
-      contents: read
+  id-token: write
+  contents: read
 
 jobs:
+  build-trigger:
+    runs-on: ubuntu-latest
+    outputs:
+      build: ${{ steps.build.outputs.src }}
+      aws: ${{ steps.aws.outputs.src }}      
+    steps:
+    - uses: actions/checkout@v3
+    - uses: dorny/paths-filter@v3
+      id: build
+      with:
+        filters: |
+          src:
+            - 'build/**'
+    - uses: dorny/paths-filter@v3
+      id: aws
+      with:
+        filters: |
+          src:
+            - 'aws/**'            
   Packer:
+    needs: build-trigger
+    if: ${{ needs.build-trigger.outputs.build == 'true' }}
     runs-on: ubuntu-latest
     name: Run Packer
     steps:
@@ -35,6 +56,8 @@ jobs:
         id: build
         run: "packer build build/percycraft-base.pkr.hcl"
   PrepareChangeSet:
+    needs: build-trigger
+    if: ${{ needs.build-trigger.outputs.aws == 'true' }}    
     runs-on: ubuntu-latest
     steps:
       - name: Git clone the repository
