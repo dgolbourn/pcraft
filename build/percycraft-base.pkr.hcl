@@ -16,6 +16,7 @@ source "amazon-ebs" "percycraft-base" {
   security_group_id = "sg-05c7965a1a755551c"
   ssh_timeout       = "20m"
   vpc_id            = "vpc-09c7f69f2900a0df4"
+  subnet_id         = "subnet-0c53e3a5493659240"
 }
 
 build {
