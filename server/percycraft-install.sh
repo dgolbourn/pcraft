@@ -164,6 +164,7 @@ install-all() {
     enhancedgroups
     echo $PERCYCRAFT_VERSION > /opt/data/percycraft.version
     cp /opt/.env /opt/data/previous.env
+    chown -R 1000:1000 /opt/data
 }
 
 PERCYCRAFT_VERSION=$(version)
@@ -173,12 +174,14 @@ if [ "$PERCYCRAFT_VERSION" = "$RESTORE_VERSION" ]; then
     if cmp -s /opt/.env /opt/data/previous.env; then
         echo Continuing with existing Percycraft version >&2
     else
+        echo IS_TEST_RUN=true >> /opt/.env
         echo Env variables have changed, reinstalling Percycraft >&2
         install-all
     fi
 else
+    echo IS_TEST_RUN=true >> /opt/.env
     echo Percycraft version has changed to $PERCYCRAFT_VERSION >&2
     install-all
 fi
-chown -R 1000:1000 /opt/data
+
 echo Install server complete >&2

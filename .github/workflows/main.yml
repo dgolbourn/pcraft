@@ -1,16 +1,39 @@
 name: Deploy Percycraft
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  - push
 
 permissions:
       id-token: write
       contents: read
 
 jobs:
+  Packer:
+    runs-on: ubuntu-latest
+    name: Run Packer
+    steps:
+      - name: Git clone the repository
+        uses: actions/checkout@v3
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v1.7.0
+        with:
+          role-to-assume: arn:aws:iam::719158693954:role/Percycraft
+          role-session-name: GithubDeployPercycraft
+          aws-region: eu-west-2
+      - name: Setup `packer`
+        uses: hashicorp/setup-packer@main
+        id: setup
+        with:
+          version: latest
+      - name: Run `packer init`
+        id: init
+        run: "packer init build/"
+      - name: Run `packer validate`
+        id: validate
+        run: "packer validate build/"
+      - name: Build AMI
+        id: build
+        run: "packer build build/percycraft-base.pkr.hcl"
   PrepareChangeSet:
     runs-on: ubuntu-latest
     steps:
