@@ -8,11 +8,14 @@ packer {
 }
 
 source "amazon-ebs" "percycraft-base" {
-  ami_name      = "percycraft-base"
-  instance_type = "t3a.large"
-  region        = "eu-west-2"
-  source_ami    = "ami-0e58172bedd62916b"
-  ssh_username  = "ec2-user"
+  ami_name          = "percycraft-base"
+  instance_type     = "t3a.large"
+  region            = "eu-west-2"
+  source_ami        = "ami-0e58172bedd62916b"
+  ssh_username      = "ec2-user"
+  security_group_id = "sg-05c7965a1a755551c"
+  ssh_timeout       = "20m"
+  vpc_id            = "vpc-09c7f69f2900a0df4"
 }
 
 build {
