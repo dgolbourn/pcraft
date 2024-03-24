@@ -22,6 +22,12 @@ build {
     environment_vars = [
       "FOO=hello world",
     ]
+    inline = [
+      "#!/bin/sh -x",
+      "export AWS_POLL_DELAY_SECONDS=30",
+      "export AWS_MAX_ATTEMPTS=3000",
+      "export AWS_TIMEOUT_SECONDS=3000" 
+    ]
     script = "build/provision-base.sh"
   }
 }
