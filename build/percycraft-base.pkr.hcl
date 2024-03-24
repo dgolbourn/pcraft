@@ -22,7 +22,7 @@ build {
   provisioner "shell" {
     environment_vars = [
       "FOO=hello world"
-    ],
+    ]
     execute_command = "sudo env {{ .Vars }} {{ .Path }}"
     script = "build/provision-base.sh"
   }
