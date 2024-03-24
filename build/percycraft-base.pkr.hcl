@@ -14,6 +14,8 @@ source "amazon-ebs" "percycraft-base" {
   source_ami    = "ami-0e58172bedd62916b"
   ssh_username  = "ec2-user"
   ssh_timeout   = "20m"
+  force_deregister = "true",
+  force_delete_snapshot = "true"
 }
 
 build {
