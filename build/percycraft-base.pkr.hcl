@@ -21,9 +21,9 @@ build {
   sources = ["source.amazon-ebs.percycraft-base"]
   provisioner "shell" {
     environment_vars = [
-      "FOO=hello world",
+      "FOO=hello world"
     ],
-    execute_command = "sudo env {{ .Vars }} {{ .Path }}",
+    execute_command = "sudo env {{ .Vars }} {{ .Path }}"
     script = "build/provision-base.sh"
   }
 }
