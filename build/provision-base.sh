@@ -1,6 +1,12 @@
 #!/bin/bash -xe
 echo Provision server started >&2
 
+aws() {
+    export AWS_POLL_DELAY_SECONDS=30
+    export AWS_MAX_ATTEMPTS=3000
+    export AWS_TIMEOUT_SECONDS=3000 
+}
+
 git() {
     yum update -y
     yum -y install git
@@ -48,6 +54,7 @@ percycraftbase() {
     echo Install percycraft complete >&2
 }
 
+aws
 git
 docker
 mcrcon
