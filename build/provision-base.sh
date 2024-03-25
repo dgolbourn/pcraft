@@ -45,8 +45,8 @@ vectorbase() {
     curl -o /opt/vector/setup.sh https://repositories.timber.io/public/vector/cfg/setup/bash.rpm.sh
     chmod +x /opt/vector/setup.sh
     /opt/vector/setup.sh
-    dnf install -y vector
-    dnf upgrade -y vector
+    dnf install -y timber/vector
+    dnf upgrade -y timber/vector
     echo Install vector complete >&2
 }
 
