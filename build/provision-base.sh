@@ -42,7 +42,6 @@ mcaselector() {
 vectorbase() {
     echo Install vector started >&2
     bash -c "$(curl -L https://setup.vector.dev)"
-    /opt/vector/setup.sh
     dnf install -y vector
     dnf upgrade -y vector
     echo Install vector complete >&2
