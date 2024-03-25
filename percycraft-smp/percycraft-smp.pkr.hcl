@@ -26,7 +26,7 @@ source "amazon-ebs" "percycraft-smp" {
 
 build {
   name    = "percycraft"
-  sources = ["source.amazon-ebs.percycraft"]
+  sources = ["source.amazon-ebs.percycraft-smp"]
 
   provisioner "shell" {
     inline = ["git clone --single-branch --branch ${data.git-repository.repository.head} https://github.com/dgolbourn/percycraft.git /opt/percycraft"]
