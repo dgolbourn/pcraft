@@ -41,12 +41,10 @@ mcaselector() {
 
 vectorbase() {
     echo Install vector started >&2
-    mkdir -p /opt/vector
-    curl -o /opt/vector/setup.sh https://repositories.timber.io/public/vector/cfg/setup/bash.rpm.sh
-    chmod +x /opt/vector/setup.sh
+    bash -c "$(curl -L https://setup.vector.dev)"
     /opt/vector/setup.sh
-    dnf install -y timber/vector
-    dnf upgrade -y timber/vector
+    dnf install -y vector
+    dnf upgrade -y vector
     echo Install vector complete >&2
 }
 
@@ -66,10 +64,10 @@ percycraftbase() {
 }
 
 git
+vectorbase
 docker
 mcrcon
 mcaselector
-vectorbase
 statusbase
 percycraftbase
 
