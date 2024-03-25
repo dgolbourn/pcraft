@@ -39,6 +39,23 @@ mcaselector() {
     echo Install mcaselector complete >&2
 }
 
+vectorbase() {
+    echo Install vector started >&2
+    mkdir -p /opt/vector
+    curl -o /opt/vector/setup.sh https://repositories.timber.io/public/vector/cfg/setup/bash.rpm.sh
+    chmod +x /opt/vector/setup.sh
+    /opt/vector/setup.sh
+    yum install -y vector
+    yum upgrade -y vector
+    echo Install vector complete >&2
+}
+
+statusbase() {
+    echo Install status started >&2
+    yum install -y nc
+    echo Install status complete >&2
+}
+
 percycraftbase() {
     echo Install percycraft started >&2
     mkdir -p /opt/data
@@ -52,6 +69,8 @@ git
 docker
 mcrcon
 mcaselector
+vectorbase
+statusbase
 percycraftbase
 
 echo Provision server complete >&2

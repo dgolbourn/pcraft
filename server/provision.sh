@@ -3,12 +3,6 @@ echo Provision server started >&2
 
 vector() {
     echo Install vector started >&2
-    mkdir -p /opt/vector
-    curl -o /opt/vector/setup.sh https://repositories.timber.io/public/vector/cfg/setup/bash.rpm.sh
-    chmod +x /opt/vector/setup.sh
-    /opt/vector/setup.sh
-    yum install -y vector
-    yum upgrade -y vector
     cp /opt/percycraft/server/vector.toml /etc/vector
     cp /opt/percycraft/server/vector.service /etc/systemd/system/vector.service
     systemctl enable vector.service
@@ -18,7 +12,6 @@ vector() {
 
 status() {
     echo Install status started >&2
-    yum install -y nc
     chmod +x /opt/percycraft/server/status.sh
     cp /opt/percycraft/server/status.service /etc/systemd/system/status.service
     systemctl enable status.service
@@ -38,10 +31,8 @@ percycraft() {
     echo Install percycraft complete >&2
 }
 
-git clone --single-branch ${Repository} /opt/percycraft
 vector
 status
-
 percycraft
 
 echo Provision server complete >&2
