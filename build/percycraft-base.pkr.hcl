@@ -34,7 +34,9 @@ build {
   post-processor "manifest"{}
 
   post-processor "shell-local" {
-    execute_command = ["sudo env {{ .Vars }} {{ .Path }}"]
-    script = "build/ami-parameter-store.sh"
+    inline = [
+      "AMI_ID=$(jq -r '.builds[-1].artifact_id' packer-manifest.json | cut -d ':' -f2)",
+      "aws ssm put-parameter --name '/percycraft/ami-latest/base-x86_64' --type 'String' --value $AMI_ID --overwrite"
+    ]
   }
 }
