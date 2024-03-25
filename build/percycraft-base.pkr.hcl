@@ -8,16 +8,15 @@ packer {
 }
 
 source "amazon-ebs" "percycraft-base" {
-  ami_name      = "percycraft-base"
-  instance_type = "t3a.large"
-  region        = "eu-west-2"
-  source_ami    = "ami-0e58172bedd62916b"
-  ssh_username  = "ec2-user"
-  ssh_timeout   = "20m"
-  force_deregister = "true"
+  ami_name              = "percycraft-base"
+  instance_type         = "t3a.large"
+  region                = "eu-west-2"
+  source_ami            = "ami-0e58172bedd62916b"
+  ssh_username          = "ec2-user"
+  ssh_timeout           = "20m"
+  force_deregister      = "true"
   force_delete_snapshot = "true"
 }
-
 
 build {
   name    = "percycraft-base"
@@ -31,7 +30,7 @@ build {
     script          = "build/provision-base.sh"
   }
 
-  post-processor "manifest"{}
+  post-processor "manifest" {}
 
   post-processor "shell-local" {
     inline = [

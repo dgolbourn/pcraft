@@ -281,10 +281,6 @@ Resources:
           Fn::Base64: !Sub
             - |
               #!/bin/bash -xe
-              yum update -y
-              timedatectl set-timezone ${TimeZone}
-              yum -y install git
-              git clone --single-branch ${Repository} /opt/percycraft
               echo "ALBUMBUCKETS3URI=s3://${AlbumBucket}" > /opt/.env
               echo "DATABUCKETS3URI=s3://${DataBucket}" >> /opt/.env
               echo "FILEBUCKETS3URI=s3://${FileBucket}" >> /opt/.env
@@ -295,6 +291,8 @@ Resources:
               echo "STARTCONTINUELAMBDA=${AWS::StackName}-StartContinueLambda" >> /opt/.env
               echo "CF_API_KEY=${CurseForgeAPIKey}" >> /opt/.env
               echo "PROFILE=${Profile}" >> /opt/.env
+              timedatectl set-timezone ${TimeZone}
+              git clone --single-branch ${Repository} /opt/percycraft              
               chmod +x /opt/percycraft/server/provision.sh
               /opt/percycraft/server/provision.sh
             - FileBucketWebsiteURL: !GetAtt FileBucket.WebsiteURL
