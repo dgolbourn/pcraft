@@ -2,13 +2,13 @@
 echo Provision server started >&2
 
 git() {
-    yum update -y
-    yum -y install git
+    dnf update -y
+    dnf -y install git
 }
 
 docker() {
     echo Install docker started >&2
-    yum install -y docker
+    dnf install -y docker
     curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
     chmod +x /usr/local/bin/docker-compose
     systemctl enable docker.service
@@ -28,8 +28,8 @@ mcrcon() {
 
 mcaselector() {
     echo Install mcaselector started >&2
-    yum install -y gtk3-devel
-    yum install -y xorg-x11-server-Xvfb
+    dnf install -y gtk3-devel
+    dnf install -y xorg-x11-server-Xvfb
     curl -o javafx.tar.gz https://cdn.azul.com/zulu/bin/zulu17.30.15-ca-fx-jre17.0.1-linux_x64.tar.gz
     tar -xvzf javafx.tar.gz
     mv zulu* /opt/mca-selector
@@ -45,21 +45,21 @@ vectorbase() {
     curl -o /opt/vector/setup.sh https://repositories.timber.io/public/vector/cfg/setup/bash.rpm.sh
     chmod +x /opt/vector/setup.sh
     /opt/vector/setup.sh
-    yum install -y vector
-    yum upgrade -y vector
+    dnf install -y vector
+    dnf upgrade -y vector
     echo Install vector complete >&2
 }
 
 statusbase() {
     echo Install status started >&2
-    yum install -y nc
+    dnf install -y nc
     echo Install status complete >&2
 }
 
 percycraftbase() {
     echo Install percycraft started >&2
     mkdir -p /opt/data
-    yum install -y tree
+    dnf install -y tree
     docker pull amake/innosetup
     docker pull itzg/minecraft-server
     echo Install percycraft complete >&2
