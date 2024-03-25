@@ -7,21 +7,15 @@ packer {
   }
 }
 
-data "amazon-ami" "ami-base" {
-    filters = {
-        virtualization-type = "hvm"
-        name = "*al2023-ami-*"
-        root-device-type = "ebs"
-    }
-    owners = ["amazon"]
-    most_recent = true
+data "amazon-parameterstore" "ami-base" {
+    name = "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x64_64"
 }
 
 source "amazon-ebs" "percycraft-base" {
   ami_name              = "percycraft-base"
   instance_type         = "t3a.large"
   region                = "eu-west-2"
-  source_ami            = "data.amazon-ami.ami-base.id"
+  source_ami            = "${data.amazon-parameterstore.ami-base.value}"
   ssh_username          = "ec2-user"
   ssh_timeout           = "20m"
   force_deregister      = "true"
