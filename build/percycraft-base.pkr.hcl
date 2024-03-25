@@ -10,7 +10,7 @@ packer {
 data "amazon-ami" "ami-base" {
     filters = {
         virtualization-type = "hvm"
-        name = "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-*"
+        name = "*al2023-ami-*"
         root-device-type = "ebs"
     }
     owners = ["amazon"]
