@@ -11,27 +11,34 @@ jobs:
   build-trigger:
     runs-on: ubuntu-latest
     outputs:
-      build: ${{ steps.build.outputs.src }}
+      percycraft-base: ${{ steps.percycraft-base.outputs.src }}
+      percycraft-smp: ${{ steps.percycraft-smp.outputs.src }}
       aws: ${{ steps.aws.outputs.src }}
     steps:
     - uses: actions/checkout@v3
     - uses: dorny/paths-filter@v3
-      id: build
+      id: percycraft-base
       with:
         filters: |
           src:
-            - 'build/**'
+            - 'percycraft-base/**'
+    - uses: dorny/paths-filter@v3
+      id: percycraft-smp
+      with:
+        filters: |
+          src:
+            - 'percycraft-smp/**'
     - uses: dorny/paths-filter@v3
       id: aws
       with:
         filters: |
           src:
             - 'aws/**'
-  Packer:
+  percycraft-base:
     needs: build-trigger
-    if: needs.build-trigger.outputs.build == 'true'
+    if: needs.build-trigger.outputs.percycraft-base == 'true'
     runs-on: ubuntu-latest
-    name: Run Packer
+    name: Create percycraft-base AMI
     steps:
       - name: Git clone the repository
         uses: actions/checkout@v3
@@ -48,17 +55,47 @@ jobs:
           version: latest
       - name: Run `packer init`
         id: init
-        run: "packer init build/"
+        run: "packer init percycraft-base/"
       - name: Run `packer validate`
         id: validate
-        run: "packer validate build/"
+        run: "packer validate percycraft-base/"
       - name: Build AMI
         id: build
-        run: "packer build build/percycraft-base.pkr.hcl"
+        run: "packer build percycraft-base/percycraft-base.pkr.hcl"
+  percycraft-smp:
+    needs:
+      - build-trigger
+      - percycraft-base
+    if: needs.build-trigger.outputs.percycraft-smp == 'true'
+    runs-on: ubuntu-latest
+    name: Create percycraft-smp AMI
+    steps:
+      - name: Git clone the repository
+        uses: actions/checkout@v3
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v1.7.0
+        with:
+          role-to-assume: arn:aws:iam::719158693954:role/Percycraft
+          role-session-name: GithubDeployPercycraft
+          aws-region: eu-west-2
+      - name: Setup `packer`
+        uses: hashicorp/setup-packer@main
+        id: setup
+        with:
+          version: latest
+      - name: Run `packer init`
+        id: init
+        run: "packer init percycraft-smp/"
+      - name: Run `packer validate`
+        id: validate
+        run: "packer validate percycraft-smp/"
+      - name: Build AMI
+        id: build
+        run: "packer build percycraft-smp/percycraft-smp.pkr.hcl"
   PrepareChangeSet:
     needs:
       - build-trigger
-      - Packer
+      - percycraft-smp
     if: needs.build-trigger.outputs.aws == 'true'
     runs-on: ubuntu-latest
     steps:

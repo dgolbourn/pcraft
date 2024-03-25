@@ -32,15 +32,10 @@ services:
         iris
         individual-keep-inventory
       MODRINTH_ALLOWED_VERSION_TYPE: beta
-      CF_API_KEY: ${CF_API_KEY}
-      CURSEFORGE_FILES: |
-        litematica
-        malilib
-        worldedit
       ICON: /resources/server-icon.png
       OVERRIDE_ICON: "TRUE"
     volumes:
       - /opt/data:/data
-      - /opt/percycraft/install-minecraft/vanillatweaks:/vanillatweaks:ro
-      - /opt/percycraft/install-minecraft/resources/:/resources:ro
+      - /opt/percycraft/percycraft-smp/vanillatweaks:/vanillatweaks:ro
+      - /opt/percycraft/percycraft-smp/resources/:/resources:ro
     restart: no

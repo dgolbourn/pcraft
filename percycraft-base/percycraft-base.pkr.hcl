@@ -7,21 +7,11 @@ packer {
   }
 }
 
-data "amazon-ami" "ami-base" {
-    filters = {
-        virtualization-type = "hvm"
-        name = "*al2023-ami*"
-        root-device-type = "ebs"
-    }
-    owners = ["amazon"]
-    most_recent = true
-}
-
 source "amazon-ebs" "percycraft-base" {
   ami_name              = "percycraft-base"
   instance_type         = "t3a.large"
   region                = "eu-west-2"
-  source_ami            = "${data.amazon-ami.ami-base.id}"
+  source_ami            = "ami-0e58172bedd62916b"
   ssh_username          = "ec2-user"
   ssh_timeout           = "20m"
   force_deregister      = "true"
@@ -37,7 +27,7 @@ build {
       "FOO=hello world"
     ]
     execute_command = "sudo env {{ .Vars }} {{ .Path }}"
-    script          = "build/provision-base.sh"
+    script          = "base/provision.sh"
   }
 
   post-processor "manifest" {}
@@ -45,7 +35,7 @@ build {
   post-processor "shell-local" {
     inline = [
       "AMI_ID=$(jq -r '.builds[-1].artifact_id' packer-manifest.json | cut -d ':' -f2)",
-      "aws ssm put-parameter --name '/percycraft/ami-latest/base-x86_64' --type 'String' --value $AMI_ID --overwrite"
+      "aws ssm put-parameter --name '/percycraft/ami-latest/percycraft-base' --type 'String' --value $AMI_ID --overwrite"
     ]
   }
 }

@@ -95,7 +95,7 @@ Metadata:
       - Label:
           default: Profile
         Parameters:
-        - Profile        
+        - Profile
       - Label:
           default: Host names
         Parameters:
@@ -292,7 +292,7 @@ Resources:
               echo "CF_API_KEY=${CurseForgeAPIKey}" >> /opt/.env
               echo "PROFILE=${Profile}" >> /opt/.env
               timedatectl set-timezone ${TimeZone}
-              git clone --single-branch ${Repository} /opt/percycraft              
+              git clone --single-branch ${Repository} /opt/percycraft
               chmod +x /opt/percycraft/server/provision.sh
               /opt/percycraft/server/provision.sh
             - FileBucketWebsiteURL: !GetAtt FileBucket.WebsiteURL

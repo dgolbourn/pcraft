@@ -47,7 +47,6 @@ statusbase() {
 
 percycraftbase() {
     echo Install percycraft started >&2
-    mkdir -p /opt/data
     dnf install -y tree
     docker pull amake/innosetup
     docker pull itzg/minecraft-server
