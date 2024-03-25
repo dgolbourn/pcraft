@@ -34,19 +34,5 @@ lobby() {
     systemctl start lobby.service
 }
 
-vector() {
-    mkdir -p /opt/vector
-    curl -o /opt/vector/setup.sh https://repositories.timber.io/public/vector/cfg/setup/bash.rpm.sh
-    chmod +x /opt/vector/setup.sh
-    /opt/vector/setup.sh
-    yum install -y vector
-    yum upgrade -y vector
-    cp /opt/percycraft/lobby/vector.toml /etc/vector
-    cp /opt/percycraft/lobby/vector.service /etc/systemd/system/vector.service
-    systemctl enable vector.service
-    systemctl start vector.service
-}
-
-vector
 lobby
 echo Provision lobby complete >&2

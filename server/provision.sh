@@ -1,15 +1,6 @@
 #!/bin/bash
 echo Provision server started >&2
 
-vector() {
-    echo Install vector started >&2
-    cp /opt/percycraft/server/vector.toml /etc/vector
-    cp /opt/percycraft/server/vector.service /etc/systemd/system/vector.service
-    systemctl enable vector.service
-    systemctl start vector.service
-    echo Install vector complete >&2
-}
-
 status() {
     echo Install status started >&2
     chmod +x /opt/percycraft/server/status.sh
@@ -31,7 +22,6 @@ percycraft() {
     echo Install percycraft complete >&2
 }
 
-vector
 status
 percycraft
 

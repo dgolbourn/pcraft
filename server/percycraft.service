@@ -2,8 +2,6 @@
 Description=Percycraft cluster
 After=docker.service
 Requires=docker.service
-After=vector.service
-Requires=vector.service
 
 [Service]
 Restart=no

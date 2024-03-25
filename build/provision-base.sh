@@ -39,14 +39,6 @@ mcaselector() {
     echo Install mcaselector complete >&2
 }
 
-vectorbase() {
-    echo Install vector started >&2
-    bash -c "$(curl -L https://setup.vector.dev)"
-    dnf install -y vector
-    dnf upgrade -y vector
-    echo Install vector complete >&2
-}
-
 statusbase() {
     echo Install status started >&2
     dnf install -y nc
@@ -63,7 +55,6 @@ percycraftbase() {
 }
 
 git
-vectorbase
 docker
 mcrcon
 mcaselector
