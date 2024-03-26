@@ -19,18 +19,21 @@ jobs:
     - uses: dorny/paths-filter@v3
       id: percycraft-base
       with:
+        base: ${{ github.ref }}
         filters: |
           src:
             - 'percycraft-base/**'
     - uses: dorny/paths-filter@v3
       id: percycraft-smp
       with:
+        base: ${{ github.ref }}
         filters: |
           src:
             - 'percycraft-smp/**'
     - uses: dorny/paths-filter@v3
       id: aws
       with:
+        base: ${{ github.ref }}
         filters: |
           src:
             - 'aws/**'
