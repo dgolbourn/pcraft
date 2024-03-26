@@ -69,7 +69,14 @@ jobs:
     needs:
       - build-trigger
       - percycraft-base
-    if: needs.build-trigger.outputs.percycraft-smp == 'true'
+    if: |
+      always() && !(
+        contains(needs.*.result, 'failure') ||
+        contains(needs.*.result, 'cancelled')
+      ) && (
+        needs.build-trigger.outputs.percycraft-smp == 'true' ||
+        needs.percycraft-base.result == 'success'
+      )
     runs-on: ubuntu-latest
     name: Create percycraft-smp AMI
     steps:
@@ -98,8 +105,17 @@ jobs:
   PrepareChangeSet:
     needs:
       - build-trigger
+      - percycraft-base
       - percycraft-smp
-    if: needs.build-trigger.outputs.aws == 'true'
+    if: |
+      always() && !(
+        contains(needs.*.result, 'failure') ||
+        contains(needs.*.result, 'cancelled')
+      ) && (
+        needs.build-trigger.outputs.aws == 'true' ||
+        needs.percycraft-base.result == 'success' ||
+        needs.percycrafy-smp.result == 'success'
+      )
     runs-on: ubuntu-latest
     steps:
       - name: Git clone the repository
