@@ -34,7 +34,7 @@ build {
 
   provisioner "shell" {
     execute_command = "sudo env {{ .Vars }} {{ .Path }}"
-    inline = ["git clone --single-branch --branch ${data.git-repository.repository.head} https://github.com/dgolbourn/percycraft.git /opt/percycraft"]
+    inline          = ["git clone --single-branch --branch ${data.git-repository.repository.head} https://github.com/dgolbourn/percycraft.git /opt/percycraft"]
   }
 
   provisioner "shell" {
