@@ -1,4 +1,4 @@
-#!/bin/bash -xe
+#!/bin/bash
 echo Provision server started >&2
 
 git() {
