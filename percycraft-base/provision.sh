@@ -48,8 +48,8 @@ statusbase() {
 percycraftbase() {
     echo Install percycraft started >&2
     dnf install -y tree
-    docker pull amake/innosetup
-    docker pull itzg/minecraft-server
+    docker pull amake/innosetup | xargs -I{} docker tag {} amake/innosetup:base
+    docker pull itzg/minecraft-server | xargs -I{} docker tag {} itzg/minecraft-server:base
     echo Install percycraft complete >&2
 }
 
