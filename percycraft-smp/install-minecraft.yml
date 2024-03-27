@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   install-minecraft:
-    image: itzg/minecraft-server
+    image: itzg/minecraft-server:base
     environment:
       EULA: "TRUE"
       TYPE: FABRIC
