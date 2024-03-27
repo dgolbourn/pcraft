@@ -57,9 +57,9 @@ percycraftbase() {
 
 git
 docker
+percycraftbase
 mcrcon
 mcaselector
 statusbase
-percycraftbase
 
 echo Provision server complete >&2
