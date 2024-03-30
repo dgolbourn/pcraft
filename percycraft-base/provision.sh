@@ -8,9 +8,10 @@ provision_git() {
 
 provision_docker() {
     echo Install docker started >&2
-    sudo dnf -y install dnf-plugins-core < /dev/null
-    sudo dnf -y config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo < /dev/null
-    sudo dnf -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin < /dev/null
+    dnf install -y docker < /dev/null
+    curl -fL https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose < /dev/null
+    chmod +x /usr/local/bin/docker-compose
+    ln -s /usr/local/bin/docker-compose /usr/local/lib/docker/cli-plugins/docker-compose
     systemctl enable docker.service
     systemctl start docker.service
     echo Install docker complete >&2
