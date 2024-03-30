@@ -11,6 +11,7 @@ provision_docker() {
     dnf install -y docker < /dev/null
     curl -fL https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose < /dev/null
     chmod +x /usr/local/bin/docker-compose
+    mkdir -p /usr/local/lib/docker/cli-plugins/
     ln -s /usr/local/bin/docker-compose /usr/local/lib/docker/cli-plugins/docker-compose
     systemctl enable docker.service
     systemctl start docker.service
