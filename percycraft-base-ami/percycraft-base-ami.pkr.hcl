@@ -7,8 +7,8 @@ packer {
   }
 }
 
-source "amazon-ebs" "percycraft-base" {
-  ami_name              = "percycraft-base"
+source "amazon-ebs" "percycraft-base-ami" {
+  ami_name              = "percycraft-base-ami"
   instance_type         = "t3a.large"
   region                = "eu-west-2"
   source_ami            = "ami-0e58172bedd62916b"
@@ -19,12 +19,12 @@ source "amazon-ebs" "percycraft-base" {
 }
 
 build {
-  name    = "percycraft-base"
-  sources = ["source.amazon-ebs.percycraft-base"]
+  name    = "percycraft-base-ami"
+  sources = ["source.amazon-ebs.percycraft-base-ami"]
 
   provisioner "shell" {
     execute_command = "sudo env {{ .Vars }} {{ .Path }}"
-    script          = "percycraft-base/provision.sh"
+    script          = "percycraft-base-ami/provision.sh"
   }
 
   post-processor "manifest" {}
@@ -32,7 +32,7 @@ build {
   post-processor "shell-local" {
     inline = [
       "AMI_ID=$(jq -r '.builds[-1].artifact_id' packer-manifest.json | cut -d ':' -f2)",
-      "aws ssm put-parameter --name '/percycraft/ami-latest/percycraft-base' --type 'String' --value $AMI_ID --overwrite"
+      "aws ssm put-parameter --name '/percycraft/ami-latest/percycraft-base-ami' --type 'String' --value $AMI_ID --overwrite"
     ]
   }
 }

@@ -1,0 +1,11 @@
+[Unit]
+Description=Percycraft status
+After=percycraft.service
+Requires=percycraft.service
+
+[Service]
+ExecStart=/opt/percycraft/percycraft-ec2/status.sh
+Restart=no
+
+[Install]
+WantedBy=multi-user.target

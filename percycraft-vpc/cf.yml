@@ -54,10 +54,6 @@ Parameters:
     Type: String
     Default: https://github.com/dgolbourn/percycraft.git
 
-  Profile:
-    Type: String
-    Default: survival
-
 Conditions:
   WeekdayStartScheduleProvided: !Not [ !Equals [ !Ref WeekdayStartSchedule, '' ] ]
   WeekdayStopScheduleProvided: !Not [ !Equals [ !Ref WeekdayStopSchedule, '' ] ]
@@ -281,7 +277,7 @@ Resources:
           Fn::Base64: !Sub
             - |
               #!/bin/bash -xe
-              echo "ALBUMBUCKETS3URI=s3://${AlbumBucket}" > /opt/.env
+              echo "ALBUMBUCKETS3URI=s3://${AlbumBucket}" >> /opt/.env
               echo "DATABUCKETS3URI=s3://${DataBucket}" >> /opt/.env
               echo "FILEBUCKETS3URI=s3://${FileBucket}" >> /opt/.env
               echo "FILEBUCKETWEBSITEURL=${FileBucketWebsiteURL}" >> /opt/.env
@@ -290,11 +286,9 @@ Resources:
               echo "STARTSTOPLAMBDA=${AWS::StackName}-StartStopLambda" >> /opt/.env
               echo "STARTCONTINUELAMBDA=${AWS::StackName}-StartContinueLambda" >> /opt/.env
               echo "CF_API_KEY=${CurseForgeAPIKey}" >> /opt/.env
-              echo "PROFILE=${Profile}" >> /opt/.env
               timedatectl set-timezone ${TimeZone}
-              git clone --single-branch ${Repository} /opt/percycraft
-              chmod +x /opt/percycraft/server/provision.sh
-              /opt/percycraft/server/provision.sh
+              chmod +x /opt/percycraft/percycraft-ec2/provision.sh
+              /opt/percycraft/percycraft-ec2/provision.sh
             - FileBucketWebsiteURL: !GetAtt FileBucket.WebsiteURL
 
   AutoScalingGroup:
