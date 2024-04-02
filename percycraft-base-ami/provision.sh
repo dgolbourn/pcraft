@@ -43,6 +43,7 @@ provision_mcaselector() {
 provision_status() {
     echo Install status started >&2
     dnf install -y nc < /dev/null
+    mkdir -p /opt/status
     cp /tmp/percycraft/percycraft-base-ami/service-status.sh /opt/status/service-status.sh
     chmod +x /opt/status/service-status.sh
     cp /tmp/percycraft/percycraft-base-ami/status.service /etc/systemd/system/status.service    
