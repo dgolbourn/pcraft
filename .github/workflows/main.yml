@@ -62,7 +62,7 @@ jobs:
         run: "packer init percycraft-base-ami/"
       - name: Run `packer validate`
         id: validate
-        run: "packer validate percycraft-base-ami/"
+        run: "packer validate -var \"branch=${{ github.ref_name }}\" -var \"repository=https://github.com/${{ github.repository }}.git\" percycraft-base-ami/"
       - name: Build AMI
         id: build
         run: "packer build -var \"branch=${{ github.ref_name }}\" -var \"repository=https://github.com/${{ github.repository }}.git\" percycraft-base-ami/percycraft-base-ami.pkr.hcl"
@@ -99,7 +99,7 @@ jobs:
         run: "packer init percycraft-smp-ami/"
       - name: Run `packer validate`
         id: validate
-        run: "packer validate percycraft-smp-ami/"
+        run: "packer validate -var \"branch=${{ github.ref_name }}\" -var \"repository=https://github.com/${{ github.repository }}.git\" percycraft-smp-ami/"
       - name: Build AMI
         id: build
         run: "packer build -var \"branch=${{ github.ref_name }}\" -var \"repository=https://github.com/${{ github.repository }}.git\" percycraft-smp-ami/percycraft-smp-ami.pkr.hcl"
