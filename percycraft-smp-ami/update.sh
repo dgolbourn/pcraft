@@ -4,6 +4,7 @@ echo Update data started >&2
 update_minecraft() {
     echo Update minecraft started >&2
     mkdir -p /opt/data
+    cd /tmp/percycraft
     git describe --tags --long --always > /opt/data/percycraft.version
     docker compose -f /opt/percycraft/update-minecraft.yml up
     rm -rf /opt/data/.modrinth-manifest.json
