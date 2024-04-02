@@ -4,14 +4,8 @@ packer {
       version = ">= 1.3.1"
       source  = "github.com/hashicorp/amazon"
     }
-    git = {
-      version = ">= 0.6.2"
-      source  = "github.com/ethanmdavidson/git"
-    }
   }
 }
-
-data "git-repository" "repository" {}
 
 source "amazon-ebs" "percycraft-base-ami" {
   ami_name              = "percycraft-base-ami"
@@ -31,12 +25,13 @@ build {
   provisioner "shell" {
     inline = [
       "sudo dnf -y install git",
-      "git clone --single-branch --branch ${data.git-repository.repository.head} https://github.com/dgolbourn/percycraft.git /tmp/percycraft/"
+      "git clone --single-branch --branch ${var.branch} ${var.repository} /tmp/percycraft/"
     ]
   }
 
   provisioner "shell" {
     inline = [ 
+      "sudo chmod +x /tmp/percycraft/percycraft-base-ami/provision.sh",
       "sudo /tmp/percycraft/percycraft-base-ami/provision.sh" 
     ]
   }

@@ -65,7 +65,7 @@ jobs:
         run: "packer validate percycraft-base-ami/"
       - name: Build AMI
         id: build
-        run: "packer build percycraft-base-ami/percycraft-base-ami.pkr.hcl"
+        run: "packer build -var \"branch=${{ github.ref_name }}\" -var \"https://github.com/${{ github.repository }}.git\" percycraft-base-ami/percycraft-base-ami.pkr.hcl"
   percycraft-smp-ami:
     needs:
       - build-trigger
@@ -102,7 +102,7 @@ jobs:
         run: "packer validate percycraft-smp-ami/"
       - name: Build AMI
         id: build
-        run: "packer build percycraft-smp-ami/percycraft-smp-ami.pkr.hcl"
+        run: "packer build -var \"branch=${{ github.ref_name }}\" -var \"https://github.com/${{ github.repository }}.git\" percycraft-smp-ami/percycraft-smp-ami.pkr.hcl"
   percycraft-vpc:
     needs:
       - build-trigger

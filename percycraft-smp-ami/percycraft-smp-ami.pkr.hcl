@@ -4,18 +4,12 @@ packer {
       version = ">= 1.3.1"
       source  = "github.com/hashicorp/amazon"
     }
-    git = {
-      version = ">= 0.6.2"
-      source  = "github.com/ethanmdavidson/git"
-    }
   }
 }
 
 data "amazon-parameterstore" "ami-base" {
   name = "/percycraft/ami-latest/percycraft-base-ami"
 }
-
-data "git-repository" "repository" {}
 
 source "amazon-ebs" "percycraft-smp-ami" {
   ami_name              = "percycraft-smp-ami"
@@ -34,7 +28,7 @@ build {
 
   provisioner "shell" {
     inline = [
-      "git clone --single-branch --branch ${data.git-repository.repository.head} https://github.com/dgolbourn/percycraft.git /tmp/percycraft/"
+      "git clone --single-branch --branch ${var.branch} https://github.com/dgolbourn/percycraft.git /tmp/percycraft/"
     ]
   }
 
