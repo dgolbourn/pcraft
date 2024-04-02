@@ -11,6 +11,8 @@ packer {
   }
 }
 
+data "git-repository" "repository" {}
+
 source "amazon-ebs" "percycraft-base-ami" {
   ami_name              = "percycraft-base-ami"
   instance_type         = "t3a.large"
