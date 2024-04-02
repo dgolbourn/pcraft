@@ -3,7 +3,7 @@ source /opt/.env
 
 stop-server() {
     echo Stop server started >&2
-    docker compose -f /opt/percycraft/profile/$PROFILE/docker-compose.yml --env-file /opt/data/percycraft.env down
+    docker compose -f /opt/percycraft/docker-compose.yml down
     echo Stop server complete >&2
 }
 

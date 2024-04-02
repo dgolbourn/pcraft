@@ -1,5 +1,5 @@
 #!/bin/bash -xe
-echo Startup Enhanced Groups started >&2
+echo Userdata Enhanced Groups started >&2
 source /opt/.env
 
 GROUP=$(cat /opt/data/config/enhancedgroups/persistent-groups.json | jq .[0].id)
@@ -14,4 +14,4 @@ done
 echo ${AUTOJOIN%,*} >> /opt/data/config/enhancedgroups/auto-join-groups.json
 echo } >> /opt/data/config/enhancedgroups/auto-join-groups.json
 
-echo Startup Enhanced Groups complete >&2
+echo Userdata Enhanced Groups complete >&2

@@ -1,33 +1,23 @@
 #!/bin/bash -xe
-echo Install server started >&2
+echo Provision Percycraft SMP started >&2
 
-install_minecraft() {
-    mkdir -p /opt/data
-    git describe --tags --long --always > /opt/data/percycraft.version
-    docker compose -f /opt/percycraft/percycraft-smp-ami/install-minecraft.yml up
-    rm -rf /opt/data/.modrinth-manifest.json
-    cd /opt/data
-    JARS=(*.jar)
-    echo "CUSTOM_SERVER=/data/${JARS[0]}" >> /opt/.env
-    echo "PASSWORD=$(cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c 20; echo;)" >> /opt/.env
-    chown -R 1000:1000 /opt/data
-}
+git describe --tags --long --always > /opt/percycraft/percycraft.version
+cp /tmp/percycraft/percycraft-smp-ami/update-minecraft.yml /opt/percycraft/update-minecraft.yml
+cp /tmp/percycraft/percycraft-smp-ami/run-minecraft.yml /opt/percycraft/docker-compose.yml
+mkdir -p /opt/percycraft/mods
+cp -r /tmp/percycraft/percycraft-smp-ami/mods/enhancedgroups /opt/percycraft/mods/enhancedgroups/
+chmod +x /opt/percycraft/mods/enhancedgroups/update.sh
+chmod +x /opt/percycraft/mods/enhancedgroups/start.sh
+cp -r /tmp/percycraft/percycraft-smp-ami/mods/friendly-fire /opt/percycraft/mods/friendly-fire/
+chmod +x /opt/percycraft/mods/friendly-fire/update.sh
+cp -r /tmp/percycraft/percycraft-smp-ami/mods/player-keep-inventory /opt/percycraft/mods/player-keep-inventory/
+chmod +x /opt/percycraft/mods/player-keep-inventory/start.sh
+cp /tmp/percycraft/percycraft-smp-ami/update.sh /opt/percycraft/update.sh
+chmod +x /opt/percycraft/update.sh
+cp /tmp/percycraft/percycraft-smp-ami/start.sh /opt/percycraft/start.sh
+chmod +x /opt/percycraft/start.sh
+cp -r /tmp/percycraft/percycraft-smp-ami/vanillatweaks /opt/percycraft/vanillatweaks
+cp -r /tmp/percycraft/percycraft-smp-ami/resources /opt/percycraft/resources
+/opt/percycraft/update.sh
 
-install_mods() {
-    chmod +x /opt/percycraft/percycraft-smp-ami/mods/enhancedgroups/provision.sh
-    /opt/percycraft/mods/enhancedgroups/provision.sh
-    chmod +x /opt/percycraft/percycraft-smp-ami/mods/friendly-fire/provision.sh
-    /opt/percycraft/mods/friendly-fire/provision.sh
-}
-
-install_update_and_run() {
-    ln -sf /opt/percycraft/percycraft-smp-ami/provision.sh /opt/update.sh
-    chmod +x /opt/update.sh
-    ln -sf /opt/percycraft/percycraft-smp-ami/run-minecraft.yml /opt/docker-compose.yml
-}
-
-install_minecraft
-install_mods
-install_update_and_run
-
-echo Install server complete >&2
+echo Provision Percycraft SMP complete >&2

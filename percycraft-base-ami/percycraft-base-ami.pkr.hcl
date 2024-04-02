@@ -23,8 +23,22 @@ build {
   sources = ["source.amazon-ebs.percycraft-base-ami"]
 
   provisioner "shell" {
-    execute_command = "sudo env {{ .Vars }} {{ .Path }}"
-    script          = "percycraft-base-ami/provision.sh"
+    inline = [
+      "sudo dnf -y install git",
+      "git clone --single-branch --branch ${data.git-repository.repository.head} https://github.com/dgolbourn/percycraft.git /tmp/percycraft/"
+    ]
+  }
+
+  provisioner "shell" {
+    inline = [ 
+      "sudo /tmp/percycraft/percycraft-base-ami/provision.sh" 
+    ]
+  }
+
+  provisioner "shell" {
+    inline = [
+      "rm -rf /tmp/percycraft/"
+    ]
   }
 
   post-processor "manifest" {}

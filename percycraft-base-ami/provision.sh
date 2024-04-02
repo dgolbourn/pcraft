@@ -1,9 +1,8 @@
 #!/bin/bash -xe
 echo Provision server started >&2
 
-provision_git() {
-    dnf update -y
-    dnf -y install git < /dev/null
+provision_version() {
+    git describe --tags --long --always > /opt/percycraft/percycraft.version
 }
 
 provision_docker() {
@@ -13,8 +12,7 @@ provision_docker() {
     chmod +x /usr/local/bin/docker-compose
     mkdir -p /usr/local/lib/docker/cli-plugins/
     ln -s /usr/local/bin/docker-compose /usr/local/lib/docker/cli-plugins/docker-compose
-    systemctl enable docker.service
-    systemctl start docker.service
+    systemctl enable --now docker.service
     echo Install docker complete >&2
 }
 
@@ -44,20 +42,31 @@ provision_mcaselector() {
 provision_status() {
     echo Install status started >&2
     dnf install -y nc < /dev/null
+    cp /tmp/percycraft/percycraft-base-ami/service-status.sh /opt/status/service-status.sh
+    chmod +x /opt/status/service-status.sh
+    cp /tmp/percycraft/percycraft-base-ami/status.service /etc/systemd/system/status.service    
     echo Install status complete >&2
 }
 
 provision_percycraft() {
     echo Install percycraft started >&2
-    dnf install -y tree < /dev/null
     docker image pull amake/innosetup 
     docker image tag amake/innosetup amake/innosetup:base
     docker image pull itzg/minecraft-server
     docker image tag itzg/minecraft-server itzg/minecraft-server:base
+    cp /tmp/percycraft/percycraft-base-ami/service-start.sh /opt/percycraft/service-start.sh
+    cp /tmp/percycraft/percycraft-base-ami/service-stop.sh /opt/percycraft/service-stop.sh
+    chmod +x /opt/percycraft/service-start.sh
+    chmod +x /opt/percycraft/service-stop.sh
+    cp /tmp/percycraft/percycraft-base-ami/percycraft.service /etc/systemd/system/percycraft.service   
+    cp /tmp/percycraft/percycraft-base-ami/userdata.sh /opt/percycraft/userdata.sh
+    chmod +x /opt/percycraft/userdata.sh 
     echo Install percycraft complete >&2
 }
 
-provision_git
+dnf update -y
+mkdir -p /opt/percycraft
+provision_version
 provision_docker
 provision_mcrcon
 provision_mcaselector

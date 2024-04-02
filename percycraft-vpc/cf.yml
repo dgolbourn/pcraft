@@ -277,6 +277,7 @@ Resources:
           Fn::Base64: !Sub
             - |
               #!/bin/bash -xe
+              timedatectl set-timezone ${TimeZone}
               echo "ALBUMBUCKETS3URI=s3://${AlbumBucket}" >> /opt/.env
               echo "DATABUCKETS3URI=s3://${DataBucket}" >> /opt/.env
               echo "FILEBUCKETS3URI=s3://${FileBucket}" >> /opt/.env
@@ -286,9 +287,7 @@ Resources:
               echo "STARTSTOPLAMBDA=${AWS::StackName}-StartStopLambda" >> /opt/.env
               echo "STARTCONTINUELAMBDA=${AWS::StackName}-StartContinueLambda" >> /opt/.env
               echo "CF_API_KEY=${CurseForgeAPIKey}" >> /opt/.env
-              timedatectl set-timezone ${TimeZone}
-              chmod +x /opt/percycraft/percycraft-ec2/provision.sh
-              /opt/percycraft/percycraft-ec2/provision.sh
+              sudo /opt/percycraft/userdata.sh
             - FileBucketWebsiteURL: !GetAtt FileBucket.WebsiteURL
 
   AutoScalingGroup:

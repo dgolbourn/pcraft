@@ -30,7 +30,7 @@ jobs:
         filters: |
           src:
             - 'percycraft-smp-ami/**'
-            - 'percycraft-ec2/**'
+            - 'percycraft-base-ec2/**'
     - uses: dorny/paths-filter@v3
       id: percycraft-vpc
       with:
@@ -132,7 +132,7 @@ jobs:
           name: percycraft-smp-vpc
           template: percycraft-vpc/cf.yml
           parameter-overrides: "EC2API=/percycraft/ami-latest/percycraft-smp-ami,KeyPairName=${{ secrets.KEYPAIRNAME }},YourIPv4=${{ secrets.YOURIPV4 }},Players=\"${{ secrets.PLAYERS }}\",CurseForgeAPIKey=${{ secrets.CURSEFORGEAPIKEY }},WeekdayStartSchedule=\"\",WeekdayStopSchedule=\"\",WeekendStartSchedule=\"\",WeekendStopSchedule=\"\""
-      # no-execute-changeset: 1
+          no-execute-changeset: 1
           no-fail-on-empty-changeset: 1
       # - name: Deploy Creative
       #   uses: aws-actions/aws-cloudformation-github-deploy@v1

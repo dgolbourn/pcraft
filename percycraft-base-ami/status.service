@@ -4,7 +4,7 @@ After=percycraft.service
 Requires=percycraft.service
 
 [Service]
-ExecStart=/opt/percycraft/percycraft-ec2/status.sh
+ExecStart=/opt/status/service-status.sh
 Restart=no
 
 [Install]

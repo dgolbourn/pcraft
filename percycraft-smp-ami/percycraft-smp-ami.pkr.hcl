@@ -33,13 +33,21 @@ build {
   sources = ["source.amazon-ebs.percycraft-smp-ami"]
 
   provisioner "shell" {
-    execute_command = "sudo env {{ .Vars }} {{ .Path }}"
-    inline          = ["git clone --single-branch --branch ${data.git-repository.repository.head} https://github.com/dgolbourn/percycraft.git /opt/percycraft"]
+    inline = [
+      "git clone --single-branch --branch ${data.git-repository.repository.head} https://github.com/dgolbourn/percycraft.git /tmp/percycraft/"
+    ]
   }
 
   provisioner "shell" {
-    execute_command = "sudo env {{ .Vars }} {{ .Path }}"
-    script          = "percycraft-smp-ami/provision.sh"
+    inline = [ 
+      "sudo /tmp/percycraft/percycraft-smp-ami/provision.sh" 
+    ]
+  }
+
+  provisioner "shell" {
+    inline = [
+      "rm -rf /tmp/percycraft/"
+    ]
   }
 
   post-processor "manifest" {}

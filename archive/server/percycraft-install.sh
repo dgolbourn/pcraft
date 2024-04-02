@@ -35,6 +35,14 @@ install-minecraft() {
     echo install-minecraft complete >&2
 }
 
+      CUSTOM_SERVER: ${CUSTOM_SERVER}
+      RESOURCE_PACK: ${RESOURCE_PACK}
+      RESOURCE_PACK_SHA1: ${RESOURCE_PACK_SHA1}
+      WHITELIST: ${WHITELIST}
+      RCON_PASSWORD: ${PASSWORD}
+      TZ: ${TZ}
+
+
 percycraft-env() {
     echo percycraft-env started >&2
     cd /opt/data
