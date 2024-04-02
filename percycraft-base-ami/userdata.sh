@@ -1,5 +1,5 @@
 #!/bin/bash -xe
-echo Start server started >&2
+echo Userdata server started >&2
 source /opt/.env
 
 restore() {
@@ -34,4 +34,4 @@ else
     exit 1
 fi
 
-echo Start server complete >&2
+echo Userdata server complete >&2
