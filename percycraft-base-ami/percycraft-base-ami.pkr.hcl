@@ -4,6 +4,10 @@ packer {
       version = ">= 1.3.1"
       source  = "github.com/hashicorp/amazon"
     }
+    git = {
+      version = ">= 0.6.2"
+      source  = "github.com/ethanmdavidson/git"
+    }
   }
 }
 

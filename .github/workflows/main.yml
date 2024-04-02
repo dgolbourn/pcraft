@@ -42,7 +42,7 @@ jobs:
     needs: build-trigger
     if: needs.build-trigger.outputs.percycraft-base-ami == 'true'
     runs-on: ubuntu-latest
-    name: Create percycraft-base-amis
+    name: Create percycraft-base-ami
     steps:
       - name: Git clone the repository
         uses: actions/checkout@v3
