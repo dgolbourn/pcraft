@@ -2,6 +2,7 @@
 echo Provision server started >&2
 
 provision_version() {
+    cd /tmp/percycraft
     git describe --tags --long --always > /opt/percycraft/percycraft.version
 }
 

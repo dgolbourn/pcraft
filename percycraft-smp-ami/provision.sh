@@ -1,6 +1,7 @@
 #!/bin/bash -xe
 echo Provision Percycraft SMP started >&2
 
+cd /tmp/percycraft
 git describe --tags --long --always > /opt/percycraft/percycraft.version
 cp /tmp/percycraft/percycraft-smp-ami/update-minecraft.yml /opt/percycraft/update-minecraft.yml
 cp /tmp/percycraft/percycraft-smp-ami/run-minecraft.yml /opt/percycraft/docker-compose.yml
