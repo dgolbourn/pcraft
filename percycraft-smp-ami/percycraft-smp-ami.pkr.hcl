@@ -7,6 +7,14 @@ packer {
   }
 }
 
+variable "branch" {
+  type =  string
+}
+
+variable "repository" {
+  type =  string
+}
+
 data "amazon-parameterstore" "ami-base" {
   name = "/percycraft/ami-latest/percycraft-base-ami"
 }
@@ -28,7 +36,7 @@ build {
 
   provisioner "shell" {
     inline = [
-      "git clone --single-branch --branch ${var.branch} https://github.com/dgolbourn/percycraft.git /tmp/percycraft/"
+      "git clone --single-branch --branch ${var.branch} ${var.repository} /tmp/percycraft/"
     ]
   }
 

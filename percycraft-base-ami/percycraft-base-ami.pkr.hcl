@@ -7,6 +7,14 @@ packer {
   }
 }
 
+variable "branch" {
+  type =  string
+}
+
+variable "repository" {
+  type =  string
+}
+
 source "amazon-ebs" "percycraft-base-ami" {
   ami_name              = "percycraft-base-ami"
   instance_type         = "t3a.large"
