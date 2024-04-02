@@ -36,13 +36,15 @@ build {
 
   provisioner "shell" {
     inline = [
+      "sudo dnf -y install git",
       "git clone --single-branch --branch ${var.branch} ${var.repository} /tmp/percycraft/"
     ]
   }
 
   provisioner "shell" {
-    inline = [ 
-      "sudo /tmp/percycraft/percycraft-smp-ami/provision.sh" 
+    inline = [
+      "sudo chmod +x /tmp/percycraft/percycraft-smp-ami/provision.sh",
+      "sudo /tmp/percycraft/percycraft-smp-ami/provision.sh"
     ]
   }
 
