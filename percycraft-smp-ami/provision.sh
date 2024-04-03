@@ -20,7 +20,7 @@ provision_percycraft-smp() {
 provision_minecraft() {
     echo Provision minecraft started >&2
     mkdir -p /opt/data
-    docker compose -f /tmp/percycraft/percycraft-smp-ami/provision-minecraft.yml up
+    docker compose -d -f /tmp/percycraft/percycraft-smp-ami/provision-minecraft.yml up
     RET=$(docker wait provision-minecraft-1 )
     if (( $RET != 0 )); then
         exit $RET
