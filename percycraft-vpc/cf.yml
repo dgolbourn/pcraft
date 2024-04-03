@@ -273,7 +273,7 @@ Resources:
               echo "STARTSTOPLAMBDA=${AWS::StackName}-StartStopLambda" >> /opt/.env
               echo "STARTCONTINUELAMBDA=${AWS::StackName}-StartContinueLambda" >> /opt/.env
               echo "CF_API_KEY=${CurseForgeAPIKey}" >> /opt/.env
-              sudo /opt/percycraft/userdata.sh
+              /opt/percycraft/userdata.sh
             - FileBucketWebsiteURL: !GetAtt FileBucket.WebsiteURL
 
   AutoScalingGroup:
@@ -809,7 +809,7 @@ Resources:
               timedatectl set-timezone ${TimeZone}
               echo "PLAYERLIST=${Players}" > /opt/.env
               echo "STARTSTOPLAMBDA=${AWS::StackName}-StartStopLambda" >> /opt/.env
-              sudo /opt/lobby/userdata.sh
+              /opt/lobby/userdata.sh
 
   LobbyAutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup

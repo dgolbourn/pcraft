@@ -17,7 +17,7 @@ variable "repository" {
 
 source "amazon-ebs" "lobby-ami" {
   ami_name              = "lobby-ami"
-  instance_type         = "t3g.nano"
+  instance_type         = "t4g.nano"
   region                = "eu-west-2"
   source_ami            = "ami-07ea0a7a46980a2cd"
   ssh_username          = "ec2-user"
