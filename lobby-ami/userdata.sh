@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -xe
 echo Userdata lobby started >&2
 source /opt/.env
 
