@@ -1,7 +1,7 @@
 #!/bin/bash
 source /opt/.env
 
-startup() {
+start-server() {
     echo Server started >&2
     aws lambda invoke --function-name $STARTSTOPLAMBDA --payload "{\"start\":true,\"referrer\":\"server\"}" --cli-binary-format raw-in-base64-out /dev/null
     while true; do
@@ -10,4 +10,4 @@ startup() {
     echo Server complete >&2
 }
 
-startup
+start-server

@@ -1,11 +1,6 @@
 #!/bin/bash -xe
 echo Provision server started >&2
 
-provision_version() {
-    cd /tmp/percycraft
-    git describe --tags --long --always > /opt/percycraft/percycraft.version
-}
-
 provision_docker() {
     echo Install docker started >&2
     dnf install -y docker < /dev/null
@@ -68,7 +63,6 @@ provision_percycraft() {
 
 dnf update -y
 mkdir -p /opt/percycraft
-provision_version
 provision_docker
 provision_mcrcon
 provision_mcaselector

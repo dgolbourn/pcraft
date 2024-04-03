@@ -4,11 +4,11 @@ Parameters:
 
   EC2AMI:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
-    Default: /percycraft/ami-latest/base-x86_64
+    Default: /percycraft/ami-latest/percycraft-base-ami
 
   LOBBYAMI:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
-    Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-arm64
+    Default: /percycraft/ami-latest/lobby-ami
 
   FileServerHostName:
     Type: String
@@ -50,10 +50,6 @@ Parameters:
     Type: String
     Default: cron(0 22 ? * 6-7 *)
 
-  Repository:
-    Type: String
-    Default: https://github.com/dgolbourn/percycraft.git
-
 Conditions:
   WeekdayStartScheduleProvided: !Not [ !Equals [ !Ref WeekdayStartSchedule, '' ] ]
   WeekdayStopScheduleProvided: !Not [ !Equals [ !Ref WeekdayStopSchedule, '' ] ]
@@ -81,17 +77,9 @@ Metadata:
         - KeyPairName
         - YourIPv4
       - Label:
-          default: Repository
-        Parameters:
-        - Repository
-      - Label:
           default: Curse Forge API key
         Parameters:
         - CurseForgeAPIKey
-      - Label:
-          default: Profile
-        Parameters:
-        - Profile
       - Label:
           default: Host names
         Parameters:
@@ -127,8 +115,6 @@ Metadata:
         default: "Server weekend start schedule"
       WeekendStopSchedule:
         default: "Server weekend stop schedule"
-      Repository:
-        default: "Location of the Percycraft source code"
 
 Resources:
 
@@ -820,14 +806,10 @@ Resources:
         UserData:
           Fn::Base64: !Sub |
               #!/bin/bash -xe
-              yum update -y
               timedatectl set-timezone ${TimeZone}
-              yum -y install git
-              git clone --single-branch ${Repository} /opt/percycraft
               echo "PLAYERLIST=${Players}" > /opt/.env
               echo "STARTSTOPLAMBDA=${AWS::StackName}-StartStopLambda" >> /opt/.env
-              chmod +x /opt/percycraft/lobby/provision.sh
-              /opt/percycraft/lobby/provision.sh
+              sudo /opt/lobby/userdata.sh
 
   LobbyAutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup

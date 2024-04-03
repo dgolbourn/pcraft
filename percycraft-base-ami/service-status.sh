@@ -14,13 +14,14 @@ status() {
     DONE=false
     READY=false
     PLAYERS=0
+    MAX_PLAYERS=0
+    echo $MAX_PLAYERS > /opt/status/max_players.log
     while true; do
         COUNT=$(get_player_count)
         if [[ $COUNT =~ $REGEX ]]; then
             if [ "$READY" = false ]; then
                 READY=true
                 echo ready >&2
-                echo $COUNT
                 INSTANCE_ID=$(ec2-metadata --instance-id | cut -d " " -f 2)
                 aws lambda invoke --function-name $STARTCONTINUELAMBDA --payload "{\"detail\":{\"EC2InstanceId\":\"$INSTANCE_ID\"}}" --cli-binary-format raw-in-base64-out /dev/null
             fi
@@ -28,8 +29,10 @@ status() {
                 SECONDS=0
                 if (( $COUNT != $PLAYERS )); then
                     PLAYERS=$COUNT
-                    echo $COUNT
                 fi
+                if (( $COUNT > $MAX_PLAYERS )); then
+                    echo $MAX_PLAYERS > /opt/status/max_players.log
+                fi                
                 if [ "$DONE" = true ]; then
                     DONE=false
                     echo active >&2
@@ -44,7 +47,6 @@ status() {
             else
                 if (( $COUNT != $PLAYERS )); then
                     PLAYERS=$COUNT
-                    echo $COUNT
                     echo quiet >&2
                 fi
             fi

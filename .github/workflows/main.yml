@@ -11,11 +11,19 @@ jobs:
   build-trigger:
     runs-on: ubuntu-latest
     outputs:
+      lobby-ami: ${{ steps.lobby-ami.outputs.src }}      
       percycraft-base-ami: ${{ steps.percycraft-base-ami.outputs.src }}
       percycraft-smp-ami: ${{ steps.percycraft-smp-ami.outputs.src }}
       percycraft-vpc: ${{ steps.percycraft-vpc.outputs.src }}
     steps:
     - uses: actions/checkout@v3
+    - uses: dorny/paths-filter@v3
+      id: lobby-ami
+      with:
+        base: ${{ github.ref }}
+        filters: |
+          src:
+            - 'lobby-ami/**'
     - uses: dorny/paths-filter@v3
       id: percycraft-base-ami
       with:
@@ -38,6 +46,34 @@ jobs:
         filters: |
           src:
             - 'percycraft-vpc/**'
+  lobby-ami:
+    needs: build-trigger
+    if: needs.build-trigger.outputs.lobby-ami == 'true'
+    runs-on: ubuntu-latest
+    name: Create lobby-ami
+    steps:
+      - name: Git clone the repository
+        uses: actions/checkout@v3
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v1.7.0
+        with:
+          role-to-assume: ${{ secrets.ROLETOASSUME }}
+          role-session-name: GithubDeployPercycraft
+          aws-region: ${{ secrets.AWSREGION }}
+      - name: Setup `packer`
+        uses: hashicorp/setup-packer@main
+        id: setup
+        with:
+          version: latest
+      - name: Run `packer init`
+        id: init
+        run: "packer init lobby-ami/"
+      - name: Run `packer validate`
+        id: validate
+        run: "packer validate -var \"branch=${{ github.ref_name }}\" -var \"repository=https://github.com/${{ github.repository }}.git\" lobby-ami/"
+      - name: Build AMI
+        id: build
+        run: "packer build -var \"branch=${{ github.ref_name }}\" -var \"repository=https://github.com/${{ github.repository }}.git\" lobby-ami/lobby-ami.pkr.hcl"            
   percycraft-base-ami:
     needs: build-trigger
     if: needs.build-trigger.outputs.percycraft-base-ami == 'true'
@@ -103,9 +139,10 @@ jobs:
       - name: Build AMI
         id: build
         run: "packer build -var \"branch=${{ github.ref_name }}\" -var \"repository=https://github.com/${{ github.repository }}.git\" percycraft-smp-ami/percycraft-smp-ami.pkr.hcl"
-  percycraft-vpc:
+  percycraft-smp-vpc:
     needs:
       - build-trigger
+      - lobby-ami
       - percycraft-base-ami
       - percycraft-smp-ami
     if: |
@@ -131,7 +168,7 @@ jobs:
         with:
           name: percycraft-smp-vpc
           template: percycraft-vpc/cf.yml
-          parameter-overrides: "EC2API=/percycraft/ami-latest/percycraft-smp-ami,KeyPairName=${{ secrets.KEYPAIRNAME }},YourIPv4=${{ secrets.YOURIPV4 }},Players=\"${{ secrets.PLAYERS }}\",CurseForgeAPIKey=${{ secrets.CURSEFORGEAPIKEY }},WeekdayStartSchedule=\"\",WeekdayStopSchedule=\"\",WeekendStartSchedule=\"\",WeekendStopSchedule=\"\""
+          parameter-overrides: "Repository=https://github.com/${{ github.repository }}.git,EC2AMI=/percycraft/ami-latest/percycraft-smp-ami,KeyPairName=${{ secrets.KEYPAIRNAME }},YourIPv4=${{ secrets.YOURIPV4 }},Players=\"${{ secrets.PLAYERS }}\",CurseForgeAPIKey=${{ secrets.CURSEFORGEAPIKEY }},WeekdayStartSchedule=\"\",WeekdayStopSchedule=\"\",WeekendStartSchedule=\"\",WeekendStopSchedule=\"\""
           no-execute-changeset: 1
           no-fail-on-empty-changeset: 1
       # - name: Deploy Creative

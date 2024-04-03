@@ -1,5 +1,5 @@
 services:
-  install-minecraft:
+  provision-minecraft:
     image: itzg/minecraft-server:base
     environment:
       EULA: "TRUE"
@@ -35,6 +35,6 @@ services:
       OVERRIDE_ICON: "TRUE"
     volumes:
       - /opt/data:/data
-      - /opt/percycraft/vanillatweaks:/vanillatweaks:ro
-      - /opt/percycraft/resources/:/resources:ro
+      - /tmp/percycraft-smp-ami/vanillatweaks:/vanillatweaks:ro
+      - /tmp/percycraft-smp-ami/resources/:/resources:ro
     restart: no

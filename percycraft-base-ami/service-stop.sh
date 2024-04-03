@@ -28,5 +28,10 @@ generate-image() {
 }
 
 stop-server
-backup
-generate-image
+MAX_PLAYERS=$(cat /opt/status/max_players.log)
+if (( $MAX_PLAYERS > 0 )); then
+    backup
+    generate-image
+else
+    echo No player activity, skipping backup >&2
+fi
