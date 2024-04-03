@@ -15,6 +15,7 @@ jobs:
       percycraft-base-ami: ${{ steps.percycraft-base-ami.outputs.src }}
       percycraft-smp-ami: ${{ steps.percycraft-smp-ami.outputs.src }}
       percycraft-vpc: ${{ steps.percycraft-vpc.outputs.src }}
+      percycraft-web: ${{ steps.percycraft-web.outputs.src }}
     steps:
     - uses: actions/checkout@v3
     - uses: dorny/paths-filter@v3
@@ -49,6 +50,14 @@ jobs:
         filters: |
           src:
             - 'percycraft-vpc/**'
+    - uses: dorny/paths-filter@v3
+      id: percycraft-web
+      name: Percycraft website
+      with:
+        base: ${{ github.ref }}
+        filters: |
+          src:
+            - 'percycraft-web/**'            
   lobby-ami:
     needs: build-trigger
     if: needs.build-trigger.outputs.lobby-ami == 'true'
@@ -173,3 +182,11 @@ jobs:
           parameter-overrides: "EC2AMI=/percycraft/ami-latest/create-anything-ami,KeyPairName=${{ secrets.KEYPAIRNAME }},YourIPv4=${{ secrets.YOURIPV4 }},Players=\"${{ secrets.PLAYERS }}\",CurseForgeAPIKey=${{ secrets.CURSEFORGEAPIKEY }},WeekdayStartSchedule=\"\",WeekdayStopSchedule=\"\",WeekendStartSchedule=\"\",WeekendStopSchedule=\"\""
           no-execute-changeset: 1
           no-fail-on-empty-changeset: 1
+  percycraft-web:
+    needs: build-trigger
+    if: needs.build-trigger.outputs.percycraft-web == 'true'
+    runs-on: ubuntu-latest
+    name: Deploy website
+    steps:
+      - name: Git clone the repository
+        uses: actions/checkout@v3
