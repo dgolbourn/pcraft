@@ -34,9 +34,9 @@ provision_client_resources() {
     mkdir -p /tmp/percycraft/client-resources
     docker compose -f /tmp/percycraft/percycraft-smp-ami/client-resources.yml up --exit-code-from client-resources
     mkdir -p /opt/percycraft/client-resources/resourcepacks/
-    cp /tmp/percycraft/client-resources/data/resourcepacks/* /opt/percycraft/client-resources/resourcepacks/
+    cp /tmp/percycraft/client-resources/resourcepacks/* /opt/percycraft/client-resources/resourcepacks/
     mkdir -p /opt/percycraft/client-resources/mods/
-    zip -r /opt/percycraft/client-resources/mods/mods.zip /tmp/percycraft/client-resources/data/mods/*
+    zip -r /opt/percycraft/client-resources/mods/mods.zip /tmp/percycraft/client-resources/mods/*
     cd /opt/percycraft/client-resources/
     find . -type d -print -exec sh -c 'tree "$0" \
         -H "." \
