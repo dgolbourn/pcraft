@@ -7,7 +7,7 @@ services:
       EULA: "TRUE"
       TYPE: CUSTOM
       FAMILY: FABRIC
-      MOTD: Welcome to the Percycraft server!
+      MOTD: §k* §l§6Welcome §fto the §l§cPercycraft §fserver! §k*
       MEMORY: 6G
       STOP_SERVER_ANNOUCE_DELAY: 60
       STOP_DURATION: 240

@@ -1,6 +1,6 @@
 services:
-  provision-minecraft:
-    image: itzg/minecraft-server
+  client-resources:
+    image: itzg/minecraft-server:base
     environment:
       EULA: "TRUE"
       TYPE: FABRIC
@@ -10,7 +10,7 @@ services:
         /vanillatweaks/resourcepacks.json
       MODRINTH_PROJECTS: |
         fabric-api
-        chat-signing-hider
+        chat-signing-hider:beta
         lambdynamiclights
         raised
         simple-voice-chat
@@ -22,9 +22,8 @@ services:
         sodium
         iris
         modmenu
-        distanthorizons
-      MODRINTH_ALLOWED_VERSION_TYPE: alpha
+        distanthorizons:alpha
     volumes:
-      - /opt/data:/data
+      - /tmp/percycraft/client-resources:/data
       - /tmp/percycraft/percycraft-smp-ami/vanillatweaks:/vanillatweaks:ro
     restart: no

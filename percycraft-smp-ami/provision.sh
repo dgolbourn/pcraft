@@ -30,9 +30,34 @@ provision_minecraft() {
     echo Provision minecraft complete >&2
 }
 
+provision_client_resources() {
+    mkdir -p /tmp/percycraft/client-resources
+    docker compose -f /tmp/percycraft/percycraft-smp-ami/client-resources.yml up --exit-code-from client-resources
+    mkdir -p /opt/percycraft/client-resources/resourcepacks/
+    cp /tmp/percycraft/client-resources/data/resourcepacks/* /opt/percycraft/client-resources/resourcepacks/
+    mkdir -p /opt/percycraft/client-resources/mods/
+    zip -r /opt/percycraft/client-resources/mods/mods.zip /tmp/percycraft/client-resources/data/mods/*
+    cd /opt/percycraft/client-resources/
+    find . -type d -print -exec sh -c 'tree "$0" \
+        -H "." \
+        -L 1 \
+        --noreport \
+        --dirsfirst \
+        --charset utf-8 \
+        -I "index.html" \
+        -T "Percycraft" \
+        --ignore-case \
+        --timefmt "%Y%m%d-%H%M%S" \
+        -s \
+        -D \
+        -o "$0/index.html"' {} \;
+    cp /tmp/percycraft/percycraft-smp-ami/web/* /opt/percycraft/client-resources/
+}
+
 provision_percycraft-smp
 provision_minecraft
 /opt/percycraft/mods/enhancedgroups/provision.sh
 /opt/percycraft/mods/friendly-fire/provision.sh
+provision_client_resources
 
 echo Provision Percycraft SMP complete >&2

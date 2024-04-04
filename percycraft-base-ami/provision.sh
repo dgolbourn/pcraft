@@ -47,8 +47,7 @@ provision_status() {
 
 provision_percycraft() {
     echo Install percycraft started >&2
-    docker image pull amake/innosetup 
-    docker image tag amake/innosetup amake/innosetup:base
+    dnf install -y tree < /dev/null
     docker image pull itzg/minecraft-server
     docker image tag itzg/minecraft-server itzg/minecraft-server:base
     cp /tmp/percycraft/percycraft-base-ami/service-start.sh /opt/percycraft/service-start.sh
