@@ -36,7 +36,7 @@ provision_client_resources() {
         --dirsfirst \
         --charset utf-8 \
         -I "index.html" \
-        -T "Percycraft" \
+        -T "Create Anything" \
         --ignore-case \
         --timefmt "%Y%m%d-%H%M%S" \
         -s \
