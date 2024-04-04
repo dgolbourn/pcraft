@@ -11,13 +11,14 @@ jobs:
   build-trigger:
     runs-on: ubuntu-latest
     outputs:
-      lobby-ami: ${{ steps.lobby-ami.outputs.src }}      
+      lobby-ami: ${{ steps.lobby-ami.outputs.src }}
       percycraft-base-ami: ${{ steps.percycraft-base-ami.outputs.src }}
       percycraft-smp-ami: ${{ steps.percycraft-smp-ami.outputs.src }}
       percycraft-vpc: ${{ steps.percycraft-vpc.outputs.src }}
     steps:
     - uses: actions/checkout@v3
     - uses: dorny/paths-filter@v3
+      name: Lobby
       id: lobby-ami
       with:
         base: ${{ github.ref }}
@@ -25,6 +26,7 @@ jobs:
           src:
             - 'lobby-ami/**'
     - uses: dorny/paths-filter@v3
+      name: Percycraft Base AMI
       id: percycraft-base-ami
       with:
         base: ${{ github.ref }}
@@ -33,6 +35,7 @@ jobs:
             - 'percycraft-base-ami/**'
     - uses: dorny/paths-filter@v3
       id: percycraft-smp-ami
+      name: Percycraft SMP AMP
       with:
         base: ${{ github.ref }}
         filters: |
@@ -41,6 +44,7 @@ jobs:
             - 'percycraft-base-ec2/**'
     - uses: dorny/paths-filter@v3
       id: percycraft-vpc
+      name: Percycraft VPC
       with:
         base: ${{ github.ref }}
         filters: |
@@ -65,15 +69,11 @@ jobs:
         id: setup
         with:
           version: latest
-      - name: Run `packer init`
-        id: init
-        run: "packer init lobby-ami/"
-      - name: Run `packer validate`
-        id: validate
-        run: "packer validate -var \"branch=${{ github.ref_name }}\" -var \"repository=https://github.com/${{ github.repository }}.git\" lobby-ami/"
-      - name: Build AMI
-        id: build
-        run: "packer build -var \"branch=${{ github.ref_name }}\" -var \"repository=https://github.com/${{ github.repository }}.git\" lobby-ami/lobby-ami.pkr.hcl"            
+      - name: Run Packer
+        run: |
+          packer init lobby-ami/
+          packer validate -var "branch=${{ github.ref_name }}" -var "repository=https://github.com/${{ github.repository }}.git" lobby-ami/
+          packer build -var "branch=${{ github.ref_name }}" -var "repository=https://github.com/${{ github.repository }}.git" lobby-ami/lobby-ami.pkr.hcl
   percycraft-base-ami:
     needs: build-trigger
     if: needs.build-trigger.outputs.percycraft-base-ami == 'true'
@@ -88,20 +88,15 @@ jobs:
           role-to-assume: ${{ secrets.ROLETOASSUME }}
           role-session-name: GithubDeployPercycraft
           aws-region: ${{ secrets.AWSREGION }}
-      - name: Setup `packer`
+      - name: Setup Packer
         uses: hashicorp/setup-packer@main
-        id: setup
         with:
           version: latest
-      - name: Run `packer init`
-        id: init
-        run: "packer init percycraft-base-ami/"
-      - name: Run `packer validate`
-        id: validate
-        run: "packer validate -var \"branch=${{ github.ref_name }}\" -var \"repository=https://github.com/${{ github.repository }}.git\" percycraft-base-ami/"
-      - name: Build AMI
-        id: build
-        run: "packer build -var \"branch=${{ github.ref_name }}\" -var \"repository=https://github.com/${{ github.repository }}.git\" percycraft-base-ami/percycraft-base-ami.pkr.hcl"
+      - name: Run Packer
+        run: |
+          packer init percycraft-base-ami/
+          packer validate -var "branch=${{ github.ref_name }}" -var "repository=https://github.com/${{ github.repository }}.git" percycraft-base-ami/
+          packer build -var "branch=${{ github.ref_name }}" -var "repository=https://github.com/${{ github.repository }}.git" percycraft-base-ami/percycraft-base-ami.pkr.hcl
   percycraft-smp-ami:
     needs:
       - build-trigger
@@ -130,15 +125,11 @@ jobs:
         id: setup
         with:
           version: latest
-      - name: Run `packer init`
-        id: init
-        run: "packer init percycraft-smp-ami/"
-      - name: Run `packer validate`
-        id: validate
-        run: "packer validate -var \"branch=${{ github.ref_name }}\" -var \"repository=https://github.com/${{ github.repository }}.git\" percycraft-smp-ami/"
-      - name: Build AMI
-        id: build
-        run: "packer build -var \"branch=${{ github.ref_name }}\" -var \"repository=https://github.com/${{ github.repository }}.git\" percycraft-smp-ami/percycraft-smp-ami.pkr.hcl"
+      - name: Run Packer
+        run: |
+          packer init percycraft-smp-ami/
+          packer validate -var "branch=${{ github.ref_name }}" -var "repository=https://github.com/${{ github.repository }}.git" percycraft-smp-ami/
+          packer build -var "branch=${{ github.ref_name }}" -var "repository=https://github.com/${{ github.repository }}.git" percycraft-smp-ami/percycraft-smp-ami.pkr.hcl
   percycraft-smp-vpc:
     needs:
       - build-trigger
@@ -168,7 +159,7 @@ jobs:
         with:
           name: percycraft-smp-vpc
           template: percycraft-vpc/cf.yml
-          parameter-overrides: "Repository=https://github.com/${{ github.repository }}.git,EC2AMI=/percycraft/ami-latest/percycraft-smp-ami,KeyPairName=${{ secrets.KEYPAIRNAME }},YourIPv4=${{ secrets.YOURIPV4 }},Players=\"${{ secrets.PLAYERS }}\",CurseForgeAPIKey=${{ secrets.CURSEFORGEAPIKEY }},WeekdayStartSchedule=\"\",WeekdayStopSchedule=\"\",WeekendStartSchedule=\"\",WeekendStopSchedule=\"\""
+          parameter-overrides: "EC2AMI=/percycraft/ami-latest/percycraft-smp-ami,KeyPairName=${{ secrets.KEYPAIRNAME }},YourIPv4=${{ secrets.YOURIPV4 }},Players=\"${{ secrets.PLAYERS }}\",CurseForgeAPIKey=${{ secrets.CURSEFORGEAPIKEY }},WeekdayStartSchedule=\"\",WeekdayStopSchedule=\"\",WeekendStartSchedule=\"\",WeekendStopSchedule=\"\""
           no-execute-changeset: 1
           no-fail-on-empty-changeset: 1
       # - name: Deploy Creative
