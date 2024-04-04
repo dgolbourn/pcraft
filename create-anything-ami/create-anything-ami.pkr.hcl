@@ -47,7 +47,9 @@ build {
 
   provisioner "shell" {
     inline = [
-      "echo CF_API_KEY=${var.cfapikey//£/\$\$} > /tmp/percycraft/.env",
+      "VAR=${var.cfapikey}",
+      "CF_API_KEY=${VAR//£/\$\$}"
+      "echo CF_API_KEY=${CF_API_KEY} > /tmp/percycraft/.env",
       "sudo chmod +x /tmp/percycraft/create-anything-ami/provision.sh",
       "sudo /tmp/percycraft/create-anything-ami/provision.sh"
     ]
