@@ -1,5 +1,6 @@
 #!/bin/bash -xe
 echo Provision Create Anything started >&2
+source /tmp/percycraft/.env
 
 provision_create-anything() {
     echo Provision create-anything started >&2
@@ -12,6 +13,7 @@ provision_create-anything() {
 provision_minecraft() {
     echo Provision minecraft started >&2
     mkdir -p /opt/data
+    echo "CF_API_KEY=${CF_API_KEY//£/\$\$}" > /tmp/percycraft/.env
     docker compose -f /tmp/percycraft/create-anything-ami/provision-minecraft.yml up --exit-code-from provision-minecraft
     cd /opt/data
     JAR=$(ls -t *.jar | head -1)
