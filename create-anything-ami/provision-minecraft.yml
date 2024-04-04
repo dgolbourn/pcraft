@@ -1,0 +1,25 @@
+services:
+  provision-minecraft:
+    image: itzg/minecraft-server:base
+    env_file:
+      - /tmp/percycraft/.env
+    environment:
+      EULA: "TRUE"
+      TYPE: FABRIC
+      SETUP_ONLY: "TRUE"
+      VERSION: "1.20.1"
+      MODRINTH_PROJECTS: |
+        fabric-api
+        simple-voice-chat
+        pl3xmap:beta
+        bookshelf-lib
+        better-fabric-console
+        lithium
+      CURSEFORGE_FILES: |
+        worldedit
+      ICON: /resources/server-icon.png
+      OVERRIDE_ICON: "TRUE"
+    volumes:
+      - /opt/data:/data
+      - /tmp/percycraft/create-anything-ami/resources/:/resources:ro
+    restart: no

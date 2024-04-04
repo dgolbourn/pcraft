@@ -12,7 +12,7 @@ Parameters:
 
   FileServerHostName:
     Type: String
-    Default: cdn.pcraft.co.uk
+    Default: ''
 
   KeyPairName:
     Type: String
@@ -23,10 +23,6 @@ Parameters:
     Default: ''
 
   Players:
-    Type: String
-    Default: ''
-
-  CurseForgeAPIKey:
     Type: String
     Default: ''
 
@@ -77,10 +73,6 @@ Metadata:
         - KeyPairName
         - YourIPv4
       - Label:
-          default: Curse Forge API key
-        Parameters:
-        - CurseForgeAPIKey
-      - Label:
           default: Host names
         Parameters:
         - FileServerHostName
@@ -91,8 +83,6 @@ Metadata:
         - LOBBYAMI
 
     ParameterLabels:
-      CurseForgeAPIKey:
-        default: "https://console.curseforge.com/#/api-keys (replace $ with £)"
       KeyPairName:
         default: "Key Pair: https://console.aws.amazon.com/ec2/v2/home?#KeyPairs:sort=keyName"
       YourIPv4:
@@ -268,11 +258,10 @@ Resources:
               echo "DATABUCKETS3URI=s3://${DataBucket}" >> /opt/.env
               echo "FILEBUCKETS3URI=s3://${FileBucket}" >> /opt/.env
               echo "FILEBUCKETWEBSITEURL=${FileBucketWebsiteURL}" >> /opt/.env
-              echo "PLAYERLIST=${Players}" >> /opt/.env
+              echo "WHITELIST=${Players}" >> /opt/.env
               echo "TZ=${TimeZone}" >> /opt/.env
               echo "STARTSTOPLAMBDA=${AWS::StackName}-StartStopLambda" >> /opt/.env
               echo "STARTCONTINUELAMBDA=${AWS::StackName}-StartContinueLambda" >> /opt/.env
-              echo "CF_API_KEY=${CurseForgeAPIKey}" >> /opt/.env
               /opt/percycraft/userdata.sh
             - FileBucketWebsiteURL: !GetAtt FileBucket.WebsiteURL
 

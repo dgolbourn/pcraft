@@ -21,7 +21,6 @@ provision_minecraft() {
     echo Provision minecraft started >&2
     mkdir -p /opt/data
     docker compose -f /tmp/percycraft/percycraft-smp-ami/provision-minecraft.yml up --exit-code-from provision-minecraft
-    rm -rf /opt/data/.modrinth-manifest.json
     cd /opt/data
     JAR=$(ls -t *.jar | head -1)
     echo "CUSTOM_SERVER=/data/${JAR}" >> /opt/.env

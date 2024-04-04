@@ -14,11 +14,12 @@ jobs:
       lobby-ami: ${{ steps.lobby-ami.outputs.src }}
       percycraft-base-ami: ${{ steps.percycraft-base-ami.outputs.src }}
       percycraft-smp-ami: ${{ steps.percycraft-smp-ami.outputs.src }}
+      create-anything-ami: ${{ steps.create-anything-ami.outputs.src }}
       percycraft-vpc: ${{ steps.percycraft-vpc.outputs.src }}
     steps:
     - uses: actions/checkout@v3
     - uses: dorny/paths-filter@v3
-      name: Lobby
+      name: Lobby AMI
       id: lobby-ami
       with:
         base: ${{ github.ref }}
@@ -35,12 +36,20 @@ jobs:
             - 'percycraft-base-ami/**'
     - uses: dorny/paths-filter@v3
       id: percycraft-smp-ami
-      name: Percycraft SMP AMP
+      name: Percycraft SMP AMI
       with:
         base: ${{ github.ref }}
         filters: |
           src:
             - 'percycraft-smp-ami/**'
+    - uses: dorny/paths-filter@v3
+      id: create-anything-ami
+      name: Create Anything AMI
+      with:
+        base: ${{ github.ref }}
+        filters: |
+          src:
+            - 'create-anything-ami/**'
     - uses: dorny/paths-filter@v3
       id: percycraft-vpc
       name: Percycraft VPC
@@ -48,7 +57,7 @@ jobs:
         base: ${{ github.ref }}
         filters: |
           src:
-            - 'percycraft-vpc/**'         
+            - 'percycraft-vpc/**'
   lobby-ami:
     needs: build-trigger
     if: needs.build-trigger.outputs.lobby-ami == 'true'
@@ -129,6 +138,39 @@ jobs:
           packer init percycraft-smp-ami/
           packer validate -var "branch=${{ github.ref_name }}" -var "repository=https://github.com/${{ github.repository }}.git" percycraft-smp-ami/
           packer build -var "branch=${{ github.ref_name }}" -var "repository=https://github.com/${{ github.repository }}.git" percycraft-smp-ami/percycraft-smp-ami.pkr.hcl
+  create-anything-ami:
+    needs:
+      - build-trigger
+      - percycraft-base-ami
+    if: |
+      always() && !(
+        contains(needs.*.result, 'failure') ||
+        contains(needs.*.result, 'cancelled')
+      ) && (
+        needs.build-trigger.outputs.create-anything-ami == 'true' ||
+        needs.percycraft-base-ami.result == 'success'
+      )
+    runs-on: ubuntu-latest
+    name: Create create-anything-ami
+    steps:
+      - name: Git clone the repository
+        uses: actions/checkout@v3
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v1.7.0
+        with:
+          role-to-assume: ${{ secrets.ROLETOASSUME }}
+          role-session-name: GithubDeployPercycraft
+          aws-region: ${{ secrets.AWSREGION }}
+      - name: Setup `packer`
+        uses: hashicorp/setup-packer@main
+        id: setup
+        with:
+          version: latest
+      - name: Run Packer
+        run: |
+          packer init create-anything-ami/
+          packer validate -var "cfapikey=${{ secrets.CURSEFORGEAPIKEY }}" -var "branch=${{ github.ref_name }}" -var "repository=https://github.com/${{ github.repository }}.git" create-anything-ami/
+          packer build -var "cfapikey=${{ secrets.CURSEFORGEAPIKEY }}" -var "branch=${{ github.ref_name }}" -var "repository=https://github.com/${{ github.repository }}.git" create-anything-ami/create-anything-ami.pkr.hcl
   percycraft-smp-vpc:
     needs: build-trigger
     if: needs.build-trigger.outputs.percycraft-vpc == 'true'
@@ -148,7 +190,7 @@ jobs:
         with:
           name: percycraft
           template: percycraft-vpc/cf.yml
-          parameter-overrides: "EC2AMI=/percycraft/ami-latest/percycraft-smp-ami,KeyPairName=${{ secrets.KEYPAIRNAME }},YourIPv4=${{ secrets.YOURIPV4 }},Players=\"${{ secrets.PLAYERS }}\",CurseForgeAPIKey=${{ secrets.CURSEFORGEAPIKEY }},WeekdayStartSchedule=\"\",WeekdayStopSchedule=\"\",WeekendStartSchedule=\"\",WeekendStopSchedule=\"\""
+          parameter-overrides: "EC2AMI=/percycraft/ami-latest/percycraft-smp-ami,KeyPairName=${{ secrets.KEYPAIRNAME }},YourIPv4=${{ secrets.YOURIPV4 }},Players=\"${{ secrets.PERCYCRAFTSMPPLAYERS }}\",WeekdayStartSchedule=\"\",WeekdayStopSchedule=\"\",WeekendStartSchedule=\"\",WeekendStopSchedule=\"\",FileServerHostName=${{ secrets.PERCYCRAFTSMPFILESERVER }}"
           no-execute-changeset: 1
           no-fail-on-empty-changeset: 1
   create-anything-vpc:
@@ -170,6 +212,6 @@ jobs:
         with:
           name: create-anything
           template: percycraft-vpc/cf.yml
-          parameter-overrides: "EC2AMI=/percycraft/ami-latest/create-anything-ami,KeyPairName=${{ secrets.KEYPAIRNAME }},YourIPv4=${{ secrets.YOURIPV4 }},Players=\"${{ secrets.PLAYERS }}\",CurseForgeAPIKey=${{ secrets.CURSEFORGEAPIKEY }},WeekdayStartSchedule=\"\",WeekdayStopSchedule=\"\",WeekendStartSchedule=\"\",WeekendStopSchedule=\"\""
+          parameter-overrides: "EC2AMI=/percycraft/ami-latest/create-anything-ami,KeyPairName=${{ secrets.KEYPAIRNAME }},YourIPv4=${{ secrets.YOURIPV4 }},Players=\"${{ secrets.CREATEANYTHINGPLAYERS }}\",WeekdayStartSchedule=\"\",WeekdayStopSchedule=\"\",WeekendStartSchedule=\"\",WeekendStopSchedule=\"\",FileServerHostName=${{ secrets.CREATEANYTHINGFILESERVER }}"
           no-execute-changeset: 1
           no-fail-on-empty-changeset: 1
