@@ -41,7 +41,6 @@ jobs:
         filters: |
           src:
             - 'percycraft-smp-ami/**'
-            - 'percycraft-base-ec2/**'
     - uses: dorny/paths-filter@v3
       id: percycraft-vpc
       name: Percycraft VPC
