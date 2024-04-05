@@ -1,47 +1,36 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Description: Percycraft
 Parameters:
-
   EC2AMI:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
     Default: /percycraft/ami-latest/percycraft-base-ami
-
   LOBBYAMI:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
     Default: /percycraft/ami-latest/lobby-ami
-
   FileServerHostName:
     Type: String
     Default: ''
-
   KeyPairName:
     Type: String
     Default: ''
-
   YourIPv4:
     Type: String
     Default: ''
-
   Players:
     Type: String
     Default: ''
-
   TimeZone:
     Type: String
     Default: Europe/London
-
   WeekdayStartSchedule:
     Type: String
     Default: cron(0 17 ? * 6 *)
-
   WeekdayStopSchedule:
     Type: String
     Default: cron(0 22 ? * 1 *)
-
   WeekendStartSchedule:
     Type: String
     Default: cron(0 7 ? * 7-1 *)
-
   WeekendStopSchedule:
     Type: String
     Default: cron(0 22 ? * 6-7 *)

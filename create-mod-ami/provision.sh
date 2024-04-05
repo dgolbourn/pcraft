@@ -1,19 +1,18 @@
 #!/bin/bash -xe
-echo Provision Create Anything started >&2
-source /tmp/percycraft/.env
+echo Provision Create mod started >&2
 
-provision_create-anything() {
-    echo Provision create-anything started >&2
-    cp /tmp/percycraft/create-anything-ami/run-minecraft.yml /opt/percycraft/docker-compose.yml
-    cp /tmp/percycraft/create-anything-ami/start.sh /opt/percycraft/start.sh
+provision_create-mod() {
+    echo Provision create-mod started >&2
+    cp /tmp/percycraft/create-mod-ami/run-minecraft.yml /opt/percycraft/docker-compose.yml
+    cp /tmp/percycraft/create-mod-ami/start.sh /opt/percycraft/start.sh
     chmod +x /opt/percycraft/start.sh
-    echo Provision create-anything complete >&2
+    echo Provision create-mod complete >&2
 }
 
 provision_minecraft() {
     echo Provision minecraft started >&2
     mkdir -p /opt/data
-    docker compose -f /tmp/percycraft/create-anything-ami/provision-minecraft.yml up --exit-code-from provision-minecraft
+    docker compose -f /tmp/percycraft/create-mod-ami/provision-minecraft.yml up --exit-code-from provision-minecraft
     cd /opt/data
     JAR=$(ls -t *.jar | head -1)
     echo "CUSTOM_SERVER=/data/${JAR}" >> /opt/.env
@@ -24,7 +23,7 @@ provision_minecraft() {
 
 provision_client_resources() {
     mkdir -p /tmp/percycraft/client-resources
-    docker compose -f /tmp/percycraft/create-anything-ami/client-resources.yml up --exit-code-from client-resources
+    docker compose -f /tmp/percycraft/create-mod-ami/client-resources.yml up --exit-code-from client-resources
     mkdir -p /opt/percycraft/client-resources/mods/
     zip -r /opt/percycraft/client-resources/mods/mods.zip /tmp/percycraft/client-resources/mods/*
     cd /opt/percycraft/client-resources/
@@ -35,17 +34,17 @@ provision_client_resources() {
         --dirsfirst \
         --charset utf-8 \
         -I "index.html" \
-        -T "Create Anything" \
+        -T "Create mod" \
         --ignore-case \
         --timefmt "%Y%m%d-%H%M%S" \
         -s \
         -D \
         -o "$0/index.html"' {} \;
-    cp /tmp/percycraft/create-anything-ami/web/* /opt/percycraft/client-resources/
+    cp /tmp/percycraft/create-mod-ami/web/* /opt/percycraft/client-resources/
 }
 
-provision_create-anything
+provision_create-mod
 provision_minecraft
 provision_client_resources
 
-echo Provision Create Anything complete >&2
+echo Provision Create mod complete >&2
