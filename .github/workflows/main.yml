@@ -214,8 +214,19 @@ jobs:
           packer validate -var "branch=${{ github.ref_name }}" -var "repository=https://github.com/${{ github.repository }}.git" create-mod-ami/
           packer build -var "branch=${{ github.ref_name }}" -var "repository=https://github.com/${{ github.repository }}.git" create-mod-ami/create-mod-ami.pkr.hcl
   percycraft-smp-vpc:
-    needs: build-trigger
-    if: needs.build-trigger.outputs.percycraft-vpc == 'true'
+    needs:
+      - build-trigger
+      - percycraft-smp-ami
+      - lobby-ami
+    if: |
+      always() && !(
+        contains(needs.*.result, 'failure') ||
+        contains(needs.*.result, 'cancelled')
+      ) && (
+        needs.build-trigger.outputs.percycraft-vpc == 'true' ||
+        needs.build-trigger.outputs.percycraft-smp-ami == 'true' ||
+        needs.build-trigger.outputs.lobby-ami == 'true'
+      )
     runs-on: ubuntu-latest
     name: Update percycraft-smp-vpc
     steps:
@@ -236,8 +247,19 @@ jobs:
           no-execute-changeset: 1
           no-fail-on-empty-changeset: 1
   create-anything-vpc:
-    needs: build-trigger
-    if: needs.build-trigger.outputs.percycraft-vpc == 'true'
+    needs:
+      - build-trigger
+      - create-mod-ami
+      - lobby-ami
+    if: |
+      always() && !(
+        contains(needs.*.result, 'failure') ||
+        contains(needs.*.result, 'cancelled')
+      ) && (
+        needs.build-trigger.outputs.percycraft-vpc == 'true' ||
+        needs.build-trigger.outputs.create-anything-ami == 'true' ||
+        needs.build-trigger.outputs.lobby-ami == 'true'
+      ) 
     runs-on: ubuntu-latest
     name: Update create-anything-vpc
     steps:
@@ -258,8 +280,19 @@ jobs:
           no-execute-changeset: 1
           no-fail-on-empty-changeset: 1
   create-mod-vpc:
-    needs: build-trigger
-    if: needs.build-trigger.outputs.percycraft-vpc == 'true'
+    needs:
+      - build-trigger
+      - create-mod-ami
+      - lobby-ami
+    if: |
+      always() && !(
+        contains(needs.*.result, 'failure') ||
+        contains(needs.*.result, 'cancelled')
+      ) && (
+        needs.build-trigger.outputs.percycraft-vpc == 'true' ||
+        needs.build-trigger.outputs.create-mod-ami == 'true' ||
+        needs.build-trigger.outputs.lobby-ami == 'true'
+      )
     runs-on: ubuntu-latest
     name: Update create-mod-vpc
     steps:
