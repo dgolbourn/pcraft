@@ -5,8 +5,8 @@ dnf update -y
 mkdir -p /opt/lazymc
 sudo curl -fsSL -o /opt/lazymc/lazymc https://github.com/timvisee/lazymc/releases/download/v0.2.10/lazymc-v0.2.10-linux-aarch64
 chmod +x /opt/lazymc/lazymc
-cp /tmp/percycraft/lobby-ami/service-start.sh /opt/lazymc
-chmod +x /opt/lazymc/service-start.sh
+cp /tmp/percycraft/lobby-ami/start-command.sh /opt/lobby/
+chmod +x /opt/lobby/start-command.sh
 cp /tmp/percycraft/lobby-ami/server.properties /opt/lazymc
 cp /tmp/percycraft/lobby-ami/lazymc.toml /opt/lazymc
 cp /tmp/percycraft/lobby-ami/server-icon.png /opt/lazymc

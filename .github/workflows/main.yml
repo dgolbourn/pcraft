@@ -58,7 +58,7 @@ jobs:
         base: ${{ github.ref }}
         filters: |
           src:
-            - 'create-mod-ami/**'            
+            - 'create-mod-ami/**'
     - uses: dorny/paths-filter@v3
       id: percycraft-vpc
       name: Percycraft VPC
@@ -191,7 +191,7 @@ jobs:
       ) && (
         needs.build-trigger.outputs.create-mod-ami == 'true' ||
         needs.percycraft-base-ami.result == 'success'
-      )          
+      )
     runs-on: ubuntu-latest
     name: Create create-mod-ami
     steps:
@@ -277,4 +277,4 @@ jobs:
           name: create-mod
           template: percycraft-vpc/cf.yml
           parameter-overrides: "EC2AMI=/percycraft/ami-latest/create-mod-ami,KeyPairName=${{ secrets.KEYPAIRNAME }},YourIPv4=${{ secrets.YOURIPV4 }},Players=\"${{ secrets.CREATEMODPLAYERS }}\",WeekdayStartSchedule=\"\",WeekdayStopSchedule=\"\",WeekendStartSchedule=\"\",WeekendStopSchedule=\"\",FileServerHostName=${{ secrets.CREATEMODFILESERVER }}"
-          no-fail-on-empty-changeset: 1          
+          no-fail-on-empty-changeset: 1
