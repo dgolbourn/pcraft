@@ -15,6 +15,7 @@ jobs:
       percycraft-base-ami: ${{ steps.percycraft-base-ami.outputs.src }}
       percycraft-smp-ami: ${{ steps.percycraft-smp-ami.outputs.src }}
       create-anything-ami: ${{ steps.create-anything-ami.outputs.src }}
+      create-mod-ami: ${{ steps.create-mod-ami.outputs.src }}
       percycraft-vpc: ${{ steps.percycraft-vpc.outputs.src }}
     steps:
     - uses: actions/checkout@v3
@@ -50,6 +51,14 @@ jobs:
         filters: |
           src:
             - 'create-anything-ami/**'
+    - uses: dorny/paths-filter@v3
+      id: create-mod-ami
+      name: Create Mod AMI
+      with:
+        base: ${{ github.ref }}
+        filters: |
+          src:
+            - 'create-mod-ami/**'            
     - uses: dorny/paths-filter@v3
       id: percycraft-vpc
       name: Percycraft VPC
@@ -171,6 +180,39 @@ jobs:
           packer init create-anything-ami/
           packer validate -var "cfapikey=${{ secrets.CURSEFORGEAPIKEY }}" -var "branch=${{ github.ref_name }}" -var "repository=https://github.com/${{ github.repository }}.git" create-anything-ami/
           packer build -var "cfapikey=${{ secrets.CURSEFORGEAPIKEY }}" -var "branch=${{ github.ref_name }}" -var "repository=https://github.com/${{ github.repository }}.git" create-anything-ami/create-anything-ami.pkr.hcl
+  create-mod-ami:
+    needs:
+      - build-trigger
+      - percycraft-base-ami
+    if: |
+      always() && !(
+        contains(needs.*.result, 'failure') ||
+        contains(needs.*.result, 'cancelled')
+      ) && (
+        needs.build-trigger.outputs.create-mod-ami == 'true' ||
+        needs.percycraft-base-ami.result == 'success'
+      )          
+    runs-on: ubuntu-latest
+    name: Create create-mod-ami
+    steps:
+      - name: Git clone the repository
+        uses: actions/checkout@v3
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v1.7.0
+        with:
+          role-to-assume: ${{ secrets.ROLETOASSUME }}
+          role-session-name: GithubDeployPercycraft
+          aws-region: ${{ secrets.AWSREGION }}
+      - name: Setup `packer`
+        uses: hashicorp/setup-packer@main
+        id: setup
+        with:
+          version: latest
+      - name: Run Packer
+        run: |
+          packer init create-mod-ami/
+          packer validate -var "branch=${{ github.ref_name }}" -var "repository=https://github.com/${{ github.repository }}.git" create-mod-ami/
+          packer build -var "branch=${{ github.ref_name }}" -var "repository=https://github.com/${{ github.repository }}.git" create-mod-ami/create-mod-ami.pkr.hcl
   percycraft-smp-vpc:
     needs: build-trigger
     if: needs.build-trigger.outputs.percycraft-vpc == 'true'
@@ -215,3 +257,24 @@ jobs:
           parameter-overrides: "EC2AMI=/percycraft/ami-latest/create-anything-ami,KeyPairName=${{ secrets.KEYPAIRNAME }},YourIPv4=${{ secrets.YOURIPV4 }},Players=\"${{ secrets.CREATEANYTHINGPLAYERS }}\",WeekdayStartSchedule=\"\",WeekdayStopSchedule=\"\",WeekendStartSchedule=\"\",WeekendStopSchedule=\"\",FileServerHostName=${{ secrets.CREATEANYTHINGFILESERVER }}"
           no-execute-changeset: 1
           no-fail-on-empty-changeset: 1
+  create-mod-vpc:
+    needs: build-trigger
+    if: needs.build-trigger.outputs.percycraft-vpc == 'true'
+    runs-on: ubuntu-latest
+    name: Update create-mod-vpc
+    steps:
+      - name: Git clone the repository
+        uses: actions/checkout@v3
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v1.7.0
+        with:
+          role-to-assume: ${{ secrets.ROLETOASSUME }}
+          role-session-name: GithubDeployPercycraft
+          aws-region: ${{ secrets.AWSREGION }}
+      - name: Deploy to AWS
+        uses: aws-actions/aws-cloudformation-github-deploy@v1
+        with:
+          name: create-mod
+          template: percycraft-vpc/cf.yml
+          parameter-overrides: "EC2AMI=/percycraft/ami-latest/create-mod-ami,KeyPairName=${{ secrets.KEYPAIRNAME }},YourIPv4=${{ secrets.YOURIPV4 }},Players=\"${{ secrets.CREATEMODPLAYERS }}\",WeekdayStartSchedule=\"\",WeekdayStopSchedule=\"\",WeekendStartSchedule=\"\",WeekendStopSchedule=\"\",FileServerHostName=${{ secrets.CREATEMODFILESERVER }}"
+          no-fail-on-empty-changeset: 1          

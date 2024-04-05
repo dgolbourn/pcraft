@@ -1,14 +1,12 @@
 services:
   provision-minecraft:
     image: itzg/minecraft-server:base
-    env_file:
-      - /tmp/percycraft/.env
     environment:
       EULA: "TRUE"
       TYPE: FABRIC
       SETUP_ONLY: "TRUE"
       VERSION: "1.20.1"
-      MODE: creative
+      MODE: creative      
       MODRINTH_PROJECTS: |
         fabric-api
         simple-voice-chat
@@ -16,8 +14,7 @@ services:
         bookshelf-lib
         better-fabric-console
         lithium
-      CURSEFORGE_FILES: |
-        worldedit
+        create-fabric:beta
       ICON: /resources/server-icon.png
       OVERRIDE_ICON: "TRUE"
     volumes:
