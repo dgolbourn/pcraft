@@ -96,6 +96,7 @@ Metadata:
         default: "Server weekend stop schedule"
 
 Resources:
+
   Vpc:
     Type: AWS::EC2::VPC
     Properties:
