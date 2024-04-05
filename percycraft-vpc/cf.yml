@@ -229,7 +229,7 @@ Resources:
               VolumeSize: 16
         IamInstanceProfile:
           Arn: !GetAtt InstanceProfile.Arn
-        ImageId: !Sub resolve:ssm:${EC2AMI}
+        ImageId: resolve:ssm:${EC2AMI}
         InstanceMarketOptions:
           MarketType: "spot"
         InstanceType: t3a.large
@@ -772,7 +772,7 @@ Resources:
       LaunchTemplateData:
         IamInstanceProfile:
           Arn: !GetAtt InstanceProfile.Arn
-        ImageId: !Sub resolve:ssm:${LOBBYAMI} 
+        ImageId: resolve:ssm:${LOBBYAMI} 
         InstanceMarketOptions:
           MarketType: "spot"
         InstanceType: t4g.nano
