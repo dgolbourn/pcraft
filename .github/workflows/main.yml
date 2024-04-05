@@ -249,7 +249,7 @@ jobs:
   create-anything-vpc:
     needs:
       - build-trigger
-      - create-mod-ami
+      - create-anything-ami
       - lobby-ami
     if: |
       always() && !(
