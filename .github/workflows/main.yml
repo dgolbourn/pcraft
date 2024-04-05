@@ -277,4 +277,5 @@ jobs:
           name: create-mod
           template: percycraft-vpc/cf.yml
           parameter-overrides: "EC2AMI=/percycraft/ami-latest/create-mod-ami,KeyPairName=${{ secrets.KEYPAIRNAME }},YourIPv4=${{ secrets.YOURIPV4 }},Players=\"${{ secrets.CREATEMODPLAYERS }}\",WeekdayStartSchedule=\"\",WeekdayStopSchedule=\"\",WeekendStartSchedule=\"\",WeekendStopSchedule=\"\",FileServerHostName=${{ secrets.CREATEMODFILESERVER }}"
+          no-execute-changeset: 1
           no-fail-on-empty-changeset: 1          
