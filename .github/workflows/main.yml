@@ -322,6 +322,7 @@ jobs:
       - name: Prepare Cloudformation template
         run: >
           cat percycraft-vpc/cf.yml |
+          sed "s/{{ .Version }}/${{ github.sha }}/g" |
           sed "s/{{ .LobbyAMIId }}/${{ steps.create-mod-parameters.outputs.LobbyAMIId }}/g" |
           sed "s/{{ .ServerAMIId }}/${{ steps.create-mod-parameters.outputs.ServerAMIId }}/g" |
           sed "s/{{ .KeyPairName }}/${{ secrets.KEYPAIRNAME }}/g" |
@@ -342,4 +343,6 @@ jobs:
       - name: Deploy to AWS
         run: |
           aws cloudformation validate-template --template-body file://create-mod.yml
+          #aws ec2 create-launch-template-version --launch-template-name some-name-launch-template --launch-template-data '{"ImageId":"${{ steps.create-mod-parameters.outputs.ServerAMIId }}"}'
           aws cloudformation deploy --template-file create-mod.yml --stack-name create-mod --capabilities CAPABILITY_IAM --no-fail-on-empty-changeset
+          #aws autoscaling update-auto-scaling-group --auto-scaling-group-name my-asg --launch-template LaunchTemplateName=my-template-for-auto-scaling,Version='$Latest'

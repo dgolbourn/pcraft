@@ -134,6 +134,7 @@ Resources:
   LaunchTemplate:
     Type: AWS::EC2::LaunchTemplate
     Properties:
+      LaunchTemplateName: !Sub "${AWS::StackName}-LaunchTemplate-{{ .VERSION }}"
       LaunchTemplateData:
         BlockDeviceMappings:
           - DeviceName: /dev/xvda
@@ -173,8 +174,7 @@ Resources:
       AutoScalingGroupName: !Sub "${AWS::StackName}-AutoScalingGroup"
       DesiredCapacity: 0
       LaunchTemplate:
-        LaunchTemplateId: !Ref LaunchTemplate
-        Version: !GetAtt LaunchTemplate.LatestVersionNumber
+        LaunchTemplateName: !Sub "${AWS::StackName}-LaunchTemplate-{{ .VERSION }}"
       NewInstancesProtectedFromScaleIn: false
       MaxSize: 1
       MinSize: 0
@@ -682,6 +682,7 @@ Resources:
   LobbyLaunchTemplate:
     Type: AWS::EC2::LaunchTemplate
     Properties:
+      LaunchTemplateName: !Sub "${AWS::StackName}-LobbyLaunchTemplate-{{ .VERSION }}"
       LaunchTemplateData:
         IamInstanceProfile:
           Arn: !GetAtt InstanceProfile.Arn
@@ -704,12 +705,12 @@ Resources:
 
   LobbyAutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
+    DependsOn: LaunchTemplate
     Properties:
       AutoScalingGroupName: !Sub "${AWS::StackName}-LobbyAutoScalingGroup"
       DesiredCapacity: 1
       LaunchTemplate:
-        LaunchTemplateId: !Ref LobbyLaunchTemplate
-        Version: !GetAtt LobbyLaunchTemplate.LatestVersionNumber
+        LaunchTemplateName: !Sub "${AWS::StackName}-LobbyLaunchTemplate-{{ .VERSION }}"
       NewInstancesProtectedFromScaleIn: false
       MaxSize: 1
       MinSize: 0
