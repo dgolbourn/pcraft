@@ -1,99 +1,11 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Description: Percycraft
-Parameters:
-  ServerAMIId:
-    Type: String
-    Default: ''
-  LobbyAMIId:
-    Type: String
-    Default: ''
-  FileServerHostName:
-    Type: String
-    Default: ''
-  KeyPairName:
-    Type: String
-    Default: ''
-  YourIPv4:
-    Type: String
-    Default: ''
-  Players:
-    Type: String
-    Default: ''
-  TimeZone:
-    Type: String
-    Default: Europe/London
-  WeekdayStartSchedule:
-    Type: String
-    Default: cron(0 17 ? * 6 *)
-  WeekdayStopSchedule:
-    Type: String
-    Default: cron(0 22 ? * 1 *)
-  WeekendStartSchedule:
-    Type: String
-    Default: cron(0 7 ? * 7-1 *)
-  WeekendStopSchedule:
-    Type: String
-    Default: cron(0 22 ? * 6-7 *)
 
 Conditions:
-  WeekdayStartScheduleProvided: !Not [ !Equals [ !Ref WeekdayStartSchedule, '' ] ]
-  WeekdayStopScheduleProvided: !Not [ !Equals [ !Ref WeekdayStopSchedule, '' ] ]
-  WeekendStartScheduleProvided: !Not [ !Equals [ !Ref WeekendStartSchedule, '' ] ]
-  WeekendStopScheduleProvided: !Not [ !Equals [ !Ref WeekendStopSchedule, '' ] ]
-
-Metadata:
-  AWS::CloudFormation::Interface:
-    ParameterGroups:
-      - Label:
-          default: Who's playing?
-        Parameters:
-        - Players
-      - Label:
-          default: Schedule
-        Parameters:
-        - TimeZone
-        - WeekdayStartSchedule
-        - WeekdayStopSchedule
-        - WeekendStartSchedule
-        - WeekendStopSchedule
-      - Label:
-          default: SSH Configuration
-        Parameters:
-        - KeyPairName
-        - YourIPv4
-      - Label:
-          default: Host names
-        Parameters:
-        - FileServerHostName
-      - Label:
-          default: Virtual Machines
-        Parameters:
-        - ServerAMIId
-        - LobbyAMIId
-
-    ParameterLabels:
-      KeyPairName:
-        default: "Key Pair: https://console.aws.amazon.com/ec2/v2/home?#KeyPairs:sort=keyName"
-      YourIPv4:
-        default: "IPv4 address: http://checkip.amazonaws.com"
-      ServerAMIId:
-        default: "Server virtual machine image"
-      LobbyAMIId:
-        default: "Lobby virtual machine image"
-      Players:
-        default: "Comma separated list of player names"
-      FileServerHostName:
-        default: "File server host name"
-      TimeZone:
-        default: "Time zone"
-      WeekdayStartSchedule:
-        default: "Server weekday start schedule"
-      WeekdayStopSchedule:
-        default: "Server weekday stop schedule"
-      WeekendStartSchedule:
-        default: "Server weekend start schedule"
-      WeekendStopSchedule:
-        default: "Server weekend stop schedule"
+  WeekdayStartScheduleProvided: !Not [ !Equals [ {{ .WeekdayStartSchedule }}, '' ] ]
+  WeekdayStopScheduleProvided: !Not [ !Equals [ {{ .WeekdayStopSchedule }}, '' ] ]
+  WeekendStartScheduleProvided: !Not [ !Equals [ {{ .WeekendStartSchedule }}, '' ] ]
+  WeekendStopScheduleProvided: !Not [ !Equals [ {{ .WeekendStopSchedule }}, '' ] ]
 
 Resources:
   Vpc:
@@ -203,7 +115,7 @@ Resources:
       - FromPort: 22
         ToPort: 22
         IpProtocol: tcp
-        CidrIp: !Sub "${YourIPv4}/32"
+        CidrIp: {{ .YourIPv4 }}/32
       - FromPort: 25565
         ToPort: 25565
         IpProtocol: tcp
@@ -228,11 +140,11 @@ Resources:
               VolumeSize: 16
         IamInstanceProfile:
           Arn: !GetAtt InstanceProfile.Arn
-        ImageId: !Ref ServerAMIId
+        ImageId: {{ .ServerAMIId }}
         InstanceMarketOptions:
           MarketType: "spot"
         InstanceType: t3a.large
-        KeyName: !Ref KeyPairName
+        KeyName: {{ .KeyPairName }}
         NetworkInterfaces:
           - DeviceIndex: 0
             AssociatePublicIpAddress: true
@@ -241,13 +153,13 @@ Resources:
           Fn::Base64: !Sub
             - |
               #!/bin/bash -xe
-              timedatectl set-timezone ${TimeZone}
+              timedatectl set-timezone {{ .TimeZone }}
               echo "ALBUMBUCKETS3URI=s3://${AlbumBucket}" >> /opt/.env
               echo "DATABUCKETS3URI=s3://${DataBucket}" >> /opt/.env
               echo "FILEBUCKETS3URI=s3://${FileBucket}" >> /opt/.env
               echo "FILEBUCKETWEBSITEURL=${FileBucketWebsiteURL}" >> /opt/.env
-              echo "WHITELIST=${Players}" >> /opt/.env
-              echo "TZ=${TimeZone}" >> /opt/.env
+              echo "WHITELIST={{ .Players }}" >> /opt/.env
+              echo "TZ={{ .TimeZone }}" >> /opt/.env
               echo "STARTSTOPLAMBDA=${AWS::StackName}-StartStopLambda" >> /opt/.env
               echo "STARTCONTINUELAMBDA=${AWS::StackName}-StartContinueLambda" >> /opt/.env
               /opt/percycraft/userdata.sh
@@ -309,7 +221,7 @@ Resources:
       FlexibleTimeWindow:
         MaximumWindowInMinutes: 5
         Mode: FLEXIBLE
-      ScheduleExpression: !Ref WeekdayStopSchedule
+      ScheduleExpression: {{ .WeekdayStopSchedule}}
       ScheduleExpressionTimezone: !Ref TimeZone
       State: ENABLED
       Target:
@@ -324,7 +236,7 @@ Resources:
       FlexibleTimeWindow:
         MaximumWindowInMinutes: 5
         Mode: FLEXIBLE
-      ScheduleExpression: !Ref WeekendStopSchedule
+      ScheduleExpression: {{ .WeekendStopSchedule}}
       ScheduleExpressionTimezone: !Ref TimeZone
       State: ENABLED
       Target:
@@ -339,7 +251,7 @@ Resources:
       FlexibleTimeWindow:
         MaximumWindowInMinutes: 5
         Mode: FLEXIBLE
-      ScheduleExpression: !Ref WeekdayStartSchedule
+      ScheduleExpression: {{ .WeekdayStartSchedule }}
       ScheduleExpressionTimezone: !Ref TimeZone
       State: ENABLED
       Target:
@@ -354,7 +266,7 @@ Resources:
       FlexibleTimeWindow:
         MaximumWindowInMinutes: 5
         Mode: FLEXIBLE
-      ScheduleExpression: !Ref WeekendStartSchedule
+      ScheduleExpression: {{ .WeekendStartSchedule}}
       ScheduleExpressionTimezone: !Ref TimeZone
       State: ENABLED
       Target:
@@ -724,7 +636,7 @@ Resources:
   FileBucket:
     Type: 'AWS::S3::Bucket'
     Properties:
-      BucketName: !Ref FileServerHostName
+      BucketName: {{ .FileServerHostName }}
       PublicAccessBlockConfiguration:
         BlockPublicAcls: false
       OwnershipControls:
@@ -772,11 +684,11 @@ Resources:
       LaunchTemplateData:
         IamInstanceProfile:
           Arn: !GetAtt InstanceProfile.Arn
-        ImageId: !Ref LobbyAMIId
+        ImageId: {{ .LobbyAMIId }}
         InstanceMarketOptions:
           MarketType: "spot"
         InstanceType: t4g.nano
-        KeyName: !Ref KeyPairName
+        KeyName: {{ .KeyPairName }}
         NetworkInterfaces:
           - DeviceIndex: 0
             AssociatePublicIpAddress: true
@@ -784,8 +696,8 @@ Resources:
         UserData:
           Fn::Base64: !Sub |
               #!/bin/bash -xe
-              timedatectl set-timezone ${TimeZone}
-              echo "PLAYERLIST=${Players}" > /opt/.env
+              timedatectl set-timezone {{ .TimeZone }}
+              echo "PLAYERLIST={{ .Players }}" > /opt/.env
               echo "STARTSTOPLAMBDA=${AWS::StackName}-StartStopLambda" >> /opt/.env
               /opt/lobby/userdata.sh
 
