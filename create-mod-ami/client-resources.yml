@@ -10,6 +10,7 @@ services:
         fabric-api
         simple-voice-chat
         jei:beta
+        create-fabric:beta
     volumes:
       - /tmp/percycraft/client-resources:/data
     restart: no

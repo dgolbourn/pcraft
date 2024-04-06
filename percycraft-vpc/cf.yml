@@ -2,10 +2,10 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: Percycraft
 Parameters:
   EC2AMI:
-    Type: String
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
     Default: /percycraft/ami-latest/percycraft-base-ami
   LOBBYAMI:
-    Type: String
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
     Default: /percycraft/ami-latest/lobby-ami
   FileServerHostName:
     Type: String
@@ -229,11 +229,7 @@ Resources:
               VolumeSize: 16
         IamInstanceProfile:
           Arn: !GetAtt InstanceProfile.Arn
-        ImageId: !Join
-          - ''
-          - - '{{resolve:ssm:'
-            - !Ref EC2AMI
-            - '}}'
+        ImageId: !Ref EC2AMI
         InstanceMarketOptions:
           MarketType: "spot"
         InstanceType: t3a.large
@@ -776,11 +772,7 @@ Resources:
       LaunchTemplateData:
         IamInstanceProfile:
           Arn: !GetAtt InstanceProfile.Arn
-        ImageId: !Join
-          - ''
-          - - '{{resolve:ssm:'
-            - !Ref LOBBYAMI
-            - '}}'
+        ImageId: !Ref LOBBYAMI
         InstanceMarketOptions:
           MarketType: "spot"
         InstanceType: t4g.nano
