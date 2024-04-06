@@ -36,7 +36,7 @@ provision_client_resources() {
         --dirsfirst \
         --charset utf-8 \
         -I "index.html" \
-        -T "Create mod" \
+        -T "Create Mod" \
         --ignore-case \
         --timefmt "%Y%m%d-%H%M%S" \
         -s \
