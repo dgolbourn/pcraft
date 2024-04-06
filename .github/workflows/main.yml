@@ -322,7 +322,6 @@ jobs:
       - name: Prepare Cloudformation template
         run: >
           cat percycraft-vpc/cf.yml |
-          sed "s/{{ .Version }}/$(git describe --tags --long --always)/g" |
           sed "s/{{ .LobbyAMIId }}/${{ steps.create-mod-parameters.outputs.LobbyAMIId }}/g" |
           sed "s/{{ .ServerAMIId }}/${{ steps.create-mod-parameters.outputs.ServerAMIId }}/g" |
           sed "s/{{ .KeyPairName }}/${{ secrets.KEYPAIRNAME }}/g" |
