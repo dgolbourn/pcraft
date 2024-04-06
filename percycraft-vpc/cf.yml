@@ -170,7 +170,7 @@ Resources:
     Type: AWS::AutoScaling::AutoScalingGroup
     DependsOn: LaunchTemplate
     Properties:
-      AutoScalingGroupName: !Sub "${AWS::StackName}-AutoScalingGroup"
+      AutoScalingGroupName: !Sub "${AWS::StackName}-ServerGroup-{{ .ServerAMIId }}"
       DesiredCapacity: 0
       LaunchTemplate:
         LaunchTemplateName: !Sub "${AWS::StackName}-ServerLaunch-{{ .ServerAMIId }}"
@@ -187,7 +187,7 @@ Resources:
     Type: AWS::AutoScaling::LifecycleHook
     DependsOn: AutoScalingGroup
     Properties:
-      AutoScalingGroupName: !Sub "${AWS::StackName}-AutoScalingGroup"
+      AutoScalingGroupName: !Sub "${AWS::StackName}-ServerGroup-{{ .ServerAMIId }}"
       DefaultResult: CONTINUE
       HeartbeatTimeout: 600
       LifecycleHookName: !Sub "${AWS::StackName}-AutoScalingLifecycleHook"
@@ -434,7 +434,7 @@ Resources:
     Properties:
       Environment:
         Variables:
-          LobbyAutoScalingGroupName: !Sub "${AWS::StackName}-LobbyAutoScalingGroup"
+          LobbyAutoScalingGroupName: !Sub "${AWS::StackName}-LobbyGroup-{{ .LobbyAMIId }}"
           AllocationId: !GetAtt ElasticIP.AllocationId
       Code:
         ZipFile: |
@@ -466,8 +466,8 @@ Resources:
     Properties:
       Environment:
         Variables:
-          AutoScalingGroupName: !Sub "${AWS::StackName}-AutoScalingGroup"
-          LobbyAutoScalingGroupName: !Sub "${AWS::StackName}-LobbyAutoScalingGroup"
+          AutoScalingGroupName: !Sub "${AWS::StackName}-ServerGroup-{{ .ServerAMIId }}"
+          LobbyAutoScalingGroupName: !Sub "${AWS::StackName}-LobbyGroup-{{ .LobbyAMIId }}"
           DDBTableName: !Sub "${AWS::StackName}-DDBTable"
       Code:
         ZipFile: |
@@ -566,7 +566,7 @@ Resources:
         - EC2 Instance Launch Successful
         detail:
           AutoScalingGroupName:
-          - !Sub "${AWS::StackName}-LobbyAutoScalingGroup"
+          - !Sub "${AWS::StackName}-LobbyGroup-{{ .LobbyAMIId }}"
       State: ENABLED
       Targets:
         - Arn: !GetAtt AssociateElasticIPLambda.Arn
@@ -590,7 +590,7 @@ Resources:
         - EC2 Instance-terminate Lifecycle Action
         detail:
           AutoScalingGroupName:
-          - !Sub "${AWS::StackName}-AutoScalingGroup"
+          - !Sub "${AWS::StackName}-ServerGroup-{{ .ServerAMIId }}"
       State: ENABLED
       Targets:
         - Arn: !GetAtt GracefulShutdownLambda.Arn
@@ -707,7 +707,7 @@ Resources:
     Type: AWS::AutoScaling::AutoScalingGroup
     DependsOn: LobbyLaunchTemplate
     Properties:
-      AutoScalingGroupName: !Sub "${AWS::StackName}-LobbyAutoScalingGroup"
+      AutoScalingGroupName: !Sub "${AWS::StackName}-LobbyGroup-{{ .LobbyAMIId }}"
       DesiredCapacity: 1
       LaunchTemplate:
         LaunchTemplateName: !Sub "${AWS::StackName}-LobbyLaunch-{{ .LobbyAMIId }}"
