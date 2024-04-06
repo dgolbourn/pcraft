@@ -1,5 +1,4 @@
 AWSTemplateFormatVersion: "2010-09-09"
-
 Description: Percycraft
 
 Conditions:
@@ -134,7 +133,7 @@ Resources:
   LaunchTemplate:
     Type: AWS::EC2::LaunchTemplate
     Properties:
-      LaunchTemplateName: !Sub "${AWS::StackName}-LaunchTemplate-{{ .VERSION }}"
+      LaunchTemplateName: !Sub "${AWS::StackName}-Launch-{{ .VERSION }}"
       LaunchTemplateData:
         BlockDeviceMappings:
           - DeviceName: /dev/xvda
@@ -174,7 +173,7 @@ Resources:
       AutoScalingGroupName: !Sub "${AWS::StackName}-AutoScalingGroup"
       DesiredCapacity: 0
       LaunchTemplate:
-        LaunchTemplateName: !Sub "${AWS::StackName}-LaunchTemplate-{{ .VERSION }}"
+        LaunchTemplateName: !Sub "${AWS::StackName}-Launch-{{ .VERSION }}"
       NewInstancesProtectedFromScaleIn: false
       MaxSize: 1
       MinSize: 0
@@ -682,7 +681,7 @@ Resources:
   LobbyLaunchTemplate:
     Type: AWS::EC2::LaunchTemplate
     Properties:
-      LaunchTemplateName: !Sub "${AWS::StackName}-LobbyLaunchTemplate-{{ .VERSION }}"
+      LaunchTemplateName: !Sub "${AWS::StackName}-LobbyLaunch-{{ .VERSION }}"
       LaunchTemplateData:
         IamInstanceProfile:
           Arn: !GetAtt InstanceProfile.Arn
@@ -710,7 +709,7 @@ Resources:
       AutoScalingGroupName: !Sub "${AWS::StackName}-LobbyAutoScalingGroup"
       DesiredCapacity: 1
       LaunchTemplate:
-        LaunchTemplateName: !Sub "${AWS::StackName}-LobbyLaunchTemplate-{{ .VERSION }}"
+        LaunchTemplateName: !Sub "${AWS::StackName}-LobbyLaunch-{{ .VERSION }}"
       NewInstancesProtectedFromScaleIn: false
       MaxSize: 1
       MinSize: 0
