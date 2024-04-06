@@ -222,7 +222,7 @@ Resources:
         MaximumWindowInMinutes: 5
         Mode: FLEXIBLE
       ScheduleExpression: {{ .WeekdayStopSchedule }}
-      ScheduleExpressionTimezone: !Ref TimeZone
+      ScheduleExpressionTimezone: {{ .TimeZone }}
       State: ENABLED
       Target:
         Arn: !GetAtt StartStopLambda.Arn
@@ -237,7 +237,7 @@ Resources:
         MaximumWindowInMinutes: 5
         Mode: FLEXIBLE
       ScheduleExpression: {{ .WeekendStopSchedule }}
-      ScheduleExpressionTimezone: !Ref TimeZone
+      ScheduleExpressionTimezone: {{ .TimeZone }}
       State: ENABLED
       Target:
         Arn: !GetAtt StartStopLambda.Arn
@@ -252,7 +252,7 @@ Resources:
         MaximumWindowInMinutes: 5
         Mode: FLEXIBLE
       ScheduleExpression: {{ .WeekdayStartSchedule }}
-      ScheduleExpressionTimezone: !Ref TimeZone
+      ScheduleExpressionTimezone: {{ .TimeZone }}
       State: ENABLED
       Target:
         Arn: !GetAtt StartStopLambda.Arn
@@ -267,7 +267,7 @@ Resources:
         MaximumWindowInMinutes: 5
         Mode: FLEXIBLE
       ScheduleExpression: {{ .WeekendStartSchedule }}
-      ScheduleExpressionTimezone: !Ref TimeZone
+      ScheduleExpressionTimezone: {{ .TimeZone }}
       State: ENABLED
       Target:
         Arn: !GetAtt StartStopLambda.Arn
