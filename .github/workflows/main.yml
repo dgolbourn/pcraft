@@ -238,12 +238,17 @@ jobs:
           role-to-assume: ${{ secrets.ROLETOASSUME }}
           role-session-name: GithubDeployPercycraft
           aws-region: ${{ secrets.AWSREGION }}
+      - name: get parameters
+        id: percycraft-smp-parameters
+        run: |
+          echo ServerAMIId=$(aws ssm get-parameter --name '/percycraft/ami-latest/percycraft-smp-ami' | jq -r .Parameter.Value) >> $GITHUB_OUTPUT
+          echo LobbyAMIId=$(aws ssm get-parameter --name '/percycraft/ami-latest/lobby-ami' | jq -r .Parameter.Value) >> $GITHUB_OUTPUT
       - name: Deploy to AWS
         uses: aws-actions/aws-cloudformation-github-deploy@v1
         with:
           name: percycraft
           template: percycraft-vpc/cf.yml
-          parameter-overrides: "EC2AMI=/percycraft/ami-latest/percycraft-smp-ami,KeyPairName=${{ secrets.KEYPAIRNAME }},YourIPv4=${{ secrets.YOURIPV4 }},Players=\"${{ secrets.PERCYCRAFTSMPPLAYERS }}\",WeekdayStartSchedule=\"\",WeekdayStopSchedule=\"\",WeekendStartSchedule=\"\",WeekendStopSchedule=\"\",FileServerHostName=${{ secrets.PERCYCRAFTSMPFILESERVER }}"
+          parameter-overrides: "LobbyAMIId=${{ steps.percycraft-smp-parameters.outputs.LobbyAMIId }},ServerAMIId=${{ steps.percycraft-smp-parameters.outputs.ServerAMIId }},KeyPairName=${{ secrets.KEYPAIRNAME }},YourIPv4=${{ secrets.YOURIPV4 }},Players=\"${{ secrets.PERCYCRAFTSMPPLAYERS }}\"WeekdayStartSchedule=\"\",WeekdayStopSchedule=\"\",WeekendStartSchedule=\"\",WeekendStopSchedule=\"\",FileServerHostName=${{ secrets.PERCYCRAFTSMPFILESERVER }}"
           no-execute-changeset: 1
           no-fail-on-empty-changeset: 1
   create-anything-vpc:
@@ -271,12 +276,17 @@ jobs:
           role-to-assume: ${{ secrets.ROLETOASSUME }}
           role-session-name: GithubDeployPercycraft
           aws-region: ${{ secrets.AWSREGION }}
+      - name: get parameters
+        id: create-anything-parameters
+        run: |
+          echo ServerAMIId=$(aws ssm get-parameter --name '/percycraft/ami-latest/create-anything-ami' | jq -r .Parameter.Value) >> $GITHUB_OUTPUT
+          echo LobbyAMIId=$(aws ssm get-parameter --name '/percycraft/ami-latest/lobby-ami' | jq -r .Parameter.Value) >> $GITHUB_OUTPUT
       - name: Deploy to AWS
         uses: aws-actions/aws-cloudformation-github-deploy@v1
         with:
           name: create-anything
           template: percycraft-vpc/cf.yml
-          parameter-overrides: "EC2AMI=/percycraft/ami-latest/create-anything-ami,KeyPairName=${{ secrets.KEYPAIRNAME }},YourIPv4=${{ secrets.YOURIPV4 }},Players=\"${{ secrets.CREATEANYTHINGPLAYERS }}\",WeekdayStartSchedule=\"\",WeekdayStopSchedule=\"\",WeekendStartSchedule=\"\",WeekendStopSchedule=\"\",FileServerHostName=${{ secrets.CREATEANYTHINGFILESERVER }}"
+          parameter-overrides: "LobbyAMIId=${{ steps.create-anything-parameters.outputs.LobbyAMIId }},ServerAMIId=${{ steps.create-anything-parameters.outputs.ServerAMIId }},KeyPairName=${{ secrets.KEYPAIRNAME }},YourIPv4=${{ secrets.YOURIPV4 }},Players=\"${{ secrets.CREATEANYTHINGPLAYERS }}\",WeekdayStartSchedule=\"\",WeekdayStopSchedule=\"\",WeekendStartSchedule=\"\",WeekendStopSchedule=\"\",FileServerHostName=${{ secrets.CREATEANYTHINGFILESERVER }}"
           no-execute-changeset: 1
           no-fail-on-empty-changeset: 1
   create-mod-vpc:
@@ -304,10 +314,15 @@ jobs:
           role-to-assume: ${{ secrets.ROLETOASSUME }}
           role-session-name: GithubDeployPercycraft
           aws-region: ${{ secrets.AWSREGION }}
+      - name: get parameters
+        id: create-mod-parameters
+        run: |
+          echo ServerAMIId=$(aws ssm get-parameter --name '/percycraft/ami-latest/create-mod-ami' | jq -r .Parameter.Value) >> $GITHUB_OUTPUT
+          echo LobbyAMIId=$(aws ssm get-parameter --name '/percycraft/ami-latest/lobby-ami' | jq -r .Parameter.Value) >> $GITHUB_OUTPUT
       - name: Deploy to AWS
         uses: aws-actions/aws-cloudformation-github-deploy@v1
         with:
           name: create-mod
           template: percycraft-vpc/cf.yml
-          parameter-overrides: "EC2AMI=/percycraft/ami-latest/create-mod-ami,KeyPairName=${{ secrets.KEYPAIRNAME }},YourIPv4=${{ secrets.YOURIPV4 }},Players=\"${{ secrets.CREATEMODPLAYERS }}\",WeekdayStartSchedule=\"\",WeekdayStopSchedule=\"\",WeekendStartSchedule=\"\",WeekendStopSchedule=\"\",FileServerHostName=${{ secrets.CREATEMODFILESERVER }}"
+          parameter-overrides: "LobbyAMIId=${{ steps.create-mod-parameters.outputs.LobbyAMIId }},ServerAMIId=${{ steps.create-mod-parameters.outputs.ServerAMIId }},KeyPairName=${{ secrets.KEYPAIRNAME }},YourIPv4=${{ secrets.YOURIPV4 }},Players=\"${{ secrets.CREATEMODPLAYERS }}\",WeekdayStartSchedule=\"\",WeekdayStopSchedule=\"\",WeekendStartSchedule=\"\",WeekendStopSchedule=\"\",FileServerHostName=${{ secrets.CREATEMODFILESERVER }}"
           no-fail-on-empty-changeset: 1

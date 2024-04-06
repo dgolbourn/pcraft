@@ -1,12 +1,12 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Description: Percycraft
 Parameters:
-  EC2AMI:
+  ServerAMIId:
     Type: String
-    Default: /percycraft/ami-latest/percycraft-base-ami
-  LOBBYAMI:
+    Default: ''
+  LobbyAMIId:
     Type: String
-    Default: /percycraft/ami-latest/lobby-ami
+    Default: ''
   FileServerHostName:
     Type: String
     Default: ''
@@ -68,17 +68,17 @@ Metadata:
       - Label:
           default: Virtual Machines
         Parameters:
-        - EC2AMI
-        - LOBBYAMI
+        - ServerAMIId
+        - LobbyAMIId
 
     ParameterLabels:
       KeyPairName:
         default: "Key Pair: https://console.aws.amazon.com/ec2/v2/home?#KeyPairs:sort=keyName"
       YourIPv4:
         default: "IPv4 address: http://checkip.amazonaws.com"
-      EC2AMI:
+      ServerAMIId:
         default: "Server virtual machine image"
-      LOBBYAMI:
+      LobbyAMIId:
         default: "Lobby virtual machine image"
       Players:
         default: "Comma separated list of player names"
@@ -229,11 +229,7 @@ Resources:
               VolumeSize: 16
         IamInstanceProfile:
           Arn: !GetAtt InstanceProfile.Arn
-        ImageId: !Join
-          - ''
-          - - '{{ resolve:ssm:'
-            - !Ref EC2AMI
-            - '}}'
+        ImageId: !Ref ServerAMIId
         InstanceMarketOptions:
           MarketType: "spot"
         InstanceType: t3a.large
@@ -776,11 +772,7 @@ Resources:
       LaunchTemplateData:
         IamInstanceProfile:
           Arn: !GetAtt InstanceProfile.Arn
-        ImageId: !Join
-          - ''
-          - - '{{ resolve:ssm:'
-            - !Ref LOBBYAMI
-            - '}}'
+        ImageId: !Ref LobbyAMIId
         InstanceMarketOptions:
           MarketType: "spot"
         InstanceType: t4g.nano
