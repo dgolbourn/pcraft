@@ -264,7 +264,7 @@ jobs:
         needs.build-trigger.outputs.percycraft-vpc == 'true' ||
         needs.build-trigger.outputs.create-anything-ami == 'true' ||
         needs.build-trigger.outputs.lobby-ami == 'true'
-      ) 
+      )
     runs-on: ubuntu-latest
     name: Update create-anything-vpc
     steps:
@@ -321,20 +321,20 @@ jobs:
           echo LobbyAMIId=$(aws ssm get-parameter --name '/percycraft/ami-latest/lobby-ami' | jq -r .Parameter.Value) >> $GITHUB_OUTPUT
       - name: Prepare Cloudformation template
         run: >
-          cat percycraft-vpc/cf.yml | 
+          cat percycraft-vpc/cf.yml |
           sed "s/{{ .LobbyAMIId }}/${{ steps.create-mod-parameters.outputs.LobbyAMIId }}/g" |
           sed "s/{{ .ServerAMIId }}/${{ steps.create-mod-parameters.outputs.ServerAMIId }}/g" |
           sed "s/{{ .KeyPairName }}/${{ secrets.KEYPAIRNAME }}/g" |
           sed "s/{{ .YourIPv4 }}/${{ secrets.YOURIPV4 }}/g" |
           sed "s/{{ .Players }}/\"${{ secrets.CREATEMODPLAYERS }}\"/g" |
-          sed "s/{{ .TimeZone }}/Europe\/London/g" |          
+          sed "s/{{ .TimeZone }}/Europe\/London/g" |
           sed "s/{{ .WeekdayStartSchedule }}/''/g" |
           sed "s/{{ .WeekdayStopSchedule }}/''/g" |
           sed "s/{{ .WeekendStartSchedule }}/''/g" |
           sed "s/{{ .WeekendStopSchedule }}/''/g" |
           sed "s/{{ .FileServerHostName }}/${{ secrets.CREATEMODFILESERVER }}/g" >
           create-mod.yml
-          
+
           cat create-mod.yml
       - name: Deploy to AWS
-        run: aws cloudformation deploy --template-file create-mod.yml --stack-name create-mod --capabilities CAPABILITY_IAM --no-fail-on-empty-changeset
+        run: aws cloudformation deploy --debug --template-file create-mod.yml --stack-name create-mod --capabilities CAPABILITY_IAM --no-fail-on-empty-changeset
