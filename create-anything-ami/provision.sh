@@ -28,7 +28,8 @@ provision_client_resources() {
     docker compose -f /tmp/percycraft/create-anything-ami/client-resources.yml up --exit-code-from client-resources
     mkdir -p /opt/percycraft/client-resources/mods/
     zip -r /opt/percycraft/client-resources/mods/mods.zip /tmp/percycraft/client-resources/mods/*
-    touch /top/percycraft/client-resources/album/world.png    
+    mkdir -p /top/percycraft/client-resources/album/
+    touch /top/percycraft/client-resources/album/world.png
     cd /opt/percycraft/client-resources/
     find . -type d -print -exec sh -c 'tree "$0" \
         -H "." \

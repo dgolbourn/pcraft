@@ -36,6 +36,7 @@ provision_client_resources() {
     cp /tmp/percycraft/client-resources/resourcepacks/* /opt/percycraft/client-resources/resourcepacks/
     mkdir -p /opt/percycraft/client-resources/mods/
     zip -r /opt/percycraft/client-resources/mods/mods.zip /tmp/percycraft/client-resources/mods/*
+    mkdir -p /top/percycraft/client-resources/album/
     touch /top/percycraft/client-resources/album/world.png
     cd /opt/percycraft/client-resources/
     find . -type d -print -exec sh -c 'tree "$0" \
