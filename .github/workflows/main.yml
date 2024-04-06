@@ -321,7 +321,7 @@ jobs:
           echo LobbyAMIId=$(aws ssm get-parameter --name '/percycraft/ami-latest/lobby-ami' | jq -r .Parameter.Value) >> $GITHUB_OUTPUT
       - name: Prepare Cloudformation template
         run: >
-          cat /percycraft/percycraft-vpc/cf.yml | 
+          cat percycraft-vpc/cf.yml | 
           sed "s/{{ .LobbyAMIId }}/${{ steps.create-mod-parameters.outputs.LobbyAMIId }}/g" |
           sed "s/{{ .ServerAMIId }}/${{ steps.create-mod-parameters.outputs.ServerAMIId }}/g" |
           sed "s/{{ .KeyPairName }}/${{ secrets.KEYPAIRNAME }}/g" |
