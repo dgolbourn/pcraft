@@ -335,8 +335,6 @@ jobs:
           sed "s/{{ .FileServerHostName }}/${{ secrets.CREATEMODFILESERVER }}/g" >
           create-mod.yml
 
-          cat create-mod.yml
-
           aws cloudformation validate-template --template-body file://create-mod.yml
       - name: Deploy to AWS
         run: aws cloudformation deploy --debug --template-file create-mod.yml --stack-name create-mod --capabilities CAPABILITY_IAM --no-fail-on-empty-changeset

@@ -221,7 +221,7 @@ Resources:
       FlexibleTimeWindow:
         MaximumWindowInMinutes: 5
         Mode: FLEXIBLE
-      ScheduleExpression: {{ .WeekdayStopSchedule}}
+      ScheduleExpression: {{ .WeekdayStopSchedule }}
       ScheduleExpressionTimezone: !Ref TimeZone
       State: ENABLED
       Target:
@@ -236,7 +236,7 @@ Resources:
       FlexibleTimeWindow:
         MaximumWindowInMinutes: 5
         Mode: FLEXIBLE
-      ScheduleExpression: {{ .WeekendStopSchedule}}
+      ScheduleExpression: {{ .WeekendStopSchedule }}
       ScheduleExpressionTimezone: !Ref TimeZone
       State: ENABLED
       Target:
@@ -266,7 +266,7 @@ Resources:
       FlexibleTimeWindow:
         MaximumWindowInMinutes: 5
         Mode: FLEXIBLE
-      ScheduleExpression: {{ .WeekendStartSchedule}}
+      ScheduleExpression: {{ .WeekendStartSchedule }}
       ScheduleExpressionTimezone: !Ref TimeZone
       State: ENABLED
       Target:
