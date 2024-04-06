@@ -326,7 +326,7 @@ jobs:
           sed "s/{{ .ServerAMIId }}/${{ steps.create-mod-parameters.outputs.ServerAMIId }}/g" |
           sed "s/{{ .KeyPairName }}/${{ secrets.KEYPAIRNAME }}/g" |
           sed "s/{{ .YourIPv4 }}/${{ secrets.YOURIPV4 }}/g" |
-          sed "s/{{ .Players }}/\"${{ secrets.CREATEMODPLAYERS }}\"/g" |
+          sed "s/{{ .Players }}/${{ secrets.CREATEMODPLAYERS }}/g" |
           sed "s/{{ .TimeZone }}/Europe\/London/g" |
           sed "s/{{ .WeekdayStartSchedule }}/''/g" |
           sed "s/{{ .WeekdayStopSchedule }}/''/g" |
