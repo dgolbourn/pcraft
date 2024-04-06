@@ -1,5 +1,5 @@
 #!/bin/bash -xe
-echo Provision Create mod started >&2
+echo Provision Create Mod started >&2
 
 provision_create-mod() {
     echo Provision create-mod started >&2
@@ -50,4 +50,4 @@ provision_create-mod
 provision_minecraft
 provision_client_resources
 
-echo Provision Create mod complete >&2
+echo Provision Create Mod complete >&2
