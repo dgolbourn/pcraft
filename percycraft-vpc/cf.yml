@@ -174,6 +174,7 @@ Resources:
       DesiredCapacity: 0
       LaunchTemplate:
         LaunchTemplateName: !Sub "${AWS::StackName}-ServerLaunch-{{ .ServerAMIId }}"
+        Version: !GetAtt LaunchTemplate.LatestVersionNumber
       NewInstancesProtectedFromScaleIn: false
       MaxSize: 1
       MinSize: 0
@@ -704,12 +705,13 @@ Resources:
 
   LobbyAutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
-    DependsOn: LaunchTemplate
+    DependsOn: LobbyLaunchTemplate
     Properties:
       AutoScalingGroupName: !Sub "${AWS::StackName}-LobbyAutoScalingGroup"
       DesiredCapacity: 1
       LaunchTemplate:
         LaunchTemplateName: !Sub "${AWS::StackName}-LobbyLaunch-{{ .LobbyAMIId }}"
+        Version: !GetAtt LobbyLaunchTemplate.LatestVersionNumber
       NewInstancesProtectedFromScaleIn: false
       MaxSize: 1
       MinSize: 0
