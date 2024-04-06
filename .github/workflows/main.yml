@@ -326,7 +326,7 @@ jobs:
             "ServerAMIId=${{ steps.create-mod-parameters.outputs.ServerAMIId }}"\
             "KeyPairName=${{ secrets.KEYPAIRNAME }}"\
             "YourIPv4=${{ secrets.YOURIPV4 }}"\
-            "Players=\"${{ secrets.CREATEMODPLAYERS }}\"
+            "Players=\"${{ secrets.CREATEMODPLAYERS }}\"\
             "WeekdayStartSchedule=\"\""\
             "WeekdayStopSchedule=\"\""\
             "WeekendStartSchedule=\"\""\
