@@ -320,15 +320,15 @@ jobs:
           echo ServerAMIId=$(aws ssm get-parameter --name '/percycraft/ami-latest/create-mod-ami' | jq -r .Parameter.Value) >> $GITHUB_OUTPUT
           echo LobbyAMIId=$(aws ssm get-parameter --name '/percycraft/ami-latest/lobby-ami' | jq -r .Parameter.Value) >> $GITHUB_OUTPUT
       - name: Deploy to AWS
-        run: |
-          aws cloudformation deploy --template-file percycraft-vpc/cf.yml --stack-name create-mod --no-fail-on-empty-changeset --parameter-overrides \
-            LobbyAMIId=${{ steps.create-mod-parameters.outputs.LobbyAMIId }} \
-            ServerAMIId=${{ steps.create-mod-parameters.outputs.ServerAMIId }} \
-            KeyPairName=${{ secrets.KEYPAIRNAME }} \
-            YourIPv4=${{ secrets.YOURIPV4 }} \ 
-            Players="${{ secrets.CREATEMODPLAYERS }}" \
-            WeekdayStartSchedule="" \
-            WeekdayStopSchedule="" \
-            WeekendStartSchedule="" \
-            WeekendStopSchedule="" \
-            FileServerHostName=${{ secrets.CREATEMODFILESERVER }}
+        run: >
+          aws cloudformation deploy --template-file percycraft-vpc/cf.yml --stack-name create-mod --no-fail-on-empty-changeset --parameter-overrides
+          LobbyAMIId=${{ steps.create-mod-parameters.outputs.LobbyAMIId }}
+          ServerAMIId=${{ steps.create-mod-parameters.outputs.ServerAMIId }}
+          KeyPairName=${{ secrets.KEYPAIRNAME }}
+          YourIPv4=${{ secrets.YOURIPV4 }}
+          Players="${{ secrets.CREATEMODPLAYERS }}"
+          WeekdayStartSchedule=""
+          WeekdayStopSchedule=""
+          WeekendStartSchedule=""
+          WeekendStopSchedule=""
+          FileServerHostName=${{ secrets.CREATEMODFILESERVER }}
