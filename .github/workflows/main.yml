@@ -321,7 +321,7 @@ jobs:
           echo LobbyAMIId=$(aws ssm get-parameter --name '/percycraft/ami-latest/lobby-ami' | jq -r .Parameter.Value) >> $GITHUB_OUTPUT
       - name: Deploy to AWS
         run: >
-          aws cloudformation deploy --template-file percycraft-vpc/cf.yml --stack-name create-mod --no-fail-on-empty-changeset --parameter-overrides
+          aws cloudformation deploy --template-file percycraft-vpc/cf.yml --stack-name create-mod --capabilities CAPABILITY_IAM --no-fail-on-empty-changeset --parameter-overrides
           LobbyAMIId=${{ steps.create-mod-parameters.outputs.LobbyAMIId }}
           ServerAMIId=${{ steps.create-mod-parameters.outputs.ServerAMIId }}
           KeyPairName=${{ secrets.KEYPAIRNAME }}
