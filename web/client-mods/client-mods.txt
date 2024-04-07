@@ -1,8 +1,0 @@
-fabric-api
-voicechat-fabric
-shulkerboxtooltip
-Bookshelf
-iris
-sodium
-litematica
-malilib

@@ -1,0 +1,14 @@
+[Unit]
+Description=Percycraft
+After=docker.service
+Requires=docker.service
+
+[Service]
+Restart=no
+ExecStart=/opt/percycraft/service-start.sh
+ExecStop=/opt/percycraft/service-stop.sh
+TimeoutStartSec=900
+TimeoutStopSec=600
+
+[Install]
+WantedBy=multi-user.target

@@ -1,40 +1,380 @@
 name: Deploy Percycraft
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  - push
 
 permissions:
-      id-token: write
-      contents: read
+  id-token: write
+  contents: read
 
 jobs:
-  PrepareChangeSet:
+  build-trigger:
     runs-on: ubuntu-latest
+    outputs:
+      lobby-ami: ${{ steps.lobby-ami.outputs.src }}
+      percycraft-base-ami: ${{ steps.percycraft-base-ami.outputs.src }}
+      percycraft-smp-ami: ${{ steps.percycraft-smp-ami.outputs.src }}
+      create-anything-ami: ${{ steps.create-anything-ami.outputs.src }}
+      create-mod-ami: ${{ steps.create-mod-ami.outputs.src }}
+      percycraft-vpc: ${{ steps.percycraft-vpc.outputs.src }}
+    steps:
+    - uses:  actions/checkout@v4
+    - uses: dorny/paths-filter@v3
+      name: Lobby AMI
+      id: lobby-ami
+      with:
+        base: ${{ github.ref }}
+        filters: |
+          src:
+            - 'lobby-ami/**'
+    - uses: dorny/paths-filter@v3
+      name: Percycraft Base AMI
+      id: percycraft-base-ami
+      with:
+        base: ${{ github.ref }}
+        filters: |
+          src:
+            - 'percycraft-base-ami/**'
+    - uses: dorny/paths-filter@v3
+      id: percycraft-smp-ami
+      name: Percycraft SMP AMI
+      with:
+        base: ${{ github.ref }}
+        filters: |
+          src:
+            - 'percycraft-smp-ami/**'
+    - uses: dorny/paths-filter@v3
+      id: create-anything-ami
+      name: Create Anything AMI
+      with:
+        base: ${{ github.ref }}
+        filters: |
+          src:
+            - 'create-anything-ami/**'
+    - uses: dorny/paths-filter@v3
+      id: create-mod-ami
+      name: Create Mod AMI
+      with:
+        base: ${{ github.ref }}
+        filters: |
+          src:
+            - 'create-mod-ami/**'
+    - uses: dorny/paths-filter@v3
+      id: percycraft-vpc
+      name: Percycraft VPC
+      with:
+        base: ${{ github.ref }}
+        filters: |
+          src:
+            - 'percycraft-vpc/**'
+  lobby-ami:
+    needs: build-trigger
+    if: needs.build-trigger.outputs.lobby-ami == 'true'
+    runs-on: ubuntu-latest
+    name: Create lobby-ami
     steps:
       - name: Git clone the repository
-        uses: actions/checkout@v3
+        uses:  actions/checkout@v4
       - name: configure aws credentials
-        uses: aws-actions/configure-aws-credentials@v1.7.0
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::719158693954:role/Percycraft
+          role-to-assume: ${{ secrets.ROLETOASSUME }}
           role-session-name: GithubDeployPercycraft
-          aws-region: eu-west-2
-      - name: Deploy Survival
-        uses: aws-actions/aws-cloudformation-github-deploy@v1
+          aws-region: ${{ secrets.AWSREGION }}
+      - name: Setup Packer
+        uses: hashicorp/setup-packer@main
+        id: setup
         with:
-          name: percycraft
-          template: aws/cf.yml
-          parameter-overrides: "KeyPairName=${{ secrets.KEYPAIRNAME }},YourIPv4=${{ secrets.YOURIPV4 }},Players=\"${{ secrets.PLAYERS }}\",CurseForgeAPIKey=${{ secrets.CURSEFORGEAPIKEY }},Profile=survival,WeekdayStartSchedule=\"\",WeekdayStopSchedule=\"\",WeekendStartSchedule=\"\",WeekendStopSchedule=\"\""
-          no-execute-changeset: 1
-          no-fail-on-empty-changeset: 1
-      - name: Deploy Creative
-        uses: aws-actions/aws-cloudformation-github-deploy@v1
+          version: latest
+      - name: Run Packer
+        run: |
+          packer init lobby-ami/
+          packer validate -var "branch=${{ github.ref_name }}" -var "repository=https://github.com/${{ github.repository }}.git" lobby-ami/
+          packer build -var "branch=${{ github.ref_name }}" -var "repository=https://github.com/${{ github.repository }}.git" lobby-ami/lobby-ami.pkr.hcl
+  percycraft-base-ami:
+    needs: build-trigger
+    if: needs.build-trigger.outputs.percycraft-base-ami == 'true'
+    runs-on: ubuntu-latest
+    name: Create percycraft-base-ami
+    steps:
+      - name: Git clone the repository
+        uses:  actions/checkout@v4
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          name: create-anything
-          template: aws/cf.yml
-          parameter-overrides: "KeyPairName=${{ secrets.KEYPAIRNAME }},YourIPv4=${{ secrets.YOURIPV4 }},Players=\"${{ secrets.CREATIVEPLAYERS }}\",CurseForgeAPIKey=${{ secrets.CURSEFORGEAPIKEY }},Profile=creative,FileServerHostName=cdn2.pcraft.co.uk,WeekdayStartSchedule=\"\",WeekdayStopSchedule=\"\",WeekendStartSchedule=\"\",WeekendStopSchedule=\"\""
-          no-execute-changeset: 1
-          no-fail-on-empty-changeset: 1          
+          role-to-assume: ${{ secrets.ROLETOASSUME }}
+          role-session-name: GithubDeployPercycraft
+          aws-region: ${{ secrets.AWSREGION }}
+      - name: Setup Packer
+        uses: hashicorp/setup-packer@main
+        with:
+          version: latest
+      - name: Run Packer
+        run: |
+          packer init percycraft-base-ami/
+          packer validate -var "branch=${{ github.ref_name }}" -var "repository=https://github.com/${{ github.repository }}.git" percycraft-base-ami/
+          packer build -var "branch=${{ github.ref_name }}" -var "repository=https://github.com/${{ github.repository }}.git" percycraft-base-ami/percycraft-base-ami.pkr.hcl
+  percycraft-smp-ami:
+    needs:
+      - build-trigger
+      - percycraft-base-ami
+    if: |
+      always() && !(
+        contains(needs.*.result, 'failure') ||
+        contains(needs.*.result, 'cancelled')
+      ) && (
+        needs.build-trigger.outputs.percycraft-smp-ami == 'true' ||
+        needs.percycraft-base-ami.result == 'success'
+      )
+    runs-on: ubuntu-latest
+    name: Create percycraft-smp-ami
+    steps:
+      - name: Git clone the repository
+        uses:  actions/checkout@v4
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.ROLETOASSUME }}
+          role-session-name: GithubDeployPercycraft
+          aws-region: ${{ secrets.AWSREGION }}
+      - name: Setup `packer`
+        uses: hashicorp/setup-packer@main
+        id: setup
+        with:
+          version: latest
+      - name: Run Packer
+        run: |
+          packer init percycraft-smp-ami/
+          packer validate -var "branch=${{ github.ref_name }}" -var "repository=https://github.com/${{ github.repository }}.git" percycraft-smp-ami/
+          packer build -var "branch=${{ github.ref_name }}" -var "repository=https://github.com/${{ github.repository }}.git" percycraft-smp-ami/percycraft-smp-ami.pkr.hcl
+  create-anything-ami:
+    needs:
+      - build-trigger
+      - percycraft-base-ami
+    if: |
+      always() && !(
+        contains(needs.*.result, 'failure') ||
+        contains(needs.*.result, 'cancelled')
+      ) && (
+        needs.build-trigger.outputs.create-anything-ami == 'true' ||
+        needs.percycraft-base-ami.result == 'success'
+      )
+    runs-on: ubuntu-latest
+    name: Create create-anything-ami
+    steps:
+      - name: Git clone the repository
+        uses:  actions/checkout@v4
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.ROLETOASSUME }}
+          role-session-name: GithubDeployPercycraft
+          aws-region: ${{ secrets.AWSREGION }}
+      - name: Setup `packer`
+        uses: hashicorp/setup-packer@main
+        id: setup
+        with:
+          version: latest
+      - name: Run Packer
+        run: |
+          packer init create-anything-ami/
+          packer validate -var "cfapikey=${{ secrets.CURSEFORGEAPIKEY }}" -var "branch=${{ github.ref_name }}" -var "repository=https://github.com/${{ github.repository }}.git" create-anything-ami/
+          packer build -var "cfapikey=${{ secrets.CURSEFORGEAPIKEY }}" -var "branch=${{ github.ref_name }}" -var "repository=https://github.com/${{ github.repository }}.git" create-anything-ami/create-anything-ami.pkr.hcl
+  create-mod-ami:
+    needs:
+      - build-trigger
+      - percycraft-base-ami
+    if: |
+      always() && !(
+        contains(needs.*.result, 'failure') ||
+        contains(needs.*.result, 'cancelled')
+      ) && (
+        needs.build-trigger.outputs.create-mod-ami == 'true' ||
+        needs.percycraft-base-ami.result == 'success'
+      )
+    runs-on: ubuntu-latest
+    name: Create create-mod-ami
+    steps:
+      - name: Git clone the repository
+        uses:  actions/checkout@v4
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.ROLETOASSUME }}
+          role-session-name: GithubDeployPercycraft
+          aws-region: ${{ secrets.AWSREGION }}
+      - name: Setup `packer`
+        uses: hashicorp/setup-packer@main
+        id: setup
+        with:
+          version: latest
+      - name: Run Packer
+        run: |
+          packer init create-mod-ami/
+          packer validate -var "branch=${{ github.ref_name }}" -var "repository=https://github.com/${{ github.repository }}.git" create-mod-ami/
+          packer build -var "branch=${{ github.ref_name }}" -var "repository=https://github.com/${{ github.repository }}.git" create-mod-ami/create-mod-ami.pkr.hcl
+  percycraft-smp-vpc:
+    needs:
+      - build-trigger
+      - percycraft-smp-ami
+      - lobby-ami
+    if: |
+      always() && !(
+        contains(needs.*.result, 'failure') ||
+        contains(needs.*.result, 'cancelled')
+      ) && (
+        needs.build-trigger.outputs.percycraft-vpc == 'true' ||
+        needs.build-trigger.outputs.percycraft-smp-ami == 'true' ||
+        needs.build-trigger.outputs.lobby-ami == 'true'
+      )
+    runs-on: ubuntu-latest
+    name: Update percycraft-smp-vpc
+    steps:
+      - name: Git clone the repository
+        uses:  actions/checkout@v4
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.ROLETOASSUME }}
+          role-session-name: GithubDeployPercycraft
+          aws-region: ${{ secrets.AWSREGION }}
+      - name: Get AMI IDs
+        id: percycraft-smp-parameters
+        run: |
+          echo ServerAMIId=$(aws ssm get-parameter --name '/percycraft/ami-latest/percycraft-smp-ami' | jq -r .Parameter.Value) >> $GITHUB_OUTPUT
+          echo LobbyAMIId=$(aws ssm get-parameter --name '/percycraft/ami-latest/lobby-ami' | jq -r .Parameter.Value) >> $GITHUB_OUTPUT
+      - name: Prepare Cloudformation template
+        run: >
+          cat percycraft-vpc/cf.yml |
+          sed "s/{{ .LobbyAMIId }}/${{ steps.percycraft-smp-parameters.outputs.LobbyAMIId }}/g" |
+          sed "s/{{ .ServerAMIId }}/${{ steps.percycraft-smp-parameters.outputs.ServerAMIId }}/g" |
+          sed "s/{{ .KeyPairName }}/${{ secrets.KEYPAIRNAME }}/g" |
+          sed "s/{{ .YourIPv4 }}/${{ secrets.YOURIPV4 }}/g" |
+          sed "s/{{ .Players }}/${{ secrets.PERCYCRAFTSMPPLAYERS }}/g" |
+          sed "s/{{ .TimeZone }}/Europe\/London/g" |
+          sed "s/{{ .WeekdayStartSchedule }}/''/g" |
+          sed "s/{{ .WeekdayStopSchedule }}/''/g" |
+          sed "s/{{ .WeekendStartSchedule }}/''/g" |
+          sed "s/{{ .WeekendStopSchedule }}/''/g" |
+          sed "s/{{ .FileServerHostName }}/${{ secrets.PERCYCRAFTSMPFILESERVER }}/g" >
+          percycraft-smp.yml
+      - name: Cloudformation template artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: percycraft-smp template
+          path: percycraft-smp.yml
+      - name: Deploy to AWS
+        run: |
+          aws cloudformation validate-template --template-body file://percycraft-smp.yml
+          aws cloudformation wait stack-exists --stack-name percycraft
+          aws cloudformation deploy --template-file percycraft-smp.yml --stack-name percycraft --capabilities CAPABILITY_IAM --no-fail-on-empty-changeset
+  create-anything-vpc:
+    needs:
+      - build-trigger
+      - create-anything-ami
+      - lobby-ami
+    if: |
+      always() && !(
+        contains(needs.*.result, 'failure') ||
+        contains(needs.*.result, 'cancelled')
+      ) && (
+        needs.build-trigger.outputs.percycraft-vpc == 'true' ||
+        needs.build-trigger.outputs.create-anything-ami == 'true' ||
+        needs.build-trigger.outputs.lobby-ami == 'true'
+      )
+    runs-on: ubuntu-latest
+    name: Update create-anything-vpc
+    steps:
+      - name: Git clone the repository
+        uses:  actions/checkout@v4
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.ROLETOASSUME }}
+          role-session-name: GithubDeployPercycraft
+          aws-region: ${{ secrets.AWSREGION }}
+      - name: Get AMI IDs
+        id: create-anything-parameters
+        run: |
+          echo ServerAMIId=$(aws ssm get-parameter --name '/percycraft/ami-latest/create-anything-ami' | jq -r .Parameter.Value) >> $GITHUB_OUTPUT
+          echo LobbyAMIId=$(aws ssm get-parameter --name '/percycraft/ami-latest/lobby-ami' | jq -r .Parameter.Value) >> $GITHUB_OUTPUT
+      - name: Prepare Cloudformation template
+        run: >
+          cat percycraft-vpc/cf.yml |
+          sed "s/{{ .LobbyAMIId }}/${{ steps.create-anything-parameters.outputs.LobbyAMIId }}/g" |
+          sed "s/{{ .ServerAMIId }}/${{ steps.create-anything-parameters.outputs.ServerAMIId }}/g" |
+          sed "s/{{ .KeyPairName }}/${{ secrets.KEYPAIRNAME }}/g" |
+          sed "s/{{ .YourIPv4 }}/${{ secrets.YOURIPV4 }}/g" |
+          sed "s/{{ .Players }}/${{ secrets.CREATEANYTHINGPLAYERS }}/g" |
+          sed "s/{{ .TimeZone }}/Europe\/London/g" |
+          sed "s/{{ .WeekdayStartSchedule }}/''/g" |
+          sed "s/{{ .WeekdayStopSchedule }}/''/g" |
+          sed "s/{{ .WeekendStartSchedule }}/''/g" |
+          sed "s/{{ .WeekendStopSchedule }}/''/g" |
+          sed "s/{{ .FileServerHostName }}/${{ secrets.CREATEANYTHINGFILESERVER }}/g" >
+          create-anything.yml
+      - name: Cloudformation template artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: create-anything template
+          path: create-anything.yml
+      - name: Deploy to AWS
+        run: |
+          aws cloudformation validate-template --template-body file://create-anything.yml
+          aws cloudformation wait stack-exists --stack-name create-anything
+          aws cloudformation deploy --template-file create-anything.yml --stack-name create-anything --capabilities CAPABILITY_IAM --no-fail-on-empty-changeset
+  create-mod-vpc:
+    needs:
+      - build-trigger
+      - create-mod-ami
+      - lobby-ami
+    if: |
+      always() && !(
+        contains(needs.*.result, 'failure') ||
+        contains(needs.*.result, 'cancelled')
+      ) && (
+        needs.build-trigger.outputs.percycraft-vpc == 'true' ||
+        needs.build-trigger.outputs.create-mod-ami == 'true' ||
+        needs.build-trigger.outputs.lobby-ami == 'true'
+      )
+    runs-on: ubuntu-latest
+    name: Update create-mod-vpc
+    steps:
+      - name: Git clone the repository
+        uses:  actions/checkout@v4
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.ROLETOASSUME }}
+          role-session-name: GithubDeployPercycraft
+          aws-region: ${{ secrets.AWSREGION }}
+      - name: Get AMI IDs
+        id: create-mod-parameters
+        run: |
+          echo ServerAMIId=$(aws ssm get-parameter --name '/percycraft/ami-latest/create-mod-ami' | jq -r .Parameter.Value) >> $GITHUB_OUTPUT
+          echo LobbyAMIId=$(aws ssm get-parameter --name '/percycraft/ami-latest/lobby-ami' | jq -r .Parameter.Value) >> $GITHUB_OUTPUT
+      - name: Prepare Cloudformation template
+        run: >
+          cat percycraft-vpc/cf.yml |
+          sed "s/{{ .LobbyAMIId }}/${{ steps.create-mod-parameters.outputs.LobbyAMIId }}/g" |
+          sed "s/{{ .ServerAMIId }}/${{ steps.create-mod-parameters.outputs.ServerAMIId }}/g" |
+          sed "s/{{ .KeyPairName }}/${{ secrets.KEYPAIRNAME }}/g" |
+          sed "s/{{ .YourIPv4 }}/${{ secrets.YOURIPV4 }}/g" |
+          sed "s/{{ .Players }}/${{ secrets.CREATEMODPLAYERS }}/g" |
+          sed "s/{{ .TimeZone }}/Europe\/London/g" |
+          sed "s/{{ .WeekdayStartSchedule }}/''/g" |
+          sed "s/{{ .WeekdayStopSchedule }}/''/g" |
+          sed "s/{{ .WeekendStartSchedule }}/''/g" |
+          sed "s/{{ .WeekendStopSchedule }}/''/g" |
+          sed "s/{{ .FileServerHostName }}/${{ secrets.CREATEMODFILESERVER }}/g" >
+          create-mod.yml
+      - name: Cloudformation template artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: create-mod template
+          path: create-mod.yml
+      - name: Deploy to AWS
+        run: |
+          aws cloudformation validate-template --template-body file://create-mod.yml
+          aws cloudformation wait stack-exists --stack-name create-mod
+          aws cloudformation deploy --template-file create-mod.yml --stack-name create-mod --capabilities CAPABILITY_IAM --no-fail-on-empty-changeset

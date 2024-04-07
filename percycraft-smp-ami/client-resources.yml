@@ -1,0 +1,29 @@
+services:
+  client-resources:
+    image: itzg/minecraft-server:base
+    environment:
+      EULA: "TRUE"
+      TYPE: FABRIC
+      SETUP_ONLY: "TRUE"
+      VERSION: "1.20.1"
+      VANILLATWEAKS_FILE: |
+        /vanillatweaks/resourcepacks.json
+      MODRINTH_PROJECTS: |
+        fabric-api
+        chat-signing-hider:beta
+        lambdynamiclights
+        raised
+        simple-voice-chat
+        tooltipfix
+        shulkerboxtooltip
+        bookshelf-lib
+        directionhud
+        lithium
+        sodium
+        iris
+        modmenu
+        distanthorizons:alpha
+    volumes:
+      - /tmp/percycraft/client-resources:/data
+      - /tmp/percycraft/percycraft-smp-ami/vanillatweaks:/vanillatweaks:ro
+    restart: no

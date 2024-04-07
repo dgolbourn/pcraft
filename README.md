@@ -24,24 +24,12 @@ The selection of mods I've chosen is motivated by the desire to track the look a
 
 There is also a file server to host the client-side resource packs and mods.
 
-[Here](http://cdn.pcraft.co.uk/album/world.png) is the world so far!
-
 For players
 -----------
 
 1. Tell the admin (me) your Minecraft user name so I can add you to the allow list
 2. Install the [Fabric Loader](https://fabricmc.net/use/); this will enable you to select the Fabric version of Minecraft in the Minecraft Launcher when you start the game
-3. *Windows*: Install the [client mods](http://cdn.pcraft.co.uk/percycraft-installer.exe)
-
-   *Others*: download the client mods from [here](http://cdn.pcraft.co.uk/mods) and place them in the `/mods` directory of your Minecraft
+3. **OPTIONAL** Download the client mods from [here](http://cdn.pcraft.co.uk/mods), unzip and place them in the `/mods` directory of your Minecraft
 4. **OPTIONAL** Download these [shaders](https://sonicether.com/shaders/download/renewed-v1-0-1) and place them in the `/shaderpacks` directory of your Minecraft
 5. Launch the game, choose Multiplayer, and add the Percycraft server `pcraft.co.uk`.
 6. **Congratulations, you've joined the Percycraft server!**
-
-For server admins
------------------
-If you want your own Percycraft:
-
-1. Create an AWS Stack using the [Cloudformation template](aws/cf.yml)
-2. Enjoy
-

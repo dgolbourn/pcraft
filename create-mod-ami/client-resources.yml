@@ -1,0 +1,16 @@
+services:
+  client-resources:
+    image: itzg/minecraft-server:base
+    environment:
+      EULA: "TRUE"
+      TYPE: FABRIC
+      SETUP_ONLY: "TRUE"
+      VERSION: "1.20.1"
+      MODRINTH_PROJECTS: |
+        fabric-api
+        simple-voice-chat
+        jei:beta
+        create-fabric:beta
+    volumes:
+      - /tmp/percycraft/client-resources:/data
+    restart: no
