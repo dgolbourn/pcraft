@@ -8,6 +8,13 @@ permissions:
   contents: read
 
 jobs:
+  kill-it:
+    runs-on: ubuntu-latest
+    name: kill bad job
+    steps:
+      - name: kill it
+        run: |    
+          gh api --method POST -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /repos/dgolbourn/percycraft/actions/runs/8588318661/cancel
   build-trigger:
     runs-on: ubuntu-latest
     outputs:
