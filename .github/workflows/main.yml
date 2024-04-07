@@ -11,6 +11,8 @@ jobs:
   kill-it:
     runs-on: ubuntu-latest
     name: kill bad job
+    env:
+      GH_TOKEN: ${{ github.token }}    
     steps:
       - name: kill it
         run: |    
