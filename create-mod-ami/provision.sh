@@ -13,6 +13,7 @@ provision_minecraft() {
     echo Provision minecraft started >&2
     mkdir -p /opt/data
     docker compose -f /tmp/percycraft/create-mod-ami/provision-minecraft.yml up --exit-code-from provision-minecraft
+    docker compose -f /tmp/percycraft/create-mod-ami/run-minecraft.yml up --exit-code-from minecraft
     cd /opt/data
     JAR=$(ls -t *.jar | head -1)
     echo "CUSTOM_SERVER=/data/${JAR}" >> /opt/.env

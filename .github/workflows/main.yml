@@ -334,14 +334,13 @@ jobs:
           sed "s/{{ .WeekendStopSchedule }}/''/g" |
           sed "s/{{ .FileServerHostName }}/${{ secrets.CREATEMODFILESERVER }}/g" >
           create-mod.yml
-      - name: Cloudformation template articfact
+      - name: Cloudformation template artifact
         uses: actions/upload-artifact@v4
         with:
-          name: my-artifact
+          name: create-mod template
           path: create-mod.yml
       - name: Deploy to AWS
         run: |
           aws cloudformation validate-template --template-body file://create-mod.yml
-          #aws ec2 create-launch-template-version --launch-template-name some-name-launch-template --launch-template-data '{"ImageId":"${{ steps.create-mod-parameters.outputs.ServerAMIId }}"}'
+          aws cloudformation wait stack-exists --stack-name create-mod
           aws cloudformation deploy --template-file create-mod.yml --stack-name create-mod --capabilities CAPABILITY_IAM --no-fail-on-empty-changeset
-          #aws autoscaling update-auto-scaling-group --auto-scaling-group-name my-asg --launch-template LaunchTemplateName=my-template-for-auto-scaling,Version='$Latest'
