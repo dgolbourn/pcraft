@@ -25,7 +25,8 @@ provision_client_resources() {
     mkdir -p /tmp/percycraft/client-resources
     docker compose -f /tmp/percycraft/create-mod-ami/client-resources.yml up --exit-code-from client-resources
     mkdir -p /opt/percycraft/client-resources/mods/
-    zip -r /opt/percycraft/client-resources/mods/mods.zip /tmp/percycraft/client-resources/mods/*
+    cd /tmp/percycraft/client-resources/mods/
+    zip -r /opt/percycraft/client-resources/mods/mods.zip *
     mkdir -p /opt/percycraft/client-resources/album/
     touch /opt/percycraft/client-resources/album/world.png
     cd /opt/percycraft/client-resources/
