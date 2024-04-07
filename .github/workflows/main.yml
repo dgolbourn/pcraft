@@ -238,19 +238,36 @@ jobs:
           role-to-assume: ${{ secrets.ROLETOASSUME }}
           role-session-name: GithubDeployPercycraft
           aws-region: ${{ secrets.AWSREGION }}
-      - name: get parameters
+      - name: Get AMI IDs
         id: percycraft-smp-parameters
         run: |
           echo ServerAMIId=$(aws ssm get-parameter --name '/percycraft/ami-latest/percycraft-smp-ami' | jq -r .Parameter.Value) >> $GITHUB_OUTPUT
           echo LobbyAMIId=$(aws ssm get-parameter --name '/percycraft/ami-latest/lobby-ami' | jq -r .Parameter.Value) >> $GITHUB_OUTPUT
-      - name: Deploy to AWS
-        uses: aws-actions/aws-cloudformation-github-deploy@v1
+      - name: Prepare Cloudformation template
+        run: >
+          cat percycraft-vpc/cf.yml |
+          sed "s/{{ .LobbyAMIId }}/${{ steps.percycraft-smp-parameters.outputs.LobbyAMIId }}/g" |
+          sed "s/{{ .ServerAMIId }}/${{ steps.percycraft-smp-parameters.outputs.ServerAMIId }}/g" |
+          sed "s/{{ .KeyPairName }}/${{ secrets.KEYPAIRNAME }}/g" |
+          sed "s/{{ .YourIPv4 }}/${{ secrets.YOURIPV4 }}/g" |
+          sed "s/{{ .Players }}/${{ secrets.PERCYCRAFTSMPPLAYERS }}/g" |
+          sed "s/{{ .TimeZone }}/Europe\/London/g" |
+          sed "s/{{ .WeekdayStartSchedule }}/''/g" |
+          sed "s/{{ .WeekdayStopSchedule }}/''/g" |
+          sed "s/{{ .WeekendStartSchedule }}/''/g" |
+          sed "s/{{ .WeekendStopSchedule }}/''/g" |
+          sed "s/{{ .FileServerHostName }}/${{ secrets.PERCYCRAFTSMPFILESERVER }}/g" >
+          percycraft-smp.yml
+      - name: Cloudformation template artifact
+        uses: actions/upload-artifact@v4
         with:
-          name: percycraft
-          template: percycraft-vpc/cf.yml
-          parameter-overrides: "LobbyAMIId=${{ steps.percycraft-smp-parameters.outputs.LobbyAMIId }},ServerAMIId=${{ steps.percycraft-smp-parameters.outputs.ServerAMIId }},KeyPairName=${{ secrets.KEYPAIRNAME }},YourIPv4=${{ secrets.YOURIPV4 }},Players=\"${{ secrets.PERCYCRAFTSMPPLAYERS }}\"WeekdayStartSchedule=\"\",WeekdayStopSchedule=\"\",WeekendStartSchedule=\"\",WeekendStopSchedule=\"\",FileServerHostName=${{ secrets.PERCYCRAFTSMPFILESERVER }}"
-          no-execute-changeset: 1
-          no-fail-on-empty-changeset: 1
+          name: percycraft-smp template
+          path: percycraft-smp.yml
+      - name: Deploy to AWS
+        run: |
+          aws cloudformation validate-template --template-body file://percycraft-smp.yml
+          aws cloudformation wait stack-exists --stack-name percycraft-smp
+          aws cloudformation deploy --template-file percycraft-smp.yml --stack-name percycraft-smp --capabilities CAPABILITY_IAM --no-fail-on-empty-changeset
   create-anything-vpc:
     needs:
       - build-trigger
@@ -276,19 +293,36 @@ jobs:
           role-to-assume: ${{ secrets.ROLETOASSUME }}
           role-session-name: GithubDeployPercycraft
           aws-region: ${{ secrets.AWSREGION }}
-      - name: get parameters
+      - name: Get AMI IDs
         id: create-anything-parameters
         run: |
           echo ServerAMIId=$(aws ssm get-parameter --name '/percycraft/ami-latest/create-anything-ami' | jq -r .Parameter.Value) >> $GITHUB_OUTPUT
           echo LobbyAMIId=$(aws ssm get-parameter --name '/percycraft/ami-latest/lobby-ami' | jq -r .Parameter.Value) >> $GITHUB_OUTPUT
-      - name: Deploy to AWS
-        uses: aws-actions/aws-cloudformation-github-deploy@v1
+      - name: Prepare Cloudformation template
+        run: >
+          cat percycraft-vpc/cf.yml |
+          sed "s/{{ .LobbyAMIId }}/${{ steps.create-anything-parameters.outputs.LobbyAMIId }}/g" |
+          sed "s/{{ .ServerAMIId }}/${{ steps.create-anything-parameters.outputs.ServerAMIId }}/g" |
+          sed "s/{{ .KeyPairName }}/${{ secrets.KEYPAIRNAME }}/g" |
+          sed "s/{{ .YourIPv4 }}/${{ secrets.YOURIPV4 }}/g" |
+          sed "s/{{ .Players }}/${{ secrets.CREATEANYTHINGPLAYERS }}/g" |
+          sed "s/{{ .TimeZone }}/Europe\/London/g" |
+          sed "s/{{ .WeekdayStartSchedule }}/''/g" |
+          sed "s/{{ .WeekdayStopSchedule }}/''/g" |
+          sed "s/{{ .WeekendStartSchedule }}/''/g" |
+          sed "s/{{ .WeekendStopSchedule }}/''/g" |
+          sed "s/{{ .FileServerHostName }}/${{ secrets.CREATEANYTHINGFILESERVER }}/g" >
+          create-anything.yml
+      - name: Cloudformation template artifact
+        uses: actions/upload-artifact@v4
         with:
-          name: create-anything
-          template: percycraft-vpc/cf.yml
-          parameter-overrides: "LobbyAMIId=${{ steps.create-anything-parameters.outputs.LobbyAMIId }},ServerAMIId=${{ steps.create-anything-parameters.outputs.ServerAMIId }},KeyPairName=${{ secrets.KEYPAIRNAME }},YourIPv4=${{ secrets.YOURIPV4 }},Players=\"${{ secrets.CREATEANYTHINGPLAYERS }}\",WeekdayStartSchedule=\"\",WeekdayStopSchedule=\"\",WeekendStartSchedule=\"\",WeekendStopSchedule=\"\",FileServerHostName=${{ secrets.CREATEANYTHINGFILESERVER }}"
-          no-execute-changeset: 1
-          no-fail-on-empty-changeset: 1
+          name: create-anything template
+          path: create-anything.yml
+      - name: Deploy to AWS
+        run: |
+          aws cloudformation validate-template --template-body file://create-anything.yml
+          aws cloudformation wait stack-exists --stack-name create-anything
+          aws cloudformation deploy --template-file create-anything.yml --stack-name create-anything --capabilities CAPABILITY_IAM --no-fail-on-empty-changeset
   create-mod-vpc:
     needs:
       - build-trigger

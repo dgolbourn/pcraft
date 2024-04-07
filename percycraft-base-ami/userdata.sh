@@ -8,6 +8,9 @@ restore() {
         aws s3 cp $DATABUCKETS3URI/data.tgz /tmp/
         mv /opt/data /tmp/data
         tar xf /tmp/data.tgz -C /opt/data
+        rm /opt/data/logs/*
+        rm /opt/data/mods/*
+        rm /opt/data/resourcepacks/*
         mv /tmp/data/* /opt/data
         rm -r /tmp/data
         echo Restored Percycraft >&2
