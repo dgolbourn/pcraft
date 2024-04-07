@@ -266,8 +266,8 @@ jobs:
       - name: Deploy to AWS
         run: |
           aws cloudformation validate-template --template-body file://percycraft-smp.yml
-          aws cloudformation wait stack-exists --stack-name percycraft-smp
-          aws cloudformation deploy --template-file percycraft-smp.yml --stack-name percycraft-smp --capabilities CAPABILITY_IAM --no-fail-on-empty-changeset
+          aws cloudformation wait stack-exists --stack-name percycraft
+          aws cloudformation deploy --template-file percycraft-smp.yml --stack-name percycraft --capabilities CAPABILITY_IAM --no-fail-on-empty-changeset
   create-anything-vpc:
     needs:
       - build-trigger

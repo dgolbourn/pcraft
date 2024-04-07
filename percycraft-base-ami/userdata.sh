@@ -7,6 +7,7 @@ restore() {
     if aws s3 ls $DATABUCKETS3URI/data.tgz; then
         aws s3 cp $DATABUCKETS3URI/data.tgz /tmp/
         mv /opt/data /tmp/data
+        mkdir /opt/data
         tar xf /tmp/data.tgz -C /opt/data
         rm /opt/data/logs/*
         rm /opt/data/mods/*
