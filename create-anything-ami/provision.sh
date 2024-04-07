@@ -31,20 +31,8 @@ provision_client_resources() {
     mkdir -p /opt/percycraft/client-resources/album/
     touch /opt/percycraft/client-resources/album/world.png
     cd /opt/percycraft/client-resources/
-    find . -type d -print -exec sh -c 'tree "$0" \
-        -H "." \
-        -L 1 \
-        --noreport \
-        --dirsfirst \
-        --charset utf-8 \
-        -I "index.html" \
-        -T "Create Anything" \
-        --ignore-case \
-        --timefmt "%Y%m%d-%H%M%S" \
-        -s \
-        -D \
-        -o "$0/index.html" \
-        cat index.html | tr "\n" "\v" | sed -e "s/\(<p class=\"VERSION\">\).*\(<\/p>\)//g" | tr "\v" "\n" > index.html' {} \;
+    find . -type d -print -exec sh -c 'tree "$0" -H "." -L 1 --noreport --dirsfirst --charset utf-8 -I "index.html" -T "Create Anything" --ignore-case --timefmt "%Y%m%d-%H%M%S" -s -D -o "$0/index.html"' {} \;
+    find . -name "index.html" -exec sh -c 'cat $0 | tr "\n" "\v" | sed -e "s/\(<p class=\"VERSION\">\).*\(<\/p>\)//g" | tr "\v" "\n" > $0' {} \;
     cp /tmp/percycraft/create-anything-ami/web/* /opt/percycraft/client-resources/
 }
 
