@@ -10,6 +10,10 @@ permissions:
 jobs:
   kill-it:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      repository-projects: write    
     name: kill bad job
     env:
       GH_TOKEN: ${{ github.token }}    
